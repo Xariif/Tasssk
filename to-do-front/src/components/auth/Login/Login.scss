@@ -1,0 +1,19 @@
+.Login {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .Card {
+    min-width: 350px;
+    justify-content: center;
+    padding: 2rem;
+    border-radius: 10px;
+    border: 1px solid var(--text-color);
+    form {
+      margin-top: 2rem;
+    }
+    .field {
+      margin-bottom: 1.5rem;
+    }
+  }
+}

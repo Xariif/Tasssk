@@ -1,0 +1,49 @@
+.Home {
+  padding: 1rem 0;
+  .b {
+    background-color: var(--surface-ground);
+  }
+  .c {
+    background-color: var(--surface-section);
+  }
+  .d {
+    background-color: var(--surface-card);
+  }
+  .e {
+    background-color: var(--surface-overlay);
+  }
+  .f {
+    background-color: var(--surface-border);
+  }
+  .g {
+    background-color: var(--surface-hover);
+  }
+  h1,
+  h2 {
+    text-align: center;
+  }
+  .Cards {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    gap: 1rem;
+
+    .Card {
+      margin: 0px auto;
+      background-color: transparent;
+      box-shadow: none;
+      i {
+        font-size: 4rem;
+        margin: 1rem;
+        display: flex;
+        justify-content: center;
+      }
+      button {
+        float: right;
+        font-weight: bold;
+      }
+      .p-card .p-card-body {
+        background-color: red !important;
+      }
+    }
+  }
+}

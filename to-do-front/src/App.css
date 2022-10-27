@@ -1,0 +1,7 @@
+.p-confirm-dialog-message {
+  margin-left: 0px;
+}
+.p-confirm-dialog-message {
+  margin: 0px !important;
+  max-width: 80vh !important;
+}

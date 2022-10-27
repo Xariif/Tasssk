@@ -1,0 +1,10 @@
+.Main {
+  padding: 1rem;
+  min-height: calc(100vh - 90px);
+}
+
+.Content {
+  background-color: var(--surface-card);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+}

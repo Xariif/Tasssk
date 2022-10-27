@@ -1,0 +1,22 @@
+.Footer {
+  padding: 0 1rem;
+  min-height: 40px;
+  font-size: 0.75rem;
+  display: flex;
+  background-color: var(--surface-card);
+  width: 100%;
+  justify-content: space-between;
+  a {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  p {
+    text-align: right;
+    margin: auto 0px auto 0px;
+  }
+
+  a:link {
+    text-decoration: none;
+    color: var(--text-color);
+  }
+}
