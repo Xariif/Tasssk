@@ -277,6 +277,30 @@ namespace ToDoAPI.Controllers
 
 
         }
+        [Authorize]
+        [HttpDelete("DeleteFile")]
+        public ReturnResult<bool> DeleteFile(string listId,string fileId)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Deleted",
+                Data = true
+            };
+            try
+            {
+
+                _listsService.DeleteFile(listId, fileId);
+
+                return result;
+
+            }
+            catch (Exception)
+            {
+                SetReturnResult(result, ResultCodes.Fail, "Error", false);
+                return result;
+            }
+        }
 
     }
 }

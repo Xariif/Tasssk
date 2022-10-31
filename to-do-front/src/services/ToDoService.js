@@ -127,7 +127,6 @@ export function AddFile({ listId, files }) {
     data: formData,
   };
 
-  console.log(listId, files);
   console.log(config);
 
   return useAPI(config);

@@ -13,7 +13,7 @@ namespace ToDoAPI.Models.ItemList
         public DateTime CreatedDate { get; set; }
         public DateTime FinishDate { get; set; }
         public List<Item> Items { get; set; } = new List<Item>();
-        public List<File64> Files { get; set; } = new List<File64>();
+        public List<FileInfo> Files { get; set; } = new List<FileInfo>();
     }
     public class Item
     {
@@ -24,12 +24,12 @@ namespace ToDoAPI.Models.ItemList
         public string Name { get; set; }
     }
 
-    public class File64
+    public class FileInfo
     {
         public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string  Type { get; set; }
         public long Size { get; set; }
-        public string Base64 { get; set; }
+        public ObjectId FileId { get; set; }
     }
 }

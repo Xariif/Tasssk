@@ -96,24 +96,22 @@ export const Add = ({ list }) => {
       files: event.files,
     };
 
-    console.log(body);
-
-    // AddFile(body)
-    //   .then((res) => {
-    //     setUploadFileDialog(false);
-    //     toastRef.current.show({
-    //       severity: "info",
-    //       summary: "Success",
-    //       detail: "Uploaded",
-    //     });
-    //   })
-    //   .catch(() => {
-    //     toastRef.current.show({
-    //       severity: "error",
-    //       summary: "Error",
-    //       detail: "Cannot upload files",
-    //     });
-    //   });
+    AddFile(body)
+      .then((res) => {
+        setUploadFileDialog(false);
+        toastRef.current.show({
+          severity: "info",
+          summary: "Success",
+          detail: "Uploaded",
+        });
+      })
+      .catch(() => {
+        toastRef.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Cannot upload files",
+        });
+      });
   };
 
   return (
@@ -133,8 +131,8 @@ export const Add = ({ list }) => {
           uploadOptions={uploadOptions}
           cancelOptions={cancelOptions}
           multiple
-          //customUpload
-          //uploadHandler={uploadHandler}
+          customUpload
+          uploadHandler={uploadHandler}
           maxFileSize={1000000}
         />
       </Dialog>
