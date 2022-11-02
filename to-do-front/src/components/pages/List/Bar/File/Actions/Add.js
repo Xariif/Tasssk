@@ -88,7 +88,6 @@ export const Add = ({ list, dispatch }) => {
 
     AddFile(body)
       .then((res) => {
-        console.log(res);
         setUploadFileDialog(false);
         toastRef.current.show({
           severity: "success",

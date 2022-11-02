@@ -52,7 +52,7 @@ namespace ToDoAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("AddList")]
+        [HttpPost("AddList")]
         public ReturnResult<bool> AddList(NewListDTO newList)
         {
             newList.Name.Trim();
@@ -83,6 +83,63 @@ namespace ToDoAPI.Controllers
             return result;
         }
 
+        [Authorize]
+        [HttpGet("GetLists")]
+        public ReturnResult<List<ItemListDTO>> GetLists()
+        {
+
+            var result = new ReturnResult<List<ItemListDTO>>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Success",
+                Data = null
+            };
+
+            try
+            {
+
+                var data = _listsService.GetListsByEmail(GetUserEmail());
+
+                var dataDto = data.Select(x => new ItemListDTO
+                {
+                    Email = x.Email,
+                    Name = x.Name,
+
+                    Finished = x.Finished,
+                    FinishDate = x.FinishDate,
+                    CreatedDate = x.CreatedDate,
+                    Id = x.Id.ToString(),
+                    Items = x.Items.Select(y => new ItemDTO
+                    {
+                        Finished = y.Finished,
+                        Id = y.Id.ToString(),
+                        Name = y.Name,
+                        CreatedAt = y.CreatedAt
+                    }).ToList(),
+                    Files = x.Files.Select(z => new FileInfoDTO
+                    {
+                        FileId = z.FileId.ToString(),
+                        Id = z.Id.ToString(),
+                        Name = z.Name,
+                        Size = z.Size,
+                        Type = z.Type
+                    }).ToList()
+
+                }).ToList();
+
+                result.Data = dataDto;
+                return result;
+
+            }
+            catch
+            {
+                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
+
+                return result;
+
+            }
+
+        }
         [Authorize]
         [HttpGet("GetListById")]
         public ReturnResult<ItemListDTO> GetListById(string listId)
@@ -133,7 +190,7 @@ namespace ToDoAPI.Controllers
             }
             catch 
             {
-                SetReturnResult(result, ResultCodes.Fail, "Fial", null);
+                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
 
                 return result;
 

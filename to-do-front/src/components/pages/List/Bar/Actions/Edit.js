@@ -9,7 +9,7 @@ import { useToastContext } from "../../../../../context/ToastContext";
 import { EditList } from "../../../../../services/ToDoService";
 import { Calendar } from "primereact/calendar";
 
-export default function Delete({ list, dispatch }) {
+export default function Delete({ selectedList, fetchData }) {
   const [storage, setStorage] = useLocalStorage("selectedList");
   const toastRef = useToastContext();
   const [editListDialog, setEditListDialog] = useState(false);
@@ -17,9 +17,9 @@ export default function Delete({ list, dispatch }) {
   const [date, setDate] = useState();
 
   useEffect(() => {
-    setValue(list.name);
-    setDate(new Date(list.finishDate));
-  }, [list]);
+    setValue(selectedList.name);
+    setDate(new Date(selectedList.finishDate));
+  }, [selectedList]);
 
   const exit = () => {
     setEditListDialog(false);
@@ -48,10 +48,11 @@ export default function Delete({ list, dispatch }) {
               label="Save"
               icon="pi pi-check"
               onClick={() => {
-                list.name = value;
-                list.finishDate = date;
-                EditList(list)
+                selectedList.name = value;
+                selectedList.finishDate = date;
+                EditList(selectedList)
                   .then((res) => {
+                    fetchData();
                     setStorage(value);
                     setEditListDialog(false);
 

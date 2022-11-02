@@ -13,8 +13,6 @@ export const File = ({ list, dispatch }) => {
   const [fileDialog, setFileDialog] = useState(false);
   const toastRef = useToastContext();
 
-  console.log(list);
-
   const actionsTemplate = (row) => {
     var fileId = row.fileId;
     var listId = list.id;
