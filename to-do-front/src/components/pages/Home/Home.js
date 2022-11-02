@@ -16,13 +16,7 @@ function Home() {
   return (
     <div className="Home">
       <h1>Welcome on my page! </h1>
-      <div className="b">text-secondary-color</div>
 
-      <div className="c">text-secondary-color</div>
-      <div className="d">primary-color</div>
-      <div className="e">primary-color-text</div>
-      <div className="f">--mask-bg</div>
-      <div className="g">--surface-hover</div>
       <div className="Cards">
         <Card
           header={<i className="pi pi-list" />}

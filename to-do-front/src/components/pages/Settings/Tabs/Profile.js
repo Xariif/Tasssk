@@ -8,7 +8,7 @@ import { ChangeTheme, DeleteAccount } from "./../../../../services/UserService";
 import { useToastContext } from "./../../../../context/ToastContext";
 
 import { useNavigate } from "react-router-dom";
-import { InputText } from "primereact/inputtext";
+
 export default function Profile() {
   const [deleteDialog, setDeleteDialog] = useState();
   const [changePasswordDialog, setChangePasswordDialog] = useState();

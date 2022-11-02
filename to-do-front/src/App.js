@@ -8,7 +8,7 @@ import Login from "./components/auth/Login/Login";
 import NotFound from "./components/pages/NotFound/NotFound";
 import Settings from "./components/pages/Settings/Settings";
 import Register from "./components/auth/Register/Register";
-import ToDoList from "./components/pages/ToDoList/ToDoList";
+import List from "./components/pages/List/List";
 import Layout from "./components/layout/Layout";
 import { Toast } from "primereact/toast";
 
@@ -55,7 +55,7 @@ function App() {
 
           <Route path="/Settings" element={<Settings />} />
 
-          <Route path="/ToDoList" element={<ToDoList />} />
+          <Route path="/ToDoList" element={<List />} />
         </Route>
 
         <Route path="/Login" element={<Login />} />

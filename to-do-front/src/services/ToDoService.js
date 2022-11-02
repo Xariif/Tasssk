@@ -110,7 +110,6 @@ export function UpdateItem({ listId, item }) {
 }
 
 export function AddFile({ listId, files }) {
-  console.log(listId);
   var params = {
     listId: listId,
   };
@@ -127,7 +126,33 @@ export function AddFile({ listId, files }) {
     data: formData,
   };
 
-  console.log(config);
+  return useAPI(config);
+}
+
+export function GetFile({ fileId }) {
+  var params = {
+    fileId: fileId,
+  };
+
+  var config = {
+    method: "get",
+    url: process.env.REACT_APP_BASE_URL + "ItemList/GetFile",
+    params: params,
+  };
+
+  return useAPI(config);
+}
+export function DeleteFile({ listId, fileId }) {
+  var params = {
+    fileId: fileId,
+    listId: listId,
+  };
+
+  var config = {
+    method: "delete",
+    url: process.env.REACT_APP_BASE_URL + "ItemList/DeleteFile",
+    params: params,
+  };
 
   return useAPI(config);
 }

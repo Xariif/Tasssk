@@ -6,7 +6,7 @@
   height: 50px;
   padding: 0 1rem;
   overflow: hidden;
-  background-color: var(--surface-ground);
+  background-color: var(--surface-card);
   a {
     user-select: none;
     -webkit-user-drag: none;
@@ -23,6 +23,7 @@
       display: flex;
       align-items: center;
       font-size: 1.5rem;
+      width: 1em;
     }
 
     li {
@@ -31,11 +32,7 @@
       justify-content: center;
     }
     li:hover {
-      background-color: var(--surface-hover);
-      color: var(--text-color);
-      outline: 2px solid var(--surface-hover);
-      outline-offset: -2px;
-      transform: scale(1);
+      background-color: var(--purple-500);
       transition: all linear 0.2s;
     }
   }
@@ -49,6 +46,6 @@
     align-items: center;
   }
   .active-link {
-    background-color: #f48fb1;
+    background-color: var(--pink-500);
   }
 }

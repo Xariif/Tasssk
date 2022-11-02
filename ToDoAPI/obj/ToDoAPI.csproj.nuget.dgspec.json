@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/bocian/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj": {}
+    "/Users/jakub/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj": {}
   },
   "projects": {
-    "/Users/bocian/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj": {
+    "/Users/jakub/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/bocian/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj",
+        "projectUniqueName": "/Users/jakub/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj",
         "projectName": "ToDoAPI",
-        "projectPath": "/Users/bocian/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj",
-        "packagesPath": "/Users/bocian/.nuget/packages/",
-        "outputPath": "/Users/bocian/Documents/GitHub/To-Do/ToDoAPI/obj/",
+        "projectPath": "/Users/jakub/Documents/GitHub/To-Do/ToDoAPI/ToDoAPI.csproj",
+        "packagesPath": "/Users/jakub/.nuget/packages/",
+        "outputPath": "/Users/jakub/Documents/GitHub/To-Do/ToDoAPI/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/bocian/.nuget/NuGet/NuGet.Config"
+          "/Users/jakub/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"

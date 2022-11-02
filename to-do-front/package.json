@@ -24,6 +24,7 @@
     "primeicons": "^5.0.0",
     "primereact": "^8.1.1",
     "react": "^18.1.0",
+    "react-base64-downloader": "^2.1.7",
     "react-bootstrap": "^2.5.0",
     "react-bootstrap-icons": "^1.8.4",
     "react-calendar": "^3.9.0",

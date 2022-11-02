@@ -108,7 +108,7 @@ export const Register = () => {
         <div
           className="Card"
           style={{
-            border: "1px solid white",
+            border: "1px solid var(--text-color) ",
             borderRadius: "20px",
           }}
         >

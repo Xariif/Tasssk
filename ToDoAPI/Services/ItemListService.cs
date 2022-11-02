@@ -36,7 +36,8 @@ namespace ToDoAPI.Services
                 Finished = false,
                 FinishDate = newList.FinishDate,
                 CreatedDate = DateTime.Now,
-                Items = new List<Item>()
+                Items = new List<Item>(),
+                Files = new List<FileInfo>()
             };
 
             db.InsertRecord(ItemListCollection, list);
@@ -56,14 +57,21 @@ namespace ToDoAPI.Services
         }
         public void DeleteList(ObjectId id)
         {
+          var files =  db.FindFisrtById<ItemList>(ItemListCollection, id).Files;
+
+            foreach(var file in files)
+            {
+                db.DeleteRecord<FileData>(FileDataCollection, file.FileId);
+            }
+
             db.DeleteRecord<ItemList>(ItemListCollection, id);
         }
 
         //Items 
 
-        public void AddItem(string listId, string itemName)
+        public void AddItem(ObjectId listId, string itemName)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, ObjectId.Parse(listId));
+            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
 
             var item = new Item
             {
@@ -75,16 +83,16 @@ namespace ToDoAPI.Services
 
             list.Items.Add(item);
 
-            db.UpsertRecord(ItemListCollection, ObjectId.Parse(listId), list);
+            db.UpsertRecord(ItemListCollection, listId, list);
         }
 
-        public void DeleteItem(string listId, string itemId)
+        public void DeleteItem(ObjectId listId, ObjectId itemId)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, ObjectId.Parse(listId));
+            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
 
-            list.Items.RemoveAll(x => x.Id == ObjectId.Parse(itemId));
+            list.Items.RemoveAll(x => x.Id == itemId);
 
-            db.UpsertRecord(ItemListCollection, ObjectId.Parse(listId), list);
+            db.UpsertRecord(ItemListCollection, listId, list);
         }
         public bool UpdateItem(string listId, Item item)
         {
@@ -108,9 +116,9 @@ namespace ToDoAPI.Services
         //Files
 
 
-        public void AddFile(string listId, List<IFormFile> files)
+        public void AddFile(ObjectId listId, List<IFormFile> files)
         { 
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, ObjectId.Parse(listId));
+            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
 
 
             var filesInfoList = new List<FileInfo>();
@@ -150,7 +158,7 @@ namespace ToDoAPI.Services
 
             list.Files.AddRange(filesInfoList);
 
-            db.UpsertRecord(ItemListCollection, ObjectId.Parse(listId), list);
+            db.UpsertRecord(ItemListCollection, listId, list);
 
 
             foreach (var item in filesDataList)
@@ -160,19 +168,24 @@ namespace ToDoAPI.Services
 
         }
 
-        public bool DeleteFile(string listId, string fileId)
+        public bool DeleteFile(ObjectId listId, ObjectId fileId)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, ObjectId.Parse(listId));
+            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
             if (list == null) return false;
 
 
-            var file = list.Files.Find(x=>x.FileId == ObjectId.Parse(fileId));
+            var file = list.Files.Find(x=>x.FileId == fileId);
             list.Files.Remove(file);
 
-            db.DeleteRecord<FileData>(FileDataCollection, ObjectId.Parse(fileId));
-            db.UpsertRecord<ItemList>(ItemListCollection, ObjectId.Parse(listId), list);
+            db.DeleteRecord<FileData>(FileDataCollection, fileId);
+            db.UpsertRecord<ItemList>(ItemListCollection, listId, list);
 
             return true;
+        }
+
+        public FileData GetFile(ObjectId fileId)
+        {
+            return db.FindFisrtById<FileData>(FileDataCollection, fileId);
         }
     }
 }

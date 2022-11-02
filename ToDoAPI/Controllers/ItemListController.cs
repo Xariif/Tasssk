@@ -4,6 +4,7 @@ using MongoDB.Bson;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.Core;
 using ToDoAPI.DTOs.ItemList;
+using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
 using ToDoAPI.Services;
 
@@ -36,12 +37,7 @@ namespace ToDoAPI.Controllers
                 SetReturnResult(result, ResultCodes.Fail, "Name is empty", false);
                 return result;
             }
-            else if (newList.FinishDate.AddHours(2) <= DateTime.Now)
-            {
-                SetReturnResult(result, ResultCodes.Fail, "Finish date error", false);
-                return result;
-            }
-
+    
             var res = _listsService.AddList(newList, GetUserEmail());
 
             if (res)
@@ -65,6 +61,8 @@ namespace ToDoAPI.Controllers
             var dataDto = data.Select(x => new ItemListDTO
             {
                 Email = x.Email,
+                Name = x.Name,
+
                 Finished = x.Finished,
                 FinishDate = x.FinishDate,
                 CreatedDate = x.CreatedDate,
@@ -76,8 +74,15 @@ namespace ToDoAPI.Controllers
                     Name = y.Name,
                     CreatedAt = y.CreatedAt
                 }).ToList(),
-                Name = x.Name,
-                
+                Files = x.Files.Select(z => new FileInfoDTO {
+                    FileId = z.FileId.ToString(),
+                    Id = z.Id.ToString(),
+                    Name = z.Name,
+                    Size = z.Size,
+                    Type = z.Type
+                }).ToList()
+
+
             }).ToList();
 
             var result = new ReturnResult<List<ItemListDTO>>()
@@ -170,7 +175,7 @@ namespace ToDoAPI.Controllers
             }
             else
             {
-                _listsService.AddItem(listId, itemName);
+                _listsService.AddItem(ObjectId.Parse(listId), itemName);
                 SetReturnResult(result, ResultCodes.Ok, "Item added", true);
             }
 
@@ -244,7 +249,7 @@ namespace ToDoAPI.Controllers
             if (itemId == null)
                 return result;
 
-            _listsService.DeleteItem(listId, itemId);
+            _listsService.DeleteItem(ObjectId.Parse(listId), ObjectId.Parse(itemId));
             SetReturnResult(result, ResultCodes.Ok, "Item deleted", true);
 
             return result;
@@ -263,7 +268,7 @@ namespace ToDoAPI.Controllers
             try
             {
 
-                _listsService.AddFile(listId, files);
+                _listsService.AddFile(ObjectId.Parse(listId), files);
 
                 return result;
 
@@ -290,7 +295,7 @@ namespace ToDoAPI.Controllers
             try
             {
 
-                _listsService.DeleteFile(listId, fileId);
+                _listsService.DeleteFile(ObjectId.Parse(listId), ObjectId.Parse(fileId));
 
                 return result;
 
@@ -298,6 +303,29 @@ namespace ToDoAPI.Controllers
             catch (Exception)
             {
                 SetReturnResult(result, ResultCodes.Fail, "Error", false);
+                return result;
+            }
+        }
+        [Authorize]
+        [HttpGet("GetFile")]
+        public ReturnResult<FileData> GetFile(string fileId)
+        {
+        var result = new ReturnResult<FileData>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Success",
+            };
+            try
+            {
+
+               result.Data =  _listsService.GetFile( ObjectId.Parse(fileId));
+
+                return result;
+
+            }
+            catch (Exception)
+            {
+                SetReturnResult(result, ResultCodes.Fail, "Error", null);
                 return result;
             }
         }
