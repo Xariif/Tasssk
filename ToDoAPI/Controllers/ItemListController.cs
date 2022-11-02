@@ -7,6 +7,7 @@ using ToDoAPI.DTOs.ItemList;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
 using ToDoAPI.Services;
+using FileInfo = ToDoAPI.Models.ItemList.FileInfo;
 
 namespace ToDoAPI.Controllers
 {
@@ -18,10 +19,40 @@ namespace ToDoAPI.Controllers
         {
             _listsService = listsService;
         }
+        [Authorize]
+        [HttpGet("GetListsNames")]
+        public ReturnResult<List<ListsNamesDTO>> GetListsNames()
+        {
+            var result = new ReturnResult<List<ListsNamesDTO>>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Ok",
+                Data = new List<ListsNamesDTO>()
+            };
 
+            try
+            {
+                var data = _listsService.GetListsByEmail(GetUserEmail());
+               foreach(var list in data)
+                {
+                    result.Data.Add(new ListsNamesDTO
+                    {
+                        Id = list.Id.ToString(),
+                        Name = list.Name
+                    });
+                }
+
+                return result;
+            }
+            catch 
+            {
+                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
+                return result;
+            }
+        }
 
         [Authorize]
-        [HttpPost("AddList")]
+        [HttpGet("AddList")]
         public ReturnResult<bool> AddList(NewListDTO newList)
         {
             newList.Name.Trim();
@@ -53,46 +84,61 @@ namespace ToDoAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("GetLists")]
-        public ReturnResult<List<ItemListDTO>> GetList()
+        [HttpGet("GetListById")]
+        public ReturnResult<ItemListDTO> GetListById(string listId)
         {
-            var data = _listsService.GetListsByEmail(GetUserEmail());
 
-            var dataDto = data.Select(x => new ItemListDTO
-            {
-                Email = x.Email,
-                Name = x.Name,
-
-                Finished = x.Finished,
-                FinishDate = x.FinishDate,
-                CreatedDate = x.CreatedDate,
-                Id = x.Id.ToString(),
-                Items = x.Items.Select(y => new ItemDTO
-                {
-                    Finished = y.Finished,
-                    Id = y.Id.ToString(),
-                    Name = y.Name,
-                    CreatedAt = y.CreatedAt
-                }).ToList(),
-                Files = x.Files.Select(z => new FileInfoDTO {
-                    FileId = z.FileId.ToString(),
-                    Id = z.Id.ToString(),
-                    Name = z.Name,
-                    Size = z.Size,
-                    Type = z.Type
-                }).ToList()
-
-
-            }).ToList();
-
-            var result = new ReturnResult<List<ItemListDTO>>()
+            var result = new ReturnResult<ItemListDTO>()
             {
                 Code = ResultCodes.Ok,
                 Message = "Success",
-                Data = dataDto
+                Data = null
             };
 
-            return result;
+            try
+            {
+
+                var x = _listsService.GetListById(ObjectId.Parse(listId));
+
+                var dataDto = new ItemListDTO
+                {
+                    Email = x.Email,
+                    Name = x.Name,
+
+                    Finished = x.Finished,
+                    FinishDate = x.FinishDate,
+                    CreatedDate = x.CreatedDate,
+                    Id = x.Id.ToString(),
+                    Items = x.Items.Select(y => new ItemDTO
+                    {
+                        Finished = y.Finished,
+                        Id = y.Id.ToString(),
+                        Name = y.Name,
+                        CreatedAt = y.CreatedAt
+                    }).ToList(),
+                    Files = x.Files.Select(z => new FileInfoDTO
+                    {
+                        FileId = z.FileId.ToString(),
+                        Id = z.Id.ToString(),
+                        Name = z.Name,
+                        Size = z.Size,
+                        Type = z.Type
+                    }).ToList()
+
+                };
+
+                result.Data = dataDto;
+                return result;
+
+            }
+            catch 
+            {
+                SetReturnResult(result, ResultCodes.Fail, "Fial", null);
+
+                return result;
+
+            }
+
         }
         [Authorize]
         [HttpPut("UpdateList")]
@@ -257,25 +303,21 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("AddFile")]
-        public  ReturnResult<bool> AddFileAsync(string listId, List<IFormFile> files)
+        public  ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> files)
         {
-            var result = new ReturnResult<bool>()
-            {
-                Code = ResultCodes.Ok,
-                Message = "Sent",
-                Data = true
-            };
+            var result = new ReturnResult<List<FileInfo>>();
+       
             try
             {
 
-                _listsService.AddFile(ObjectId.Parse(listId), files);
-
+               var fileinfo =  _listsService.AddFile(ObjectId.Parse(listId), files);
+                SetReturnResult(result, ResultCodes.Ok,"Added", fileinfo);
                 return result;
 
             }
             catch (Exception )
             {
-                SetReturnResult(result, ResultCodes.Fail, "Error", false);
+                SetReturnResult(result, ResultCodes.Fail, "Error", null);
 
                 return result;
             }

@@ -7,7 +7,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { AddFile } from "../../../../../../services/ToDoService";
 
-export const Add = ({ list, fetchData }) => {
+export const Add = ({ list, dispatch }) => {
   const [uploadFileDialog, setUploadFileDialog] = useState(false);
   const toastRef = useToastContext();
   const fileUploadRef = useRef(null);
@@ -81,7 +81,6 @@ export const Add = ({ list, fetchData }) => {
       "custom-cancel-btn p-button-danger p-button-rounded p-button-outlined",
   };
   const uploadHandler = (event) => {
-    console.log("🚀 ~ file: Add.js ~ line 93 ~ uploadHandler ~ event", event);
     const body = {
       listId: list.id,
       files: event.files,
@@ -89,13 +88,14 @@ export const Add = ({ list, fetchData }) => {
 
     AddFile(body)
       .then((res) => {
+        console.log(res);
         setUploadFileDialog(false);
         toastRef.current.show({
           severity: "success",
           summary: "Success",
           detail: "Uploaded",
         });
-        fetchData();
+        dispatch({ type: "AddFile", filesArr: res.data });
       })
       .catch(() => {
         toastRef.current.show({

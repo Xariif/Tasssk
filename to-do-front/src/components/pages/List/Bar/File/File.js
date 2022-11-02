@@ -9,9 +9,11 @@ import { Add } from "./Actions/Add";
 import { DeleteFile, GetFile } from "../../../../../services/ToDoService";
 import { useToastContext } from "../../../../../context/ToastContext";
 
-export const File = ({ fetchData, list }) => {
+export const File = ({ list, dispatch }) => {
   const [fileDialog, setFileDialog] = useState(false);
   const toastRef = useToastContext();
+
+  console.log(list);
 
   const actionsTemplate = (row) => {
     var fileId = row.fileId;
@@ -51,7 +53,7 @@ export const File = ({ fetchData, list }) => {
                   severity: "error",
                   summary: "Deleted",
                 });
-                fetchData();
+                dispatch({ type: "DeleteFile", fileId });
               })
               .catch(() => {
                 toastRef.current.show({
@@ -81,7 +83,7 @@ export const File = ({ fetchData, list }) => {
           emptyMessage="No files"
           footer={
             <div style={{ display: "flex", justifyContent: "right" }}>
-              <Add list={list} fetchData={fetchData} />
+              <Add list={list} dispatch={dispatch} />
             </div>
           }
         >

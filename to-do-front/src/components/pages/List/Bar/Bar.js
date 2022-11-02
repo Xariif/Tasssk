@@ -1,5 +1,5 @@
 import { Dropdown } from "primereact/dropdown";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import New from "./Actions/New";
 import Delete from "./Actions/Delete";
@@ -9,49 +9,51 @@ import { File } from "./File/File";
 
 import useLocalStorage from "../../../../hooks/useLocalStorage";
 import EmptyArr from "../../../../UI/EmptyArr";
+import { GetListById, GetListsNames } from "../../../../services/ToDoService";
 
-function Bar({ fetchData, lists, selectedList, setSelectedList }) {
+function Bar({ setList, list, dispatch }) {
+  const [listsNames, setListsNames] = useState([]);
   const [listStorage, setListStorage] = useLocalStorage("selectedList");
+  const [selectedListName, setSelectedListName] = useState(listStorage);
+
   var dateNow = new Date();
   dateNow.setDate(dateNow.getDate());
   dateNow.setMonth(dateNow.getMonth());
   dateNow.setFullYear(dateNow.getFullYear());
-
   useEffect(() => {
-    if (lists.find((x) => x.name === listStorage)) {
-      setSelectedList(lists.find((x) => x.name === listStorage));
+    GetListsNames().then((res) => {
+      setListsNames(res.data);
+    });
+
+    if (listsNames.find((x) => x.name === listStorage)) {
+      setList(listsNames.find((x) => x.name === listStorage));
     }
   }, []);
   return (
     <div className="ListBar" style={{ marginBottom: "1rem" }}>
-      {lists.length === 0 ? (
-        <EmptyArr addButton={<New fetchData={fetchData} dateNow={dateNow} />} />
+      {listsNames.length === 0 ? (
+        <EmptyArr addButton={<New dateNow={dateNow} />} />
       ) : (
         <div style={{ justifyContent: "space-between", display: "flex" }}>
-          <div>
-            {" "}
-            {selectedList && (
-              <File list={selectedList} fetchData={fetchData} />
-            )}{" "}
-          </div>
+          <div> {list && <File list={list} dispatch={dispatch} />} </div>
           <div>
             <Dropdown
-              value={selectedList}
+              value={selectedListName}
               style={{ marginRight: "1rem", borderRadius: "2em" }}
               optionLabel="name"
               placeholder={"Select list"}
-              options={lists}
+              options={listsNames}
               onChange={(e) => {
-                console.log(e);
-                setSelectedList(e.value);
+                setSelectedListName(e.value.name);
                 setListStorage(e.value.name);
+                GetListById(e.value.id).then((res) => setList(res.data));
               }}
             />
-            <New fetchData={fetchData} dateNow={dateNow} />
-            {selectedList && (
+            <New dateNow={dateNow} />
+            {list && (
               <>
-                <Edit selectedList={selectedList} fetchData={fetchData} />
-                <Delete selectedList={selectedList} fetchData={fetchData} />
+                <Edit list={list} dispatch={dispatch} />
+                <Delete list={list} dispatch={dispatch} />
               </>
             )}
           </div>

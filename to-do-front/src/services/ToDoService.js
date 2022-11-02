@@ -1,9 +1,21 @@
 import { useAPI, useFilesAPI } from "../hooks/useAPI";
 
-export function GetLists() {
+export function GetListById(listId) {
+  var params = {
+    listId: listId,
+  };
   var config = {
     method: "get",
-    url: process.env.REACT_APP_BASE_URL + "ItemList/GetLists",
+    url: process.env.REACT_APP_BASE_URL + "ItemList/GetListById",
+    params,
+  };
+  return useAPI(config);
+}
+
+export function GetListsNames() {
+  var config = {
+    method: "get",
+    url: process.env.REACT_APP_BASE_URL + "ItemList/GetListsNames",
   };
   return useAPI(config);
 }

@@ -37,6 +37,7 @@ function New({ fetchData, dateNow }) {
                 style={{ fontSize: "2em", paddingRight: ".5em" }}
               />
               <InputText
+                style={{ display: "flex" }}
                 placeholder="Name"
                 value={name}
                 onChange={(e) => {
@@ -112,7 +113,8 @@ function New({ fetchData, dateNow }) {
               </div>{" "}
               <br />
               <p style={{ opacity: "0.8", fontSize: "0.8rem" }}>
-                *If u set hours to 00:00 event will be set for whole day!
+                *If you set hours to 00:00
+                <br /> event will be setted for whole day!
               </p>
             </>
           </>

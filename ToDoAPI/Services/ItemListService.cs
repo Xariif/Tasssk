@@ -116,7 +116,7 @@ namespace ToDoAPI.Services
         //Files
 
 
-        public void AddFile(ObjectId listId, List<IFormFile> files)
+        public List<FileInfo> AddFile(ObjectId listId, List<IFormFile> files)
         { 
             var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
 
@@ -165,6 +165,7 @@ namespace ToDoAPI.Services
             {
                 db.InsertRecord<FileData>(FileDataCollection, item);
             };
+            return filesInfoList;
 
         }
 
