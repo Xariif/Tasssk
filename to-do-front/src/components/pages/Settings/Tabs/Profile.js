@@ -98,13 +98,6 @@ export default function Profile() {
               marginBottom: "1rem",
             }}
           >
-            <i
-              className="pi pi-key"
-              style={{
-                fontSize: "1.5em",
-                marginRight: "1rem",
-              }}
-            />
             <Password
               value={passOld}
               feedback={false}
@@ -114,10 +107,6 @@ export default function Profile() {
             />
           </div>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <i
-              className="pi pi-key"
-              style={{ fontSize: "1.5em", marginRight: "1rem" }}
-            />
             <Password
               value={passNew}
               onChange={(e) => setPassNew(e.target.value)}
@@ -137,10 +126,6 @@ export default function Profile() {
 
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <i
-            className="pi pi-key"
-            style={{ fontSize: "1.5em", marginRight: "1rem" }}
-          />
           <Password
             placeholder="Password"
             style={{ marginRight: "1rem" }}
@@ -150,9 +135,11 @@ export default function Profile() {
           />
           <Button
             label="Delete"
+            iconPos="right"
             icon="pi pi-trash"
-            className="bg-pink-800  p-button-rounded border-none"
+            className="p-button-rounded p-button-danger"
             onClick={() => {
+              console.log("test", password);
               DeleteAccount(password)
                 .then((res) => {
                   if (res) {
@@ -212,7 +199,7 @@ export default function Profile() {
             }}
           >
             {" "}
-            <Countdown date={Date.now() + 10000} daysInHours>
+            <Countdown date={Date.now() + 1000} daysInHours>
               <Delete />
             </Countdown>
           </div>
@@ -248,18 +235,22 @@ export default function Profile() {
       <DialogChangePassword />
       <DialogDelete />
       <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>
-        <h2>Change password</h2>
+        <h2>Password</h2>
         <Button
-          label="Change password"
+          icon="pi pi-key"
+          iconPos="right"
+          label="Change "
           className="p-button-rounded p-button-warning"
           onClick={() => setChangePasswordDialog(true)}
         />
       </div>
 
       <div>
-        <h2>Delete account</h2>
+        <h2>Account</h2>
         <Button
-          label="Delete"
+          label="Delete "
+          icon="pi pi-trash"
+          iconPos="right"
           className="p-button-rounded p-button-danger"
           onClick={() => setDeleteDialog(true)}
         />

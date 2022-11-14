@@ -24,9 +24,9 @@ function TopBar() {
 
   return (
     <div className="TopBar">
-      <ul>
+      <ul className="home">
         <li>
-          <Link to="/" id="home">
+          <Link to="/">
             <i
               className="pi pi-fw pi-th-large"
               style={{ fontSize: "2rem", fontWeight: "bold" }}
@@ -35,7 +35,7 @@ function TopBar() {
         </li>
       </ul>
 
-      <ul>
+      <ul className="navbar">
         <li>
           <Link
             to="/Events"
@@ -69,7 +69,7 @@ function TopBar() {
           </Link>
         </li>
         <li>
-          <Link to="/Login" className="link" onClick={() => logOut()}>
+          <Link to="/Login" onClick={() => logOut()}>
             <i className="pi pi-fw pi-power-off" />
           </Link>
         </li>

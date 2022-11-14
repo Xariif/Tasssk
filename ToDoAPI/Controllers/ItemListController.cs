@@ -13,6 +13,7 @@ namespace ToDoAPI.Controllers
 {
     public class ItemListController : BaseAPIController
     {
+        //TODO: Add validation if user have access 
         private readonly ItemListService _listsService;
 
         public ItemListController(ItemListService listsService)
@@ -247,7 +248,6 @@ namespace ToDoAPI.Controllers
                 Data = false
             };
              
-            //ad check if exist btw
 
             if (listId == null)
                 return result;

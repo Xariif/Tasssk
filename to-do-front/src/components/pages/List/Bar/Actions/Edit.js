@@ -9,7 +9,7 @@ import { useToastContext } from "../../../../../context/ToastContext";
 import { EditList } from "../../../../../services/ToDoService";
 import { Calendar } from "primereact/calendar";
 
-export default function Delete({ selectedList, fetchData }) {
+export default function Delete({ list, loadData }) {
   const [storage, setStorage] = useLocalStorage("selectedList");
   const toastRef = useToastContext();
   const [editListDialog, setEditListDialog] = useState(false);
@@ -17,9 +17,9 @@ export default function Delete({ selectedList, fetchData }) {
   const [date, setDate] = useState();
 
   useEffect(() => {
-    setValue(selectedList.name);
-    setDate(new Date(selectedList.finishDate));
-  }, [selectedList]);
+    setValue(list.name);
+    setDate(new Date(list.finishDate));
+  }, [list]);
 
   const exit = () => {
     setEditListDialog(false);
@@ -48,11 +48,11 @@ export default function Delete({ selectedList, fetchData }) {
               label="Save"
               icon="pi pi-check"
               onClick={() => {
-                selectedList.name = value;
-                selectedList.finishDate = date;
-                EditList(selectedList)
+                list.name = value;
+                list.finishDate = date;
+                EditList(list)
                   .then((res) => {
-                    fetchData();
+                    loadData();
                     setStorage(value);
                     setEditListDialog(false);
 
@@ -78,24 +78,24 @@ export default function Delete({ selectedList, fetchData }) {
           </div>
         }
       >
-        <div
+        <span
+          className="p-input-icon-right"
           style={{
             display: "flex",
             marginTop: "1rem",
-            alignItems: "center",
           }}
         >
-          <i
-            className="pi pi-check-square"
-            style={{ fontSize: "2rem", paddingRight: "1rem" }}
-          />
+          <i className="pi pi-book" />
           <InputText
+            style={{ width: "100%" }}
+            placeholder="Name"
             value={value}
             onChange={(e) => {
               setValue(e.target.value);
             }}
           />
-        </div>{" "}
+        </span>
+
         <div
           style={{
             display: "flex",
@@ -103,12 +103,9 @@ export default function Delete({ selectedList, fetchData }) {
             alignItems: "center",
           }}
         >
-          <i
-            className="pi pi-clock"
-            style={{ fontSize: "2rem", paddingRight: "1rem" }}
-          />
           <Calendar
             showTime
+            showIcon
             value={date}
             onChange={(e) => setDate(new Date(e.value.setSeconds(0)))}
           />

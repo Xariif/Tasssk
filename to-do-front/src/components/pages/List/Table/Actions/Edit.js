@@ -55,7 +55,7 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
               label="Save"
               icon="pi pi-check"
               onClick={() => {
-                ChangeItemName();
+                ChangeItemName().then(() => setEditItemDialog(false));
               }}
               autoFocus
             />

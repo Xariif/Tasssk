@@ -146,6 +146,7 @@ export function AddFile({ listId, files }) {
     data: formData,
   };
 
+  console.log(config);
   return useAPI(config);
 }
 

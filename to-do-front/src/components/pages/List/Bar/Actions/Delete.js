@@ -6,7 +6,7 @@ import { Button } from "primereact/button";
 import { DeleteList } from "../../../../../services/ToDoService";
 import { useToastContext } from "../../../../../context/ToastContext";
 
-export default function Delete({ selectedList, fetchData }) {
+export default function Delete({ list, loadData }) {
   const toastRef = useToastContext();
   const [deleteListDialog, setDeleteListDialog] = useState(false);
   return (
@@ -20,19 +20,17 @@ export default function Delete({ selectedList, fetchData }) {
         message={
           <div
             style={{
-              display: "flex",
               marginLeft: "1rem",
-              marginTop: "1rem",
-              alignItems: "center",
             }}
           >
-            {selectedList.name}
+            {list.name}
           </div>
         }
         accept={() => {
-          DeleteList(selectedList)
+          DeleteList(list)
             .then((res) => {
-              fetchData("del");
+              loadData();
+
               toastRef.current.show({
                 severity: "error",
                 summary: "Deleted",
@@ -47,9 +45,6 @@ export default function Delete({ selectedList, fetchData }) {
                 detail: "Something went wrong",
                 life: 5000,
               });
-            })
-            .finally(() => {
-              fetchData();
             });
         }}
       />

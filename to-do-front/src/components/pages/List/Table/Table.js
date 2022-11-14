@@ -10,9 +10,8 @@ import { Edit } from "./Actions/Edit";
 
 import { Delete } from "./Actions/Delete";
 
-function Table({ list, fetchData }) {
+function Table({ list, loadData: fetchData }) {
   var finishDate = new Date(list.finishDate);
-
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
       item.finished = !item.finished;
@@ -56,50 +55,69 @@ function Table({ list, fetchData }) {
     );
   };
 
+  const createadAtTemplate = (row) => {
+    return <>{moment(row.createdAt).format("LLL")}</>;
+  };
+
+  const finishedSort = (event) => {
+    list.items.sort((val1, val2) => {
+      const f1 = val1[event.field];
+      const f2 = val2[event.field];
+      let result = null;
+
+      return f1;
+    });
+  };
+
   return (
-    <>
-      <div className="ToDoItem">
-        <DataTable
-          emptyMessage={
-            "Your list is empty! Add somethning using button bellow"
-          }
-          value={list.items}
-          header={<Topbar />}
-          footer={<Footer />}
-          responsiveLayout="scroll"
-          rowHover
-          /*
-          paginator
-          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-          rowsPerPageOptions={[8, 25, 50]}
-          rows={8}
-          */
-        >
-          <Column
-            field="name"
-            header="Name"
-            style={{
-              wordBreak: "break-all",
-              wordWrap: "break-word",
-            }}
-          />
-          <Column
-            header="Finished"
-            body={finishedTemplate}
-            style={{ textAlign: "center", width: "58px" }}
-          />
-          <Column
-            header="Actions"
-            body={actionsTemplate}
-            headerStyle={{ width: "95px" }}
-            style={{
-              textAlign: "center",
-              width: "132px",
-            }}
-          />
-        </DataTable>
-      </div>
-    </>
+    <div className="ToDoItem">
+      <DataTable
+        emptyMessage={"Your list is empty! Add somethning using button bellow"}
+        value={list.items}
+        header={<Topbar />}
+        footer={<Footer />}
+        responsiveLayout="scroll"
+        sortField="createdAt"
+        sortOrder={-1}
+        rowHover
+        paginator
+        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
+        rows={7}
+      >
+        <Column
+          sortable
+          field="name"
+          header="Name"
+          style={{
+            wordBreak: "break-all",
+            wordWrap: "break-word",
+          }}
+        />
+        <Column
+          header="Created at"
+          field="createdAt"
+          sortable
+          body={createadAtTemplate}
+          style={{ textAlign: "center", width: "58px" }}
+        />
+        <Column
+          header="Finished"
+          //   sortable
+          // sortFunction={finishedSort}
+          body={finishedTemplate}
+          style={{ textAlign: "center", width: "58px" }}
+        />
+        <Column
+          header="Actions"
+          body={actionsTemplate}
+          headerStyle={{ width: "95px" }}
+          style={{
+            textAlign: "center",
+            width: "132px",
+          }}
+        />
+      </DataTable>
+    </div>
   );
 
   function Topbar() {
@@ -111,7 +129,10 @@ function Table({ list, fetchData }) {
           textAlign: "center",
         }}
       >
-        <h1>{list.name.toUpperCase()}</h1>
+        <h1>
+          <i className="pi pi-book" style={{ fontSize: " 2rem" }} />{" "}
+          {list.name.toUpperCase()}
+        </h1>
         <h3 style={{ textAlign: "center", display: "flex" }}>
           <Countdown
             date={finishDate}

@@ -71,6 +71,8 @@ export default function App() {
 
         <Button
           label="Report bug"
+          icon="pi pi-send"
+          iconPos="right"
           className="p-button-rounded p-button-danger"
           onClick={() => setReportDialog(true)}
         />

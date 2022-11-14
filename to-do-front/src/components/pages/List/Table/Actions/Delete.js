@@ -37,7 +37,16 @@ export const Delete = ({ style, selectedItem, list, fetchData }) => {
         }}
         focusOnShow
         style={{ wordBreak: "break-all", wordWrap: "break-word" }}
-        message={selectedItem.name}
+        icon="pi pi-trash"
+        message={
+          <div
+            style={{
+              marginLeft: "1rem",
+            }}
+          >
+            {selectedItem.name}
+          </div>
+        }
         accept={(e) => {
           DeleteSelectedItem();
         }}

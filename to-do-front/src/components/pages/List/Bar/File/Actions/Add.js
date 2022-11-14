@@ -7,7 +7,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { AddFile } from "../../../../../../services/ToDoService";
 
-export const Add = ({ list, dispatch }) => {
+export const Add = ({ list, loadData }) => {
   const [uploadFileDialog, setUploadFileDialog] = useState(false);
   const toastRef = useToastContext();
   const fileUploadRef = useRef(null);
@@ -94,7 +94,7 @@ export const Add = ({ list, dispatch }) => {
           summary: "Success",
           detail: "Uploaded",
         });
-        dispatch({ type: "AddFile", filesArr: res.data });
+        loadData();
       })
       .catch(() => {
         toastRef.current.show({

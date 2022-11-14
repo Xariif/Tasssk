@@ -57,6 +57,8 @@ namespace ToDoAPI.Controllers
         [HttpDelete("DeleteAccount")]
         public bool DeleteAccount(string password)
         {
+            if (password == null) return false;
+
             var loginDTO = new LoginDTO()
             {
                 Email = GetUserEmail(),

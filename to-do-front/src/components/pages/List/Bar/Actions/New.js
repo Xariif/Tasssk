@@ -3,15 +3,16 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { useState } from "react";
 import { Calendar } from "primereact/calendar";
-
+import useLocalStorage from "../../../../../hooks/useLocalStorage";
 import { AddList } from "../../../../../services/ToDoService";
 import { useToastContext } from "../../../../../context/ToastContext";
 
-function New({ fetchData, dateNow }) {
+function New({ loadData, dateNow }, props) {
   const toastRef = useToastContext();
   const [newListDialog, setNewListDialog] = useState(false);
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date(new Date().setHours(0, 0, 0)));
+  const [listStorage, setListStorage] = useLocalStorage("selectedList");
 
   return (
     <>
@@ -25,98 +26,74 @@ function New({ fetchData, dateNow }) {
         }}
         message={
           <>
-            <div
+            <span
+              className="p-input-icon-right"
               style={{
                 display: "flex",
                 marginTop: "1rem",
-                alignItems: "center",
               }}
             >
-              <i
-                className="pi pi-check-square"
-                style={{ fontSize: "2em", paddingRight: ".5em" }}
-              />
+              <i className="pi pi-book" />
               <InputText
-                style={{ display: "flex" }}
+                style={{ width: "100%" }}
                 placeholder="Name"
                 value={name}
                 onChange={(e) => {
                   setName(e.target.value);
                 }}
               />
-            </div>
-            <div
+            </span>
+            <span
               style={{
                 display: "flex",
                 marginTop: "1rem",
-
-                alignItems: "center",
               }}
             >
-              <i
-                className="pi pi-calendar"
-                style={{
-                  fontSize: "2em",
-                  paddingRight: ".5em",
-                }}
-              />
-
               <Calendar
                 placeholder="Finish date"
-                style={{
-                  fontSize: "2em",
-                  top: "50%",
-                }}
+                style={{ width: "100%" }}
+                showIcon
                 id="time24"
                 value={date}
                 onChange={(e) => {
                   setDate(new Date(e.value.setHours(0, 0, 0)));
                 }}
-                minDate={dateNow}
               />
-            </div>
-
-            <>
-              {" "}
-              <div
-                style={{
-                  display: "flex",
-                  marginTop: "1rem",
-                  alignItems: "center",
-                }}
-              >
-                <i
-                  className="pi pi-clock"
-                  style={{
-                    fontSize: "2em",
-                    paddingRight: ".5em",
-                  }}
-                />
-                <Calendar
-                  disabled={date != null ? false : true}
-                  showTime
-                  timeOnly
-                  placeholder="Time"
-                  value={date}
-                  onChange={(e) => {
-                    setDate(
-                      new Date(
-                        date.setHours(
-                          e.value.getHours(),
-                          e.value.getMinutes(),
-                          e.value.getSeconds()
-                        )
+            </span>
+            <div
+              style={{
+                display: "flex",
+                marginTop: "1rem",
+                alignItems: "center",
+              }}
+            >
+              <Calendar
+                disabled={date != null ? false : true}
+                style={{ width: "100%" }}
+                showIcon
+                icon="pi pi-clock"
+                showTime
+                timeOnly
+                placeholder="Time"
+                value={date}
+                onChange={(e) => {
+                  setDate(
+                    new Date(
+                      date.setHours(
+                        e.value.getHours(),
+                        e.value.getMinutes(),
+                        e.value.getSeconds()
                       )
-                    );
-                  }}
-                />
-              </div>{" "}
-              <br />
-              <p style={{ opacity: "0.8", fontSize: "0.8rem" }}>
-                *If you set hours to 00:00
-                <br /> event will be setted for whole day!
-              </p>
-            </>
+                    )
+                  );
+                }}
+              />
+            </div>{" "}
+            <br />
+            <p style={{ opacity: "0.8", fontSize: "0.8rem" }}>
+              *If you set hours to 00:00
+              <br /> event will be setted for whole day!
+            </p>
           </>
         }
         header="Create new list"
@@ -127,33 +104,15 @@ function New({ fetchData, dateNow }) {
           })
             .then((res) => {
               console.log(res);
-              fetchData("new");
-              switch (res.code) {
-                case 0:
-                  toastRef.current.show({
-                    severity: "success",
-                    summary: "Success ",
-                    detail: res.message,
-                    life: 5000,
-                  });
-                  break;
-                case 2:
-                  toastRef.current.show({
-                    severity: "warn",
-                    summary: "Warning ",
-                    detail: res.message,
-                    life: 5000,
-                  });
-                  break;
-                default:
-                  toastRef.current.show({
-                    severity: "error  ",
-                    summary: "Error ",
-                    detail: "Unknown error",
-                    life: 5000,
-                  });
-                  break;
-              }
+              setListStorage(name);
+              loadData();
+
+              toastRef.current.show({
+                severity: "success",
+                summary: "Success ",
+                detail: res.message,
+                life: 5000,
+              });
             })
             .catch((error) => {
               toastRef.current.show({
