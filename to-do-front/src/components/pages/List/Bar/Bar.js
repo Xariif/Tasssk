@@ -1,6 +1,5 @@
 import { Dropdown } from "primereact/dropdown";
-import { useEffect } from "react";
-import { useState } from "react";
+
 import New from "./Actions/New";
 import Delete from "./Actions/Delete";
 import Edit from "./Actions/Edit";
@@ -9,7 +8,7 @@ import { File } from "./File/File";
 
 import useLocalStorage from "../../../../hooks/useLocalStorage";
 import EmptyArr from "../../../../UI/EmptyArr";
-import { GetListById, GetListsNames } from "../../../../services/ToDoService";
+import { GetListById } from "../../../../services/ToDoService";
 import Spinner from "../../../../UI/Spinner";
 
 function Bar({
@@ -38,6 +37,11 @@ function Bar({
               <Dropdown
                 value={selectedListDropdown}
                 style={{ marginRight: "1rem", borderRadius: "2em" }}
+                panelStyle={{
+                  backgroundColor: "var(--green-500)",
+                  borderRadius: "2em",
+                  overflow: "hidden",
+                }}
                 optionLabel="name"
                 placeholder={"Select list"}
                 options={listNames}

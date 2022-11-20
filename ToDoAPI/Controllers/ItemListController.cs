@@ -228,7 +228,13 @@ namespace ToDoAPI.Controllers
                 Finished = updateList.Finished,
                 FinishDate = updateList.FinishDate,
                 CreatedDate = updateList.CreatedDate,
-                Items = updateList.Items.Select(x => new Item { Id = ObjectId.Parse(x.Id), Finished = x.Finished, Name = x.Name }).ToList()
+                Items = updateList.Items.Select(x =>
+                new Item {
+                    Id = ObjectId.Parse(x.Id),
+                    Finished = x.Finished,
+                    Name = x.Name,
+                    CreatedAt = x.CreatedAt
+                }).ToList()
             };
 
             _listsService.UpdateList(ObjectId.Parse(updateList.Id), update);

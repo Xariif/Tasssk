@@ -74,9 +74,12 @@ export const File = ({ list, loadData }) => {
         onHide={() => setFileDialog(false)}
       >
         <DataTable
+          rowHover
+          paginator
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
+          rows={7}
           value={list.files}
           responsiveLayout="scroll"
-          rowHover
           emptyMessage="No files"
           footer={
             <div style={{ display: "flex", justifyContent: "right" }}>

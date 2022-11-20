@@ -9,7 +9,7 @@ function Footer() {
         <b style={{ opacity: "0.7" }}>2022 ©Stork Corp</b>
       </p>
       <p>
-        <b> To Do v0.1 by Jacob</b>
+        <b> To Do v0.2 by Jacob</b>
         <br />
         <b>
           <a href="mailto: jakubfiliks7@gmail.com ">Mail </a>
