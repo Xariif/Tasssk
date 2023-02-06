@@ -1,0 +1,56 @@
+.TopBar {
+  color: inherit;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 50px;
+  padding: 0 1rem;
+  overflow: hidden;
+  background-color: var(--surface-card);
+  a {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  ul {
+    gap: 1rem;
+
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    font-size: 1.5rem;
+    i {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      width: 1em;
+    }
+
+    li {
+      display: flex;
+      height: 100%;
+      justify-content: center;
+    }
+    li:hover {
+      background-color: var(--pink-300);
+      transition: all linear 0.2s;
+    }
+  }
+  a {
+    transition: all linear 0.2s;
+    transform: scale(1);
+    padding: 0 1.5rem;
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+  .active-link {
+    background-color: var(--pink-500);
+  }
+  .active-link i,
+  .link i {
+    margin-right: 0.5rem;
+  }
+}

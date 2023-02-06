@@ -1,0 +1,75 @@
+import { hover } from "@testing-library/user-event/dist/hover";
+import React from "react";
+import { useLocation, Link } from "react-router-dom";
+
+import { useAuthUpdateContext } from "../../../context/AuthContext";
+import { useThemeContext } from "../../../context/ThemeContext";
+import { useThemeUpdateContext } from "../../../context/ThemeContext";
+import logo from "./../../../logo.png";
+
+import "./TopBar.scss";
+
+function TopBar() {
+  const setAuth = useAuthUpdateContext();
+  const location = useLocation();
+  //const setTheme = useThemeUpdateContext();
+
+  const logOut = () => {
+    localStorage.clear();
+
+    //    setTheme(false);
+    setAuth(false);
+  };
+
+  const imgSize = 2;
+
+  return (
+    <div className="TopBar">
+      <Link to="/">
+        <img src={logo} height="50px" />
+      </Link>
+
+      <ul className="navbar">
+        <li>
+          <Link
+            to="/Events"
+            className={location.pathname === "/Events" ? "active-link" : "link"}
+          >
+            <i className="pi pi-fw pi-calendar" />
+            Events
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            to="/ToDoList"
+            className={
+              location.pathname === "/ToDoList" ? "active-link" : "link"
+            }
+          >
+            <i className="pi pi-fw pi-list" />
+            To Do List
+          </Link>
+        </li>
+        <li>
+          <Link
+            to="/Settings"
+            className={
+              location.pathname === "/Settings" ? "active-link" : "link"
+            }
+          >
+            <i className="pi pi-fw pi-cog" />
+            Settings
+          </Link>
+        </li>
+        <li>
+          <Link to="/Login" onClick={() => logOut()}>
+            <i className="pi pi-fw pi-power-off" />
+          </Link>
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+export default TopBar;
