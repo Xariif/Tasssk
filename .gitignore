@@ -1,0 +1,11 @@
+#Front
+node_modules/
+
+#Back
+bin/
+obj/
+Debug/
+/build/
+*.suo
+*.user
+_ReSharper.*/
