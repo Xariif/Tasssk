@@ -2,20 +2,26 @@
 node_modules/
 
 #Back
-/build/
+# User-specific files
 *.suo
 *.user
-_ReSharper.*/
-*.sdf
-bin/
-obj/
-Debug/
-Release/
-*.opensdf
-*.tlog
-*.log
-TestResult.xml
-*.VisualState.xml
-Version.cs
-Version.h
-Version.cpp
+*.userosscache
+*.sln.docstates
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio 2015
+.vs/
