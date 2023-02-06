@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DjfghF6GJ9aIeUOrkQzD/HYeW3nbe/sk1MtsNZkz1ccB/tZNGTdcAj7mjPJxHKybCDsFfVjfhy/gdd0naq9dhQ==",
+  "dgSpecHash": "QyXDGNYj5DsXuQZv8MWqq+Eu3IaIjRvZ2mdS4Gh2LwOfgVS01TuBiCNCVeHBgUTtxyedF3v71VoJ0OpWqDpmXA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\TassskAPI.csproj",
+  "projectFilePath": "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\TassskAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jakub\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\jakub\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.7\\microsoft.aspnetcore.authentication.jwtbearer.6.0.7.nupkg.sha512",
