@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\TassskAPI.csproj": {}
+    "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\TassskAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\TassskAPI.csproj": {
+    "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\TassskAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\TassskAPI.csproj",
+        "projectUniqueName": "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\TassskAPI.csproj",
         "projectName": "TassskAPI",
-        "projectPath": "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\TassskAPI.csproj",
+        "projectPath": "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\TassskAPI.csproj",
         "packagesPath": "C:\\Users\\jakub\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jakub\\Documents\\GitHub\\To-Do\\ToDoAPI\\obj\\",
+        "outputPath": "C:\\Users\\jakub\\Documents\\GitHub\\Tasssk\\TassskAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\jakub\\AppData\\Roaming\\NuGet\\NuGet.Config",
