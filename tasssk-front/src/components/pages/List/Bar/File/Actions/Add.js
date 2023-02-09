@@ -16,6 +16,10 @@ export const Add = ({ list, loadData }) => {
     callback();
   };
 
+  const headerTemplate = (options) => {
+    return <>test</>;
+  };
+
   const itemTemplate = (file, props) => {
     return (
       <div className="flex align-items-center flex-wrap">
@@ -38,11 +42,6 @@ export const Add = ({ list, loadData }) => {
         />
       </div>
     );
-  };
-
-  const progressBarTemplate = (props) => {
-    console.log(props);
-    return <div className="flex align-items-center flex-column">test</div>;
   };
 
   const emptyTemplate = () => {
@@ -116,7 +115,7 @@ export const Add = ({ list, loadData }) => {
         visible={uploadFileDialog}
         draggable={false}
         onHide={() => setUploadFileDialog(false)}
-        style={{ width: "50vw" }}
+        style={{ width: "50%" }}
         header="Add files"
       >
         <FileUpload
@@ -125,7 +124,6 @@ export const Add = ({ list, loadData }) => {
           emptyTemplate={emptyTemplate}
           chooseOptions={chooseOptions}
           uploadOptions={uploadOptions}
-          progressBarTemplate={progressBarTemplate}
           cancelOptions={cancelOptions}
           multiple
           customUpload

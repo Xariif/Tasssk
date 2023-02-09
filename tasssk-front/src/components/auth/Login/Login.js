@@ -1,22 +1,17 @@
-import { React, useRef, useEffect } from "react";
+import { React } from "react";
 import { Link } from "react-router-dom";
 
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Password } from "primereact/password";
-import { Checkbox } from "primereact/checkbox";
 import { classNames } from "primereact/utils";
 import { Form, Field } from "react-final-form";
 import { useNavigate } from "react-router-dom";
-import { Navigate, Outlet } from "react-router-dom";
+import { ToastAPI } from "../../../context/ToastContext";
 import logo from "./../../../logo.png";
 import useLocalStorage from "../../../hooks/useLocalStorage";
-
 import { LoginUser } from "../../../services/UserService";
-import {
-  useAuthContext,
-  useAuthUpdateContext,
-} from "../../../context/AuthContext";
+import { useAuthUpdateContext } from "../../../context/AuthContext";
 import { useThemeUpdateContext } from "../../../context/ThemeContext";
 import { useToastContext } from "../../../context/ToastContext";
 
@@ -24,12 +19,10 @@ import "./Login.scss";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [token, setToken] = useLocalStorage("token", "");
+  const [, setToken] = useLocalStorage("token", "");
   const toastRef = useToastContext();
-
   const setTheme = useThemeUpdateContext();
   const setAuth = useAuthUpdateContext();
-  const auth = useAuthContext();
 
   const validate = (data) => {
     let errors = {};
@@ -49,21 +42,10 @@ export default function Login() {
   async function onSubmit(data, form) {
     try {
       await LoginUser(data).then((res) => {
-        setToken(res.token);
-        console.log(
-          "🚀 ~ file: Login.js ~ line 52 ~ awaitLoginUser ~ res",
-          res
-        );
-
+        ToastAPI(toastRef, res);
+        setToken(res.data.token);
         setAuth(true);
-        //  setTheme(res.darkMode);
-
-        toastRef.current.show({
-          severity: "success",
-          summary: "Success ",
-          detail: "Loged in!",
-          life: 5000,
-        });
+        // setTheme(res.data.darkMode);
       });
 
       navigate("/");
@@ -71,7 +53,7 @@ export default function Login() {
       toastRef.current.show({
         severity: "error",
         summary: "Error",
-        detail: "Wrong email or password",
+        detail: error.message,
         life: 5000,
       });
     }
@@ -89,25 +71,23 @@ export default function Login() {
       <div className="Card">
         <div
           style={{
+            width: "100%",
             display: "flex",
-            flexDirection: "column",
             justifyContent: "center",
-            alignItems: "center",
+            marginBottom: "1rem",
           }}
         >
-          {" "}
-          <img src={logo} width={"100px"} style={{ marginBottom: "1rem" }} />
-          <div
-            style={{
-              textAlign: "center",
-              fontWeight: "bold",
-              fontSize: "1.5rem",
-            }}
-          >
-            Login
-          </div>
+          <img src={logo} alt={"logo"} height={"30px"} />
         </div>
-
+        <div
+          style={{
+            textAlign: "center",
+            fontWeight: "bold",
+            fontSize: "1.5rem",
+          }}
+        >
+          Login
+        </div>
         <Form
           onSubmit={onSubmit}
           initialValues={{

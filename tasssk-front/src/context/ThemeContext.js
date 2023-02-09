@@ -18,7 +18,7 @@ export function ThemeContextProvider({ children }) {
   const [theme, setTheme] = useState(localStorage);
 
   const changeBoostrapTheme = (theme) => {
-    console.log("cahnge,", theme);
+    console.log("change,", theme);
 
     let themeLink = document.getElementById("app-theme");
     if (themeLink) {
@@ -26,23 +26,18 @@ export function ThemeContextProvider({ children }) {
     }
   };
 
-  if (theme) {
-    changeBoostrapTheme(
-      "https://unpkg.com/primereact/resources/themes/lara-dark-indigo/theme"
-    );
-  }
-
   function changeTheme(value) {
+    console.log(value);
     setLocalStorage(value);
     ChangeTheme();
 
     if (value) {
       changeBoostrapTheme(
-        "https://unpkg.com/primereact/resources/themes/lara-dark-indigo/theme"
+        "https://unpkg.com/primereact/resources/themes/viva-dark/theme"
       );
     } else {
       changeBoostrapTheme(
-        "https://unpkg.com/primereact/resources/themes/lara-light-indigo/theme"
+        "https://unpkg.com/primereact/resources/themes/viva-light/theme"
       );
     }
 

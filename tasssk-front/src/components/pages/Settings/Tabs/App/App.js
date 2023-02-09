@@ -3,10 +3,17 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useToastContext } from "../../../../context/ToastContext";
+import { useToastContext } from "../../../../../context/ToastContext";
+import { ChangeTheme } from "../../../../../services/UserService";
+import {
+  useThemeContext,
+  useThemeUpdateContext,
+} from "../../../../../context/ThemeContext";
 export default function App() {
   const [reportDialog, setReportDialog] = useState();
   const toastRef = useToastContext();
+  const setTheme = useThemeUpdateContext();
+  const theme = useThemeContext();
 
   const ReportDialog = () => {
     function SendReport() {
@@ -64,7 +71,13 @@ export default function App() {
       </div>
       <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>
         <h2>Dark mode?</h2>
-        <InputSwitch checked={false} disabled />
+        <InputSwitch
+          checked={false}
+          onChange={() => {
+            console.log(theme);
+            setTheme(!theme);
+          }}
+        />
       </div>
       <div>
         <h2>Something wrong?</h2>

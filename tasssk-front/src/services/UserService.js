@@ -1,27 +1,29 @@
 import { useAPI } from "../hooks/useAPI";
 
-export async function LoginUser(loginData) {
+var url = process.env.REACT_APP_BASE_URL + "User/";
+
+export async function LoginUser(props) {
   var data = {
-    Email: loginData.email,
-    Password: loginData.password,
+    Email: props.email,
+    Password: props.password,
   };
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "User/Login",
+    url: url + "Login",
     data: data,
   };
   return useAPI(config);
 }
 
-export async function RegisterUser(registerData) {
+export async function RegisterUser(props) {
   const data = {
-    Email: registerData.email,
-    Password: registerData.password,
-    BirthDate: registerData.birthDate,
+    Email: props.email,
+    Password: props.password,
+    BirthDate: props.birthDate,
   };
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "User/Register",
+    url: url + "Register",
     data: data,
   };
   return useAPI(config);
@@ -33,7 +35,7 @@ export async function DeleteAccount(password) {
   };
   var config = {
     method: "delete",
-    url: process.env.REACT_APP_BASE_URL + "User/DeleteAccount",
+    url: url + "DeleteAccount",
     params,
   };
   return useAPI(config);
@@ -42,7 +44,21 @@ export async function DeleteAccount(password) {
 export async function ChangeTheme() {
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "User/ChangeTheme",
+    url: url + "ChangeTheme",
+  };
+  return useAPI(config);
+}
+
+export async function ChangePassword(props) {
+  console.log(props);
+  var data = {
+    OldPassword: props.OldPassword,
+    NewPassword: props.NewPassword,
+  };
+  var config = {
+    method: "put",
+    url: url + "ChangePassword",
+    data,
   };
   return useAPI(config);
 }

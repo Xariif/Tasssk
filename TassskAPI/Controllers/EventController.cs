@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using ToDoAPI.DTOs.Core;
+using TassskAPI.DTOs.Core;
 using ToDoAPI.DTOs.Event;
 using ToDoAPI.Services;
 

@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.Text;
+using TassskAPI.DTOs.Core;
+using TassskAPI.DTOs.User;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.User;
-using ToDoAPI.Interfaces;
-using ToDoAPI.Models;
 using ToDoAPI.Services;
 
 namespace ToDoAPI.Controllers
@@ -23,41 +18,72 @@ namespace ToDoAPI.Controllers
         }
         [AllowAnonymous]
         [HttpPost("Login")]
-        public ActionResult<UserDataDTO> Login(LoginDTO loginDTO)
+        public ReturnResult<UserDataDTO> Login(LoginDTO loginDTO)
         {
+            var result = new ReturnResult<UserDataDTO>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Logged in!",
+                Data = new UserDataDTO()
+            };
+
+
             var userData = _userService.Login(loginDTO);
 
             if (userData != null)
-                return Ok(userData);
+            {
+                result.Data = userData;
+                return result;
+            }
 
-            return BadRequest("Wrong email or password");      
+            SetReturnResult(result, ResultCodes.BadRequest, "Wrong email or password!", userData);
+            return result;
         }
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public  ActionResult Register(RegisterDTO registerDTO)
+        public ReturnResult<string> Register(RegisterDTO registerDTO)
         {
-            var newUser = _userService.Register(registerDTO); 
-            if (newUser != null) return Ok("Register success!");
+            var result = new ReturnResult<string>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Register success!",
+                Data = null
+            };
+            var newUser = _userService.Register(registerDTO);
+            if (newUser != null)
+                return result;
 
-            return BadRequest("Register error!");
+
+            SetReturnResult(result, ResultCodes.BadRequest, "Cannot create account!", null);
+            return result;
         }
 
 
         [Authorize]
         [HttpPost("ValidateToken")]
-        public  bool ValidateToken()
-        {          
-            return true;
+        public ReturnResult<bool> ValidateToken()
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Token is valid!",
+                Data = true
+            };
+            return result;
         }
-
-
 
         [Authorize]
         [HttpDelete("DeleteAccount")]
-        public bool DeleteAccount(string password)
+        public ReturnResult<bool> DeleteAccount(string password)
         {
-            if (password == null) return false;
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.BadRequest,
+                Message = "Account delete fail!",
+                Data = false
+            };
+
 
             var loginDTO = new LoginDTO()
             {
@@ -65,57 +91,46 @@ namespace ToDoAPI.Controllers
                 Password = password
             };
 
-            if(_userService.Login(loginDTO)== null)
-                return false;
+            if (_userService.Login(loginDTO) == null)
+                return result;
 
             _userService.DeleteAccount(GetUserEmail());
+            SetReturnResult(result, ResultCodes.BadRequest, "Account deleted!", true);
 
-            return true;
+            return result;
         }
 
 
 
         [Authorize]
         [HttpPost("ChangeTheme")]
-        public bool ChangeTheme()
+        public ReturnResult<bool> ChangeTheme()
         {
-            try
+            var result = new ReturnResult<bool>()
             {
-                _userService.ChangeTheme(GetUserEmail());
-                return true;
+                Code = ResultCodes.Ok,
+                Message = "Theme changed!",
+                Data = _userService.ChangeTheme(GetUserEmail())
+            };            
+            return result;
 
-            }
-
-            catch
-            {
-                return false;
-            }
         }
-        //[AllowAnonymous]
-        //[HttpPut("ChangePassword")]
-        //public async Task<ActionResult> ChangePassword(ResetPasswordDTO resetPasswordDTO)
-        //{
-        //    var user = await _userService.GetUserByEmail(resetPasswordDTO.Email);
-        //    if (user == null)
-        //        return Unauthorized("Account with th");
-        //    if (resetPasswordDTO.Password != resetPasswordDTO.RePassword)
-        //        return BadRequest("Passwords are diffrent!");
+        [Authorize]
+        [HttpPut("ChangePassword")]
+        public ActionResult ChangePassword(ChangePasswordDTO changePasswordDTO)
+        {
+            var loginDTO = new LoginDTO()
+            {
+                Email = GetUserEmail(),
+                Password = changePasswordDTO.OldPassword
+            };
+            if (_userService.Login(loginDTO) == null)
+                return BadRequest("Wrong data!");
 
-        //    if (user != null)
-        //    {
-        //        using var hmac = new HMACSHA512(user.PasswordSalt);
+            _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
 
-        //        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(resetPasswordDTO.Password));
-        //        user.PasswordSalt = hmac.Key;
-
-        //        await _userService.UpdateUserAsync(user);
-
-
-        //        return Ok("Password changed correctly!");
-
-        //    }
-        //    return BadRequest("Error!");
-        //}
+            return Ok("Password changed!");
+        }
         //[Authorize]
         //[HttpDelete("DeleteUser")]
         //public async Task<ActionResult> DeleteUser()

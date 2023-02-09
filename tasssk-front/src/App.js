@@ -14,16 +14,12 @@ import { Toast } from "primereact/toast";
 
 import { useAuthContext, useAuthUpdateContext } from "./context/AuthContext";
 import { useToastContext } from "./context/ToastContext";
-import { useThemeContext } from "./context/ThemeContext";
-import { ThemeContextProvider } from "./context/ThemeContext";
 import useLocalStorage from "./hooks/useLocalStorage";
 
 import "./App.css";
 
 function App() {
   const auth = useAuthContext();
-  const theme = useThemeContext();
-
   const toastRef = useToastContext();
 
   const [token, setToken] = useLocalStorage("token");
@@ -42,6 +38,7 @@ function App() {
   return (
     <>
       <Toast ref={toastRef} position={"bottom-center"} />
+
       <Routes>
         <Route
           path="/"

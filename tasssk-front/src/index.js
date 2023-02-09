@@ -13,6 +13,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   // <React.StrictMode>
+
   <ToastProvder>
     <BrowserRouter>
       <ThemeContextProvider>
@@ -22,5 +23,6 @@ root.render(
       </ThemeContextProvider>
     </BrowserRouter>
   </ToastProvder>
+
   // </React.StrictMode>
 );

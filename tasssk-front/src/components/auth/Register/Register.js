@@ -1,11 +1,11 @@
-import React, { useState, useRef } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Form, Field } from "react-final-form";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import logo from "./../../../logo.png";
-
+import { ToastAPI } from "../../../context/ToastContext";
 import { Calendar } from "primereact/calendar";
 import { Password } from "primereact/password";
 import { Checkbox } from "primereact/checkbox";
@@ -18,9 +18,8 @@ import { RegisterUser } from "../../../services/UserService";
 import "./Register.scss";
 
 export const Register = () => {
-  const [formData, setFormData] = useState({});
-  const toast = useToastContext();
-  const sub = false;
+  const toastRef = useToastContext();
+
   const navigate = useNavigate();
   const validate = (data) => {
     let errors = {};
@@ -54,7 +53,7 @@ export const Register = () => {
     if (
       data.birthDate > new Date().setFullYear(new Date().getFullYear() - 18)
     ) {
-      errors.birthDate = "You are to young.";
+      errors.birthDate = "You are too young.";
     }
 
     return errors;
@@ -63,20 +62,15 @@ export const Register = () => {
   const onSubmit = async (data, form) => {
     try {
       await RegisterUser(data).then((res) => {
-        toast.current.show({
-          severity: "success",
-          summary: "Success ",
-          detail: res,
-          life: 5000,
-        });
+        ToastAPI(toastRef, res);
         form.restart();
         navigate("/Login");
       });
     } catch (error) {
-      toast.current.show({
+      toastRef.current.show({
         severity: "error",
         summary: "Error",
-        detail: error.code,
+        detail: error.message,
         life: 5000,
       });
     }
@@ -106,34 +100,26 @@ export const Register = () => {
   return (
     <div className="Register">
       <div className="flex justify-content-center">
-        <div
-          className="Card"
-          style={{
-            border: "1px solid var(--text-color) ",
-            borderRadius: "20px",
-          }}
-        >
+        <div className="Card">
           <div
             style={{
+              width: "100%",
               display: "flex",
-              flexDirection: "column",
               justifyContent: "center",
-              alignItems: "center",
+              marginBottom: "1rem",
             }}
           >
-            {" "}
-            <img src={logo} width={"100px"} style={{ marginBottom: "1rem" }} />
-            <div
-              style={{
-                textAlign: "center",
-                fontWeight: "bold",
-                fontSize: "1.5rem",
-              }}
-            >
-              Login
-            </div>
+            <img src={logo} alt={"logo"} height={"30px"} />
           </div>
-
+          <div
+            style={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "1.5rem",
+            }}
+          >
+            Register
+          </div>
           <Form
             onSubmit={onSubmit}
             initialValues={{

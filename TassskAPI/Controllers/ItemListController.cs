@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using TassskAPI.DTOs.Core;
 using ToDoAPI.DTOs;
-using ToDoAPI.DTOs.Core;
 using ToDoAPI.DTOs.ItemList;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
@@ -27,29 +27,22 @@ namespace ToDoAPI.Controllers
             var result = new ReturnResult<List<ListsNamesDTO>>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Ok",
+                Message = "Lists names",
                 Data = new List<ListsNamesDTO>()
             };
 
-            try
-            {
-                var data = _listsService.GetListsByEmail(GetUserEmail());
-               foreach(var list in data)
-                {
-                    result.Data.Add(new ListsNamesDTO
-                    {
-                        Id = list.Id.ToString(),
-                        Name = list.Name
-                    });
-                }
 
-                return result;
-            }
-            catch 
+            var data = _listsService.GetListsByEmail(GetUserEmail());
+            foreach (var list in data)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
-                return result;
+                result.Data.Add(new ListsNamesDTO
+                {
+                    Id = list.Id.ToString(),
+                    Name = list.Name
+                });
             }
+
+            return result;
         }
 
         [Authorize]
@@ -60,26 +53,25 @@ namespace ToDoAPI.Controllers
 
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Fail",
+                Code = ResultCodes.BadRequest,
+                Message = "Add list fail",
                 Data = false
             };
-            if (newList.Name== null || newList.Name == string.Empty  )
+            if (newList.Name == null || newList.Name == string.Empty)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Name is empty", false);
                 return result;
             }
-    
+
             var res = _listsService.AddList(newList, GetUserEmail());
 
             if (res)
             {
-                SetReturnResult(result, ResultCodes.Ok, "List added correctly", true);
+                SetReturnResult(result, ResultCodes.Ok, "List added", true);
                 return result;
             }
 
 
-            SetReturnResult(result, ResultCodes.Fail, "List already exist", false);
+            SetReturnResult(result, ResultCodes.ResourceAlreadyExists, "List already exist", false);
 
             return result;
         }
@@ -92,55 +84,43 @@ namespace ToDoAPI.Controllers
             var result = new ReturnResult<List<ItemListDTO>>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Success",
+                Message = "Lists",
                 Data = null
             };
 
-            try
+            var data = _listsService.GetListsByEmail(GetUserEmail());
+
+            var dataDto = data.Select(x => new ItemListDTO
             {
+                Email = x.Email,
+                Name = x.Name,
 
-                var data = _listsService.GetListsByEmail(GetUserEmail());
-
-                var dataDto = data.Select(x => new ItemListDTO
+                Finished = x.Finished,
+                FinishDate = x.FinishDate,
+                CreatedDate = x.CreatedDate,
+                Id = x.Id.ToString(),
+                Items = x.Items.Select(y => new ItemDTO
                 {
-                    Email = x.Email,
-                    Name = x.Name,
+                    Finished = y.Finished,
+                    Id = y.Id.ToString(),
+                    Name = y.Name,
+                    CreatedAt = y.CreatedAt
+                }).ToList(),
+                Files = x.Files.Select(z => new FileInfoDTO
+                {
+                    FileId = z.FileId.ToString(),
+                    Id = z.Id.ToString(),
+                    Name = z.Name,
+                    Size = z.Size,
+                    Type = z.Type
+                }).ToList()
 
-                    Finished = x.Finished,
-                    FinishDate = x.FinishDate,
-                    CreatedDate = x.CreatedDate,
-                    Id = x.Id.ToString(),
-                    Items = x.Items.Select(y => new ItemDTO
-                    {
-                        Finished = y.Finished,
-                        Id = y.Id.ToString(),
-                        Name = y.Name,
-                        CreatedAt = y.CreatedAt
-                    }).ToList(),
-                    Files = x.Files.Select(z => new FileInfoDTO
-                    {
-                        FileId = z.FileId.ToString(),
-                        Id = z.Id.ToString(),
-                        Name = z.Name,
-                        Size = z.Size,
-                        Type = z.Type
-                    }).ToList()
+            }).ToList();
 
-                }).ToList();
-
-                result.Data = dataDto;
-                return result;
-
-            }
-            catch
-            {
-                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
-
-                return result;
-
-            }
-
+            result.Data = dataDto;
+            return result;
         }
+
         [Authorize]
         [HttpGet("GetListById")]
         public ReturnResult<ItemListDTO> GetListById(string listId)
@@ -149,7 +129,7 @@ namespace ToDoAPI.Controllers
             var result = new ReturnResult<ItemListDTO>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Success",
+                Message = "List by id",
                 Data = null
             };
 
@@ -189,9 +169,9 @@ namespace ToDoAPI.Controllers
                 return result;
 
             }
-            catch 
+            catch
             {
-                SetReturnResult(result, ResultCodes.Fail, "Fail", null);
+                SetReturnResult(result, ResultCodes.BadRequest, "Fail", null);
 
                 return result;
 
@@ -204,14 +184,13 @@ namespace ToDoAPI.Controllers
         {
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Fail",
+                Code = ResultCodes.BadRequest,
+                Message = "Update list fail",
                 Data = false
             };
 
             if (updateList == null)
             {
-                result.Message = "List is empty";
                 return result;
             }
 
@@ -229,7 +208,8 @@ namespace ToDoAPI.Controllers
                 FinishDate = updateList.FinishDate,
                 CreatedDate = updateList.CreatedDate,
                 Items = updateList.Items.Select(x =>
-                new Item {
+                new Item
+                {
                     Id = ObjectId.Parse(x.Id),
                     Finished = x.Finished,
                     Name = x.Name,
@@ -249,17 +229,13 @@ namespace ToDoAPI.Controllers
         {
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Empty id field",
+                Code = ResultCodes.BadRequest,
+                Message = "Delete list fail",
                 Data = false
             };
-             
 
             if (listId == null)
                 return result;
-
-
-
 
             var id = ObjectId.Parse(listId);
             _listsService.DeleteList(id);
@@ -270,29 +246,27 @@ namespace ToDoAPI.Controllers
         //Items
         [Authorize]
         [HttpPost("AddItem")]
-        public ReturnResult<bool> AddList(string listId, string itemName)
+        public ReturnResult<bool> AddItem(string listId, string itemName)
         {
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Fail",
+                Code = ResultCodes.BadRequest,
+                Message = "Add item fail",
                 Data = false
             };
             if (itemName == null)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Name is empty", false);
+                return result;
             }
             else
             {
                 _listsService.AddItem(ObjectId.Parse(listId), itemName);
                 SetReturnResult(result, ResultCodes.Ok, "Item added", true);
+                return result;
             }
 
-            return result;
+
         }
-
-
-    
 
         [Authorize]
         [HttpGet("GetItems")]
@@ -301,7 +275,7 @@ namespace ToDoAPI.Controllers
             var result = new ReturnResult<List<ItemList>>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Success",
+                Message = "List items",
                 Data = null
             };
 
@@ -313,14 +287,13 @@ namespace ToDoAPI.Controllers
         {
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Fail",
+                Code = ResultCodes.BadRequest,
+                Message = "Update item fail",
                 Data = false
             };
 
             if (listId == null || updatedItem == null)
             {
-                result.Message = "Item is empty";
                 return result;
             }
 
@@ -339,7 +312,7 @@ namespace ToDoAPI.Controllers
                 SetReturnResult(result, ResultCodes.Ok, "Item updated", true);
                 return result;
             }
-            SetReturnResult(result, ResultCodes.Ok, "Error", false);
+            SetReturnResult(result, ResultCodes.BadRequest, "Update item fail", false);
 
             return result;
         }
@@ -350,8 +323,8 @@ namespace ToDoAPI.Controllers
         {
             var result = new ReturnResult<bool>()
             {
-                Code = ResultCodes.Fail,
-                Message = "Empty id field",
+                Code = ResultCodes.BadRequest,
+                Message = "Item delete fail",
                 Data = false
             };
 
@@ -366,21 +339,19 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("AddFile")]
-        public  ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> files)
+        public ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> files)
         {
             var result = new ReturnResult<List<FileInfo>>();
-       
+
             try
             {
-
-               var fileinfo =  _listsService.AddFile(ObjectId.Parse(listId), files);
-                SetReturnResult(result, ResultCodes.Ok,"Added", fileinfo);
+                var fileinfo = _listsService.AddFile(ObjectId.Parse(listId), files);
+                SetReturnResult(result, ResultCodes.Ok, "File added", fileinfo);
                 return result;
-
             }
-            catch (Exception )
+            catch (Exception)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Error", null);
+                SetReturnResult(result, ResultCodes.BadRequest, "File add fail", null);
 
                 return result;
             }
@@ -389,12 +360,12 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpDelete("DeleteFile")]
-        public ReturnResult<bool> DeleteFile(string listId,string fileId)
+        public ReturnResult<bool> DeleteFile(string listId, string fileId)
         {
             var result = new ReturnResult<bool>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Deleted",
+                Message = "File deleted",
                 Data = true
             };
             try
@@ -407,7 +378,7 @@ namespace ToDoAPI.Controllers
             }
             catch (Exception)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Error", false);
+                SetReturnResult(result, ResultCodes.BadRequest, "File delete fail", false);
                 return result;
             }
         }
@@ -415,22 +386,22 @@ namespace ToDoAPI.Controllers
         [HttpGet("GetFile")]
         public ReturnResult<FileData> GetFile(string fileId)
         {
-        var result = new ReturnResult<FileData>()
+            var result = new ReturnResult<FileData>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Success",
+                Message = "File by id",
             };
             try
             {
 
-               result.Data =  _listsService.GetFile( ObjectId.Parse(fileId));
+                result.Data = _listsService.GetFile(ObjectId.Parse(fileId));
 
                 return result;
 
             }
             catch (Exception)
             {
-                SetReturnResult(result, ResultCodes.Fail, "Error", null);
+                SetReturnResult(result, ResultCodes.BadRequest, "File by id fail", null);
                 return result;
             }
         }

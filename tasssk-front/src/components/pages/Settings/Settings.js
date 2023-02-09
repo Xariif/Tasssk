@@ -3,8 +3,8 @@ import React from "react";
 import { TabView, TabPanel } from "primereact/tabview";
 import "./Settings.scss";
 
-import Profile from "./Tabs/Profile";
-import App from "./Tabs/App";
+import Profile from "./Tabs/Profile/Profile";
+import App from "./Tabs/App/App";
 
 function Settings() {
   return (

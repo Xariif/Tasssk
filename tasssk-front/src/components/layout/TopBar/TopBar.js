@@ -25,8 +25,8 @@ function TopBar() {
 
   return (
     <div className="TopBar">
-      <Link to="/">
-        <img src={logo} height="50px" />
+      <Link to="/" style={{ backgroundColor: "#f3c21e" }}>
+        <img src={logo} height="30px" />
       </Link>
 
       <ul className="navbar">

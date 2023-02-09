@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
+using TassskAPI.DTOs.User;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.User;
 using ToDoAPI.Helpers;
@@ -28,7 +29,7 @@ namespace ToDoAPI.Services
         {
             try
             {
-                var user = db.FindFirstByEmail<User>(collectionName,loginDTO.Email);
+                var user = db.FindFirstByEmail<User>(collectionName, loginDTO.Email);
 
                 if (user == null)
                     return null;
@@ -48,7 +49,7 @@ namespace ToDoAPI.Services
                     Token = _tokenService.CreateTokenDisciple(user)
                 };
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -62,7 +63,7 @@ namespace ToDoAPI.Services
 
                 using var hmac = new HMACSHA512();
 
-                if (db.FindFirstByEmail<User>(collectionName,registerDTO.Email) != null)
+                if (db.FindFirstByEmail<User>(collectionName, registerDTO.Email) != null)
                     throw new Exception(message: "Email already exist!");
 
                 var newUser = new User
@@ -75,7 +76,7 @@ namespace ToDoAPI.Services
                 db.InsertRecord<User>("User", newUser);
                 return newUser;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -111,9 +112,9 @@ namespace ToDoAPI.Services
         public bool DeleteAccount(string email)
         {
             var userId = db.FindFirstByEmail<User>(collectionName, email).Id;
-           
+
             var userLists = db.FindListsByEmail<ItemList>("ItemList", email).ToList();
-            foreach(var list in userLists)
+            foreach (var list in userLists)
             {
                 db.DeleteRecord<ItemList>("ItemList", list.Id);
             }
@@ -130,8 +131,24 @@ namespace ToDoAPI.Services
 
             user.DarkMode = !user.DarkMode;
 
-        
-            db.UpsertRecord<User>(collectionName, user.Id,user);
+
+            db.UpsertRecord<User>(collectionName, user.Id, user);
+            return user.DarkMode;
+        }
+
+        public bool ChangePassword(string email, string password)
+        {
+            var user = db.FindFirstByEmail<User>(collectionName, email);
+
+            if (user == null)
+                return false;
+
+            using var hmac = new HMACSHA512();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            user.PasswordSalt = hmac.Key;
+
+            db.UpsertRecord<User>(collectionName, user.Id, user);
+
             return true;
         }
     }
