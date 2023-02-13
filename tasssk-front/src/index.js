@@ -8,6 +8,7 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
+import { NotificationContextProvider } from "./context/NotificationContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -16,11 +17,13 @@ root.render(
 
   <ToastProvder>
     <BrowserRouter>
-      <ThemeContextProvider>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
-      </ThemeContextProvider>
+      <NotificationContextProvider>
+        <ThemeContextProvider>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+        </ThemeContextProvider>
+      </NotificationContextProvider>
     </BrowserRouter>
   </ToastProvder>
 

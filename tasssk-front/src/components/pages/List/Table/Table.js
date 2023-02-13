@@ -81,7 +81,6 @@ function Table({ list, loadData: fetchData }) {
         responsiveLayout="scroll"
         sortField="createdAt"
         sortOrder={-1}
-        selec
         rowHover
         paginator
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
