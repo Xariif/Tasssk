@@ -1,14 +1,20 @@
 import { FileUpload } from "primereact/fileupload";
-import { useToastContext } from "../../../../../../context/ToastContext";
+import {
+  ToastAPI,
+  useToastContext,
+} from "../../../../../../context/ToastContext";
 import { useRef } from "react";
 import { Tag } from "primereact/tag";
 import { useState } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { AddFile } from "../../../../../../services/ToDoService";
+import { ProgressBar } from "primereact/progressbar";
 
 export const Add = ({ list, loadData }) => {
   const [uploadFileDialog, setUploadFileDialog] = useState(false);
+  const [uploadedPercent, setUploadedPecent] = useState(0);
+  const [progressBar, setProgressBar] = useState(false);
   const toastRef = useToastContext();
   const fileUploadRef = useRef(null);
 
@@ -16,30 +22,26 @@ export const Add = ({ list, loadData }) => {
     callback();
   };
 
-  const headerTemplate = (options) => {
-    return <>test</>;
-  };
-
   const itemTemplate = (file, props) => {
     return (
-      <div className="flex align-items-center flex-wrap">
-        <div className="flex align-items-center" style={{ width: "80%" }}>
-          <span className="flex flex-column text-left ml-3">
-            {file.name}
-            <small>{new Date().toLocaleDateString()}</small>
-          </span>
+      <div className="flex justify-content-between align-items-center">
+        <span className="flex flex-column text-left   text-overflow-ellipsis">
+          <h5 style={{ margin: "0px" }}>{file.name}</h5>
+          <small>{new Date(file.lastModifiedDate).toLocaleDateString()}</small>
+        </span>{" "}
+        <div className="flex justify-content-center">
+          <Tag
+            value={props.formatSize}
+            severity="warning"
+            className="px-3 py-2 mx-3 min-w-30 "
+          />
+          <Button
+            type="button"
+            icon="pi pi-times"
+            className="p-button-outlined p-button-rounded p-button-danger"
+            onClick={() => onTemplateRemove(file, props.onRemove)}
+          />
         </div>
-        <Tag
-          value={props.formatSize}
-          severity="warning"
-          className="px-3 py-2"
-        />
-        <Button
-          type="button"
-          icon="pi pi-times"
-          className="p-button-outlined p-button-rounded p-button-danger ml-auto"
-          onClick={() => onTemplateRemove(file, props.onRemove)}
-        />
       </div>
     );
   };
@@ -85,27 +87,28 @@ export const Add = ({ list, loadData }) => {
       "custom-cancel-btn p-button-danger p-button-rounded p-button-outlined",
   };
   const uploadHandler = (event) => {
+    setProgressBar(true);
     const body = {
       listId: list.id,
       files: event.files,
     };
 
-    AddFile(body)
+    AddFile({ body, setUploadedPecent })
       .then((res) => {
+        ToastAPI(toastRef, res);
         setUploadFileDialog(false);
-        toastRef.current.show({
-          severity: "success",
-          summary: "Success",
-          detail: "Uploaded",
-        });
         loadData();
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         toastRef.current.show({
           severity: "error",
           summary: "Error",
-          detail: "Cannot upload files",
+          detail: error.message,
         });
+      })
+      .finally(() => {
+        setUploadedPecent(0);
       });
   };
 
@@ -115,7 +118,6 @@ export const Add = ({ list, loadData }) => {
         visible={uploadFileDialog}
         draggable={false}
         onHide={() => setUploadFileDialog(false)}
-        style={{ width: "50%" }}
         header="Add files"
       >
         <FileUpload
@@ -128,8 +130,16 @@ export const Add = ({ list, loadData }) => {
           multiple
           customUpload
           uploadHandler={uploadHandler}
-          maxFileSize={50000000}
+          maxFileSize={10000000}
         />
+        {progressBar ? (
+          <div style={{ textAlign: "center" }}>
+            Uploading
+            <ProgressBar value={uploadedPercent} />
+          </div>
+        ) : (
+          <></>
+        )}
       </Dialog>
       <Button
         label="Add"
