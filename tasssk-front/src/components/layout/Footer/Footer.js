@@ -6,13 +6,16 @@ function Footer() {
   return (
     <div className="Footer">
       <p>
-        <b style={{ opacity: "0.7" }}>2022 ©Stork Corp</b>
+        <b style={{ opacity: "0.7" }}>
+          {new Date().getFullYear()} © Stork Corp
+        </b>
       </p>
       <p>
-        <b> Tasssk v0.2 by Jacob</b>
-        <br />
         <b>
-          <a href="mailto: jakubfiliks7@gmail.com ">Mail </a>
+          {" "}
+          Tasssk v0.2 by Jakub Filiks
+          <br />
+          <a href="mailto: jakubfiliks7@gmail.com ">Contact</a>
         </b>
       </p>
     </div>

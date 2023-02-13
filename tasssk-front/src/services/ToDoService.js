@@ -1,4 +1,4 @@
-import { useAPI, useFilesAPI } from "../hooks/useAPI";
+import { useAPI, useFileAPI } from "../hooks/useAPI";
 
 export function GetListById(listId) {
   var params = {
@@ -129,14 +129,15 @@ export function UpdateItem({ listId, item }) {
   return useAPI(config);
 }
 
-export function AddFile({ listId, files }) {
+export function AddFile(props) {
   var params = {
-    listId: listId,
+    listId: props.body.listId,
   };
-
+  let size = 0;
   const formData = new FormData();
-  files.forEach((file) => {
-    formData.append("files", file);
+  props.body.files.forEach((file) => {
+    formData.append("formData", file);
+    size += file.size;
   });
 
   var config = {
@@ -144,10 +145,12 @@ export function AddFile({ listId, files }) {
     url: process.env.REACT_APP_BASE_URL + "ItemList/AddFile",
     params: params,
     data: formData,
+    onUploadProgress: (progressEvent) => {
+      props.setUploadedPecent(Math.round((progressEvent.loaded * 100) / size));
+    },
   };
 
-  console.log(config);
-  return useAPI(config);
+  return useFileAPI(config);
 }
 
 export function GetFile({ fileId }) {

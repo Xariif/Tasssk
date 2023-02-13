@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Add } from "./Actions/Add";
 
 import { DeleteFile, GetFile } from "../../../../../services/ToDoService";
-import { useToastContext } from "../../../../../context/ToastContext";
+import { ToastAPI, useToastContext } from "../../../../../context/ToastContext";
 
 export const File = ({ list, loadData }) => {
   const [fileDialog, setFileDialog] = useState(false);
@@ -45,11 +45,8 @@ export const File = ({ list, loadData }) => {
           className="p-button-danger p-button-rounded p-button-outlined"
           onClick={() => {
             DeleteFile({ listId, fileId })
-              .then(() => {
-                toastRef.current.show({
-                  severity: "error",
-                  summary: "Deleted",
-                });
+              .then((res) => {
+                ToastAPI(toastRef, res);
                 loadData();
               })
               .catch(() => {
@@ -62,6 +59,12 @@ export const File = ({ list, loadData }) => {
         />
       </>
     );
+  };
+
+  const dateCreatedTemplate = (file) => {
+    var timestamp = file.id.toString().substring(0, 8);
+    var date = new Date(parseInt(timestamp, 16) * 1000);
+    return <>{date.toLocaleString()}</>;
   };
 
   return (
@@ -88,6 +91,7 @@ export const File = ({ list, loadData }) => {
           }
         >
           <Column field="name" header="Name" />
+          <Column field="id" header="Upload date" body={dateCreatedTemplate} />
           <Column
             field="fileId"
             header="Actions"

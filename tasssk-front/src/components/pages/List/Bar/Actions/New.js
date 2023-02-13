@@ -103,7 +103,6 @@ function New({ loadData, dateNow }, props) {
             finishDate: date,
           })
             .then((res) => {
-              console.log(res);
               setListStorage(name);
               loadData();
 

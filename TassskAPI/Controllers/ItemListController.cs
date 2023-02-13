@@ -339,17 +339,17 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("AddFile")]
-        public ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> files)
+        public ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> formData)
         {
             var result = new ReturnResult<List<FileInfo>>();
 
             try
             {
-                var fileinfo = _listsService.AddFile(ObjectId.Parse(listId), files);
+                var fileinfo = _listsService.AddFile(ObjectId.Parse(listId), formData);
                 SetReturnResult(result, ResultCodes.Ok, "File added", fileinfo);
                 return result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 SetReturnResult(result, ResultCodes.BadRequest, "File add fail", null);
 
