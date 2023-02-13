@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -8,6 +8,7 @@ import { AddItem } from "../../../../../services/ToDoService";
 
 export const Add = ({ list, fetchData, style }) => {
   const [value, setValue] = useState("");
+  const refFocusName = useRef(null);
   const [addItemDialog, setAddItemDialog] = useState(false);
 
   function AddNewItem() {
@@ -37,6 +38,7 @@ export const Add = ({ list, fetchData, style }) => {
           setAddItemDialog(false);
           setValue("");
         }}
+        onShow={() => refFocusName.current.focus()}
         footer={
           <>
             <Button
@@ -65,6 +67,7 @@ export const Add = ({ list, fetchData, style }) => {
           onChange={(e) => setValue(e.target.value)}
           rows={5}
           cols={30}
+          ref={refFocusName}
           autoResize
         />
       </Dialog>{" "}

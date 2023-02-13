@@ -150,7 +150,7 @@ export function AddFile(props) {
     },
   };
 
-  return useFileAPI(config);
+  return useAPI(config);
 }
 
 export function GetFile({ fileId }) {

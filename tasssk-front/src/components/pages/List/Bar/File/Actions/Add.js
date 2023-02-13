@@ -109,6 +109,7 @@ export const Add = ({ list, loadData }) => {
       })
       .finally(() => {
         setUploadedPecent(0);
+        setProgressBar(false);
       });
   };
 

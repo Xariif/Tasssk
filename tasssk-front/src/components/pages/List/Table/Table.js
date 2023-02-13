@@ -9,6 +9,8 @@ import moment from "moment";
 import { Edit } from "./Actions/Edit";
 
 import { Delete } from "./Actions/Delete";
+import { InputText } from "primereact/inputtext";
+import { useState } from "react";
 
 function Table({ list, loadData: fetchData }) {
   var finishDate = new Date(list.finishDate);
@@ -79,12 +81,14 @@ function Table({ list, loadData: fetchData }) {
         responsiveLayout="scroll"
         sortField="createdAt"
         sortOrder={-1}
+        selec
         rowHover
         paginator
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
         rows={7}
       >
         <Column
+          filter
           sortable
           field="name"
           header="Name"

@@ -6,8 +6,11 @@ import { Calendar } from "primereact/calendar";
 import useLocalStorage from "../../../../../hooks/useLocalStorage";
 import { AddList } from "../../../../../services/ToDoService";
 import { useToastContext } from "../../../../../context/ToastContext";
+import { useRef, useEffect } from "react";
 
 function New({ loadData, dateNow }, props) {
+  const refFocusName = useRef(null);
+
   const toastRef = useToastContext();
   const [newListDialog, setNewListDialog] = useState(false);
   const [name, setName] = useState("");
@@ -24,6 +27,7 @@ function New({ loadData, dateNow }, props) {
           setName("");
           setDate();
         }}
+        onShow={() => refFocusName.current.focus()}
         message={
           <>
             <span
@@ -35,6 +39,7 @@ function New({ loadData, dateNow }, props) {
             >
               <i className="pi pi-book" />
               <InputText
+                ref={refFocusName}
                 style={{ width: "100%" }}
                 placeholder="Name"
                 value={name}

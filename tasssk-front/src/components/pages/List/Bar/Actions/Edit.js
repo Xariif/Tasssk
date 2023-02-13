@@ -1,6 +1,6 @@
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { useEffect } from "react";
 import useLocalStorage from "../../../../../hooks/useLocalStorage";
@@ -11,6 +11,8 @@ import { Calendar } from "primereact/calendar";
 
 export default function Delete({ list, loadData }) {
   const [storage, setStorage] = useLocalStorage("selectedList");
+  const refFocusName = useRef(null);
+
   const toastRef = useToastContext();
   const [editListDialog, setEditListDialog] = useState(false);
   const [value, setValue] = useState();
@@ -34,6 +36,7 @@ export default function Delete({ list, loadData }) {
           exit();
         }}
         header={"Edit list"}
+        onShow={() => refFocusName.current.focus()}
         footer={
           <div>
             <Button
@@ -88,6 +91,7 @@ export default function Delete({ list, loadData }) {
           <i className="pi pi-book" />
           <InputText
             style={{ width: "100%" }}
+            ref={refFocusName}
             placeholder="Name"
             value={value}
             onChange={(e) => {
