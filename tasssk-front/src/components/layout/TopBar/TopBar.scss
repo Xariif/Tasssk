@@ -31,7 +31,7 @@
       justify-content: center;
     }
     li:hover {
-      background-color: var(--blue-200);
+      background-color: var(--surface-hover);
       transition: all linear 0.2s;
     }
   }
@@ -45,7 +45,7 @@
     align-items: center;
   }
   .active-link {
-    background-color: var(--blue-500);
+    background-color: var(--primary-color);
   }
   .active-link i,
   .link i {

@@ -57,7 +57,7 @@ export const Add = ({ list, loadData }) => {
             backgroundColor: "var(--surface-b)",
             color: "var(--surface-d)",
           }}
-        />
+        ></i>
         <span
           style={{ fontSize: "1.2em", color: "var(--text-color-secondary)" }}
           className="my-5"
