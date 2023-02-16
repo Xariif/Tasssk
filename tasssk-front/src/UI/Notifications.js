@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Sidebar } from "primereact/sidebar";
-import { NotificationContext } from "./../context/NotificationContext";
+import { NotificationContext } from "../context/NotificationContext";
 import { useContext } from "react";
 import { Button } from "primereact/button";
 export default function Notifications() {
@@ -26,14 +26,14 @@ export default function Notifications() {
       icons={
         <div
           style={{
-            margin: 0,
             textAlign: "left",
             display: "flex",
             height: "100%",
-            alignItems: "center",
+            alignSelf: "left",
+            justifyContent: "left",
+            justifySelf: "left",
             fontSize: "1.2rem",
             fontWeight: "bold",
-            whiteSpace: "nowrap",
           }}
         >
           <i
@@ -63,14 +63,27 @@ export default function Notifications() {
               key={element}
             >
               <div
+                onMouseEnter={(e) => {
+                  console.log(e);
+                  e.target.style.backgroundColor = "#e13570";
+                  e.target.style.border = "2px solid rgb(31, 0, 69)";
+                  e.target.style.boxShadow = "-2px 0px 7px 2px #e13570";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "white";
+                  e.target.style.border = "none";
+                  e.target.style.boxShadow = "none";
+                }}
                 style={{
-                  display: "-webkit-box",
+                  display: "-webkit-inline-box",
                   WebkitLineClamp: 2,
                   lineHeight: "2rem",
                   WebkitBoxOrient: "vertical",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   maxHeight: "50px",
+
+                  width: "calc(100% - 47px)",
                 }}
               >
                 {" "}
@@ -79,7 +92,11 @@ export default function Notifications() {
               <Button
                 icon="pi pi-trash"
                 className="p-button-danger p-button-rounded p-button-text"
-                style={{ marginLeft: "0.5rem", minWidth: "max-content" }}
+                style={{
+                  marginLeft: "0.5rem",
+                  minWidth: "max-content",
+                  display: "inline",
+                }}
               ></Button>
             </div>
           );
