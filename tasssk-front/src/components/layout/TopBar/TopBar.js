@@ -1,22 +1,26 @@
 import React from "react";
 import { useLocation, Link } from "react-router-dom";
-
 import { useAuthUpdateContext } from "../../../context/AuthContext";
 import { useThemeContext } from "../../../context/ThemeContext";
 import { useThemeUpdateContext } from "../../../context/ThemeContext";
 import logo from "./../../../logo.png";
+import { useContext } from "react";
 
 import "./TopBar.scss";
+import { NotificationContext } from "./../../../context/NotificationContext";
 
 function TopBar() {
+  const [notificationsVisible, setNotificationsVisible] =
+    useContext(NotificationContext);
+
   const setAuth = useAuthUpdateContext();
   const location = useLocation();
-  //const setTheme = useThemeUpdateContext();
+  const setTheme = useThemeUpdateContext();
 
   const logOut = () => {
     localStorage.clear();
 
-    //    setTheme(false);
+    setTheme(false);
     setAuth(false);
   };
 
@@ -38,7 +42,6 @@ function TopBar() {
             Events
           </Link>
         </li>
-
         <li>
           <Link
             to="/ToDoList"
@@ -59,6 +62,15 @@ function TopBar() {
           >
             <i className="pi pi-fw pi-cog" />
             Settings
+          </Link>
+        </li>
+        <li>
+          <Link
+            onClick={() => {
+              setNotificationsVisible(true);
+            }}
+          >
+            <i className="pi pi-fw pi-bell" />
           </Link>
         </li>
         <li>
