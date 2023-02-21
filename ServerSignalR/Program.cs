@@ -12,12 +12,12 @@ builder.Services.AddCors();
 var app = builder.Build();
 
 app.UseCors(builder =>
-{
-    builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader();
-});
+builder
+ .AllowAnyMethod()
+ .AllowAnyHeader()
+ .SetIsOriginAllowed(origin => true)
+ .AllowCredentials()
+);
 
 app.MapHub<NotificationsHub>("notifications");
 
