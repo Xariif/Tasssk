@@ -349,7 +349,7 @@ namespace ToDoAPI.Controllers
                 SetReturnResult(result, ResultCodes.Ok, "File added", fileinfo);
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 SetReturnResult(result, ResultCodes.BadRequest, "File add fail", null);
 
