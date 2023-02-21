@@ -8,7 +8,16 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
+import { NotificationContextProvider } from "./context/NotificationContext";
 
+//theme
+import "primereact/resources/themes/lara-dark-indigo/theme.css";
+//core
+import "primereact/resources/primereact.min.css";
+//icons
+import "primeicons/primeicons.css";
+//primeflex
+import "/node_modules/primeflex/primeflex.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
@@ -16,11 +25,13 @@ root.render(
 
   <ToastProvder>
     <BrowserRouter>
-      <ThemeContextProvider>
-        <AuthContextProvider>
-          <App />
-        </AuthContextProvider>
-      </ThemeContextProvider>
+      <NotificationContextProvider>
+        <ThemeContextProvider>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+        </ThemeContextProvider>
+      </NotificationContextProvider>
     </BrowserRouter>
   </ToastProvder>
 
