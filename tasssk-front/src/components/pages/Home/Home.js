@@ -9,23 +9,9 @@ import { useAuthUpdateContext } from "../../../context/AuthContext";
 
 import "./Home.scss";
 
-import { HubConnectionBuilder } from "@microsoft/signalr";
-
 function Home() {
   const setAuth = useAuthUpdateContext();
   const auth = useAuthContext();
-
-  useEffect(() => {
-    let connection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5000/notifications")
-      .build();
-    try {
-      connection.start();
-      console.log("dziala");
-    } catch (error) {
-      console.log("catch", error);
-    }
-  }, []);
 
   return (
     <div className="Home">

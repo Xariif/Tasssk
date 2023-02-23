@@ -22,7 +22,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpGet("GetListsNames")]
-        public ReturnResult<List<ListsNamesDTO>> GetListsNames()
+        public async Task<ReturnResult<List<ListsNamesDTO>>> GetListsNames()
         {
             var result = new ReturnResult<List<ListsNamesDTO>>()
             {
@@ -32,7 +32,7 @@ namespace ToDoAPI.Controllers
             };
 
 
-            var data = _listsService.GetListsByEmail(GetUserEmail());
+            var data = await _listsService.GetListsByEmail(GetUserEmail());
             foreach (var list in data)
             {
                 result.Data.Add(new ListsNamesDTO
@@ -47,7 +47,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("AddList")]
-        public ReturnResult<bool> AddList(NewListDTO newList)
+        public async Task<ReturnResult<bool>> AddList(NewListDTO newList)
         {
             newList.Name.Trim();
 
@@ -62,7 +62,7 @@ namespace ToDoAPI.Controllers
                 return result;
             }
 
-            var res = _listsService.AddList(newList, GetUserEmail());
+            var res = await _listsService.AddList(newList, GetUserEmail());
 
             if (res)
             {
@@ -78,7 +78,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetLists")]
-        public ReturnResult<List<ItemListDTO>> GetLists()
+        public async Task<ReturnResult<List<ItemListDTO>>> GetLists()
         {
 
             var result = new ReturnResult<List<ItemListDTO>>()
@@ -88,7 +88,7 @@ namespace ToDoAPI.Controllers
                 Data = null
             };
 
-            var data = _listsService.GetListsByEmail(GetUserEmail());
+            var data = await _listsService.GetListsByEmail(GetUserEmail());
 
             var dataDto = data.Select(x => new ItemListDTO
             {
@@ -123,7 +123,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetListById")]
-        public ReturnResult<ItemListDTO> GetListById(string listId)
+        public async Task<ReturnResult<ItemListDTO>> GetListById(string listId)
         {
 
             var result = new ReturnResult<ItemListDTO>()
@@ -136,7 +136,7 @@ namespace ToDoAPI.Controllers
             try
             {
 
-                var x = _listsService.GetListById(ObjectId.Parse(listId));
+                var x = await _listsService.GetListById(listId);
 
                 var dataDto = new ItemListDTO
                 {
@@ -180,7 +180,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpPut("UpdateList")]
-        public ReturnResult<bool> UpdateList(ItemListDTO updateList)
+        public async Task<ReturnResult<bool>> UpdateList(ItemListDTO updateList)
         {
             var result = new ReturnResult<bool>()
             {
@@ -194,7 +194,7 @@ namespace ToDoAPI.Controllers
                 return result;
             }
 
-            var list = _listsService.GetListById(ObjectId.Parse(updateList.Id));
+            var list = await _listsService.GetListById(updateList.Id);
 
             if (list == null)
                 return result;
@@ -217,7 +217,7 @@ namespace ToDoAPI.Controllers
                 }).ToList()
             };
 
-            _listsService.UpdateList(ObjectId.Parse(updateList.Id), update);
+            await _listsService.UpdateList(updateList.Id, update);
             SetReturnResult(result, ResultCodes.Ok, "List Updated", true);
 
             return result;
@@ -225,7 +225,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpDelete("DeleteList")]
-        public ReturnResult<bool> DeleteList(string listId)
+        public async Task<ReturnResult<bool>> DeleteList(string listId)
         {
             var result = new ReturnResult<bool>()
             {
@@ -237,8 +237,8 @@ namespace ToDoAPI.Controllers
             if (listId == null)
                 return result;
 
-            var id = ObjectId.Parse(listId);
-            _listsService.DeleteList(id);
+
+            await _listsService.DeleteList(listId);
             SetReturnResult(result, ResultCodes.Ok, "List deleted", true);
 
             return result;
@@ -246,7 +246,7 @@ namespace ToDoAPI.Controllers
         //Items
         [Authorize]
         [HttpPost("AddItem")]
-        public ReturnResult<bool> AddItem(string listId, string itemName)
+        public async Task<ReturnResult<bool>> AddItem(string listId, string itemName)
         {
             var result = new ReturnResult<bool>()
             {
@@ -260,7 +260,7 @@ namespace ToDoAPI.Controllers
             }
             else
             {
-                _listsService.AddItem(ObjectId.Parse(listId), itemName);
+                await _listsService.AddItem(listId, itemName);
                 SetReturnResult(result, ResultCodes.Ok, "Item added", true);
                 return result;
             }
@@ -283,7 +283,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpPut("UpdateItem")]
-        public ReturnResult<bool> UpdateItem(string listId, ItemDTO updatedItem)
+        public async Task<ReturnResult<bool>> UpdateItem(string listId, ItemDTO updatedItem)
         {
             var result = new ReturnResult<bool>()
             {
@@ -306,7 +306,7 @@ namespace ToDoAPI.Controllers
             };
 
 
-            var res = _listsService.UpdateItem(listId, item);
+            var res = await _listsService.UpdateItem(listId, item);
             if (res)
             {
                 SetReturnResult(result, ResultCodes.Ok, "Item updated", true);
@@ -319,7 +319,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpDelete("DeleteItem")]
-        public ReturnResult<bool> DeleteItem(string listId, string itemId)
+        public async Task<ReturnResult<bool>> DeleteItem(string listId, string itemId)
         {
             var result = new ReturnResult<bool>()
             {
@@ -331,7 +331,7 @@ namespace ToDoAPI.Controllers
             if (itemId == null)
                 return result;
 
-            _listsService.DeleteItem(ObjectId.Parse(listId), ObjectId.Parse(itemId));
+            await _listsService.DeleteItem(listId, itemId);
             SetReturnResult(result, ResultCodes.Ok, "Item deleted", true);
 
             return result;
@@ -339,13 +339,13 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("AddFile")]
-        public ReturnResult<List<FileInfo>> AddFileAsync(string listId, List<IFormFile> formData)
+        public async Task<ReturnResult<List<FileInfo>>> AddFileAsync(string listId, List<IFormFile> formData)
         {
             var result = new ReturnResult<List<FileInfo>>();
 
             try
             {
-                var fileinfo = _listsService.AddFile(ObjectId.Parse(listId), formData);
+                var fileinfo = await _listsService.AddFile(listId, formData);
                 SetReturnResult(result, ResultCodes.Ok, "File added", fileinfo);
                 return result;
             }
@@ -360,7 +360,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpDelete("DeleteFile")]
-        public ReturnResult<bool> DeleteFile(string listId, string fileId)
+        public async Task<ReturnResult<bool>> DeleteFile(string listId, string fileId)
         {
             var result = new ReturnResult<bool>()
             {
@@ -371,7 +371,7 @@ namespace ToDoAPI.Controllers
             try
             {
 
-                _listsService.DeleteFile(ObjectId.Parse(listId), ObjectId.Parse(fileId));
+                await _listsService.DeleteFile(listId, fileId);
 
                 return result;
 
@@ -384,7 +384,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpGet("GetFile")]
-        public ReturnResult<FileData> GetFile(string fileId)
+        public async Task<ReturnResult<FileData>> GetFile(string fileId)
         {
             var result = new ReturnResult<FileData>()
             {
@@ -394,7 +394,7 @@ namespace ToDoAPI.Controllers
             try
             {
 
-                result.Data = _listsService.GetFile(ObjectId.Parse(fileId));
+                result.Data = await _listsService.GetFile(fileId);
 
                 return result;
 

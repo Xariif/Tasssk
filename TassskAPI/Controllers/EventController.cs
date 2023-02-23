@@ -19,14 +19,14 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetEvents")]
-        public ReturnResult<List<EventDTO>> GetEvents()
+        public async Task<ReturnResult<List<EventDTO>>> GetEvents()
         {
             var result = new ReturnResult<List<EventDTO>>()
             {
                 Code = ResultCodes.Ok,
                 Message = "Events",
-                Data = _eventService.GetEvents(GetUserEmail())
-            };    
+                Data = await _eventService.GetEvents(GetUserEmail())
+            };
             return result;
         }
     }

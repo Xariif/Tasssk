@@ -22,8 +22,8 @@ namespace ToDoAPI.Helpers
         public async Task<List<T>> FindCollectionByFilterAsync<T>(string collectionName, FilterDefinition<T> mongoQuery)
         {
             var collection = db.GetCollection<T>(collectionName);
-            // var filter = Builders<T>.Filter.Eq(collectionName, mongoQuery);
-            return await collection.FindSync(mongoQuery).ToListAsync();
+            var filter = Builders<T>.Filter.Eq(collectionName, mongoQuery);
+            return await collection.FindAsync(filter).Result.ToListAsync();
         }
     }
 }

@@ -3,14 +3,53 @@ import { useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Sidebar } from "primereact/sidebar";
 import { NotificationContext } from "../../context/NotificationContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Button } from "primereact/button";
 
 import "./Notifications.scss";
 
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+
 export default function Notifications() {
   const [notificationsVisible, setNotificationsVisible] =
     useContext(NotificationContext);
+
+  const [connection, setConnection] = useState(null);
+
+  const [notifications, setNoticiations] = useState();
+
+  useEffect(() => {
+    const newConnection = new HubConnectionBuilder()
+      .withUrl("http://localhost:5000/notifications")
+      .configureLogging(LogLevel.Information)
+      .build();
+
+    setConnection(newConnection);
+  }, []);
+
+  useEffect(() => {
+    if (connection) {
+      async function start() {
+        try {
+          await connection.start();
+          console.log("SignalR Connected.");
+          connection.on("ReceiveNotification", (notifcation) => {
+            console.log(notifcation);
+          });
+        } catch (err) {
+          console.log(err);
+          setTimeout(start, 5000);
+        }
+      }
+
+      connection.onclose(async () => {
+        await start();
+      });
+
+      // Start the connection.
+      start();
+    }
+  }, [connection]);
 
   var items = [
     "Rate us!",
@@ -30,6 +69,12 @@ export default function Notifications() {
         <>
           <i className="pi pi-fw pi-bell" style={{ fontSize: "2rem" }} />
           NOTIFICATIONS
+          <Button
+            label="Send Test"
+            onClick={() => {
+              connection.invoke("SendMessage", "test message");
+            }}
+          ></Button>
         </>
       }
     >

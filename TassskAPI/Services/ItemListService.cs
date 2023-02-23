@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using ToDoAPI.DTOs;
 using ToDoAPI.Helpers;
+using ToDoAPI.Helpers.Models;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
 using FileInfo = ToDoAPI.Models.ItemList.FileInfo;
@@ -18,16 +19,14 @@ namespace ToDoAPI.Services
             FileDataCollection = "FileData";
             db = new MongoCRUD();
         }
-        public bool AddList(NewListDTO newList, string email)
+        public async Task<bool> AddList(NewListDTO newList, string email)
         {
 
-            var listsNames = db.FindListsByEmail<ItemList>(ItemListCollection, email).Select(x => x.Name);
+            var nameExist = await db.FindFirstAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Name", newList.Name));
 
-            foreach (var listName in listsNames)
-            {
-                if (listName.Equals(newList.Name))
-                    return false;
-            }
+            if (nameExist != null)
+                return false;
+
             var list = new ItemList
             {
                 Id = ObjectId.GenerateNewId(),
@@ -40,38 +39,46 @@ namespace ToDoAPI.Services
                 Files = new List<FileInfo>()
             };
 
-            db.InsertRecord(ItemListCollection, list);
+            await db.InsertOneAsync(ItemListCollection, list);
             return true;
         }
-        public List<ItemList> GetListsByEmail(string email)
+        public async Task<List<ItemList>> GetListsByEmail(string email)
         {
-            return db.FindListsByEmail<ItemList>(ItemListCollection, email);
+            return await db.FindManyAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Email", email));
         }
-        public ItemList GetListById(ObjectId id)
-        {
-            return db.FindFisrtById<ItemList>(ItemListCollection, id);
-        }
-        public void UpdateList(ObjectId id, ItemList list)
-        {
-            db.UpsertRecord<ItemList>(ItemListCollection, id, list);
-        }
-        public void DeleteList(ObjectId id)
-        {
-          var files =  db.FindFisrtById<ItemList>(ItemListCollection, id).Files;
 
-            foreach(var file in files)
+
+
+        public async Task<List<ItemList>> GetListsByEmailAsync(string email)
+        {
+            return await db.FindManyAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Email", email));
+        }
+
+        public async Task<ItemList> GetListById(string id)
+        {
+            return await db.FindFirstByIdAsync<ItemList>(ItemListCollection, id);
+        }
+        public async Task UpdateList(string id, ItemList list)
+        {
+            await db.FindOneAndReplaceAsync<ItemList>(ItemListCollection, id, list);
+        }
+        public async Task DeleteList(string id)
+        {
+            var files = db.FindFirstByIdAsync<ItemList>(ItemListCollection, id).Result.Files;
+
+            foreach (var file in files)
             {
-                db.DeleteRecord<FileData>(FileDataCollection, file.FileId);
+                await db.DeleteOneAsync<FileData>(FileDataCollection, file.FileId.ToString());
             }
 
-            db.DeleteRecord<ItemList>(ItemListCollection, id);
+            await db.DeleteOneAsync<ItemList>(ItemListCollection, id);
         }
 
         //Items 
 
-        public void AddItem(ObjectId listId, string itemName)
+        public async Task AddItem(string listId, string itemName)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
+            var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, listId);
 
             var item = new Item
             {
@@ -83,27 +90,27 @@ namespace ToDoAPI.Services
 
             list.Items.Add(item);
 
-            db.UpsertRecord(ItemListCollection, listId, list);
+            await db.FindOneAndReplaceAsync(ItemListCollection, listId, list);
         }
 
-        public void DeleteItem(ObjectId listId, ObjectId itemId)
+        public async Task DeleteItem(string listId, string itemId)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
+            var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, listId);
 
-            list.Items.RemoveAll(x => x.Id == itemId);
+            list.Items.RemoveAll(x => x.Id == ObjectId.Parse(itemId));
 
-            db.UpsertRecord(ItemListCollection, listId, list);
+            await db.FindOneAndReplaceAsync(ItemListCollection, listId, list);
         }
-        public bool UpdateItem(string listId, Item item)
+        public async Task<bool> UpdateItem(string listId, Item item)
         {
             try
             {
-                var list = db.FindFisrtById<ItemList>(ItemListCollection, ObjectId.Parse(listId));
+                var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, listId);
 
                 list.Items.RemoveAll(x => x.Id == item.Id);
                 list.Items.Add(item);
 
-                db.UpsertRecord(ItemListCollection, ObjectId.Parse(listId), list);
+                await db.FindOneAndReplaceAsync(ItemListCollection, listId, list);
                 return true;
             }
             catch
@@ -116,9 +123,11 @@ namespace ToDoAPI.Services
         //Files
 
 
-        public List<FileInfo> AddFile(ObjectId listId, List<IFormFile> files)
-        { 
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
+        public async Task<List<FileInfo>> AddFile(string listId, List<IFormFile> files)
+        {
+            var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, listId);
+
+
 
 
             var filesInfoList = new List<FileInfo>();
@@ -129,7 +138,7 @@ namespace ToDoAPI.Services
                 if (file.Length > 0)
                 {
                     using (var ms = new MemoryStream())
-                   {
+                    {
                         file.CopyTo(ms);
                         var fileBytes = ms.ToArray();
                         string stringBase64 = Convert.ToBase64String(fileBytes);
@@ -158,35 +167,35 @@ namespace ToDoAPI.Services
 
             list.Files.AddRange(filesInfoList);
 
-            db.UpsertRecord(ItemListCollection, listId, list);
+            await db.FindOneAndReplaceAsync(ItemListCollection, listId, list);
 
 
             foreach (var item in filesDataList)
             {
-                db.InsertRecord<FileData>(FileDataCollection, item);
+                await db.InsertOneAsync<FileData>(FileDataCollection, item);
             };
             return filesInfoList;
 
         }
 
-        public bool DeleteFile(ObjectId listId, ObjectId fileId)
+        public async Task<bool> DeleteFile(string listId, string fileId)
         {
-            var list = db.FindFisrtById<ItemList>(ItemListCollection, listId);
+            var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, listId);
             if (list == null) return false;
 
 
-            var file = list.Files.Find(x=>x.FileId == fileId);
+            var file = list.Files.Find(x => x.FileId == ObjectId.Parse(fileId));
             list.Files.Remove(file);
 
-            db.DeleteRecord<FileData>(FileDataCollection, fileId);
-            db.UpsertRecord<ItemList>(ItemListCollection, listId, list);
+            await db.DeleteOneAsync<FileData>(FileDataCollection, fileId);
+            await db.FindOneAndReplaceAsync<ItemList>(ItemListCollection, listId, list);
 
             return true;
         }
 
-        public FileData GetFile(ObjectId fileId)
+        public async Task<FileData> GetFile(string fileId)
         {
-            return db.FindFisrtById<FileData>(FileDataCollection, fileId);
+            return await db.FindFirstByIdAsync<FileData>(FileDataCollection, fileId);
         }
     }
 }

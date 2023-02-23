@@ -2,7 +2,13 @@
 {
     public class MongoFilterHelper
     {
-        public string FilterEQ { get; set; }
-        public string FilterEQValue { get; set; }
+        public string Filter { get; set; }
+        public string FilterValue { get; set; }
+
+        public MongoFilterHelper(string filter, string filterValue)
+        {
+            this.Filter = filter;
+            this.FilterValue = filterValue;
+        }
     }
 }

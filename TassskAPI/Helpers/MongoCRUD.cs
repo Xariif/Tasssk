@@ -1,55 +1,79 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections;
 using ToDoAPI.Helpers.Models;
 using ToDoAPI.Models.ItemList;
+using ToDoAPI.Models.User;
 
 namespace ToDoAPI.Helpers
 {
     public class MongoCRUD : MongoDbHelper
     {
-        public void InsertRecord<T>(string collectionName, T record)
+        //CREATE
+        public async Task InsertOneAsync<T>(string collectionName, T record)
         {
             var collection = db.GetCollection<T>(collectionName);
-            collection.InsertOne(record);
+            await collection.InsertOneAsync(record);
         }
-
-        public T FindFirstByEmail<T>(string collectionName, string email)
+        public async Task InsertManyAsync<T>(string collectionName, List<T> records)
         {
             var collection = db.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("Email", email);
-            return collection.Find(filter).FirstOrDefault();
+            await collection.InsertManyAsync(records);
         }
-
-        public List<T> FindListsByEmail<T>(string collectionName, string email)
+        //READ
+        public async Task<T> FindFirstByIdAsync<T>(string collectionName, string id)
         {
             var collection = db.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("Email", email);
-            return collection.Find(filter).ToList();
+            var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+            return await collection.FindAsync(filter).Result.FirstOrDefaultAsync();
         }
-
-        public T FindFisrtById<T>(string collectionName, ObjectId id)
+        public async Task<T> FindFirstAsync<T>(string collectionName, MongoFilterHelper filterHelper)
         {
             var collection = db.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-            return collection.Find(filter).FirstOrDefault();
+            var filter = Builders<T>.Filter.Eq(filterHelper.Filter, filterHelper.FilterValue);
+            return await collection.FindAsync(filter).Result.FirstOrDefaultAsync();
         }
-
-        public ReplaceOneResult UpsertRecord<T>(string collectionName, ObjectId id, T record)
+        public async Task<List<T>> FindManyAsync<T>(string collectionName, MongoFilterHelper filterHelper)
         {
             var collection = db.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("_id", id);
-
-            return collection.ReplaceOne(filter, record);
+            var filter = Builders<T>.Filter.Eq(filterHelper.Filter, filterHelper.FilterValue);
+            return await collection.FindAsync(filter).Result.ToListAsync();
         }
-
-        public DeleteResult DeleteRecord<T>(string collectionName, ObjectId id)
+        //UPDATE FIELD
+        public async Task<UpdateResult> UpdateOneAsync<T>(string collectionName, MongoFilterHelper filterHelper, string field, T value)
         {
             var collection = db.GetCollection<T>(collectionName);
-            var filter = Builders<T>.Filter.Eq("_id", id);
+            var filter = Builders<T>.Filter.Eq(filterHelper.Filter, filterHelper.FilterValue);
+            var update = Builders<T>.Update.Set(field, value);
+            return await collection.UpdateOneAsync(filter, update);
 
-            return collection.DeleteOne(filter);
         }
-
-    
+        public async Task<UpdateResult> UpdateManyAsync<T>(string collectionName, MongoFilterHelper filterHelper, string field, string value)
+        {
+            var collection = db.GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq(filterHelper.Filter, filterHelper.FilterValue);
+            var update = Builders<T>.Update.Set(field, value);
+            return await collection.UpdateManyAsync(filter, update);
+        }
+        //REPLACE 
+        public async Task<T> FindOneAndReplaceAsync<T>(string collectionName,string id, T record)
+        {
+            var collection = db.GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq("_id",ObjectId.Parse(id));
+            return await collection.FindOneAndReplaceAsync(filter, record);
+        }
+        //DELETE
+        public async Task<DeleteResult> DeleteOneAsync<T>(string collectionName,string id)
+        {
+            var collection = db.GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
+            return await collection.DeleteOneAsync(filter);
+        }
+        public async Task<DeleteResult> DeleteManyAsync<T>(string collectionName, MongoFilterHelper filterHelper)
+        {
+            var collection = db.GetCollection<T>(collectionName);
+            var filter = Builders<T>.Filter.Eq(filterHelper.Filter, filterHelper.FilterValue);
+            return await collection.DeleteManyAsync(filter);
+        }
     }
 }

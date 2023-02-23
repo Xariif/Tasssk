@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ServerSignalR
 {
-    internal class NotificationsHub:Hub
+    internal class NotificationsHub : Hub
     {
-        public async Task SendMessage( string message)
+        public async Task SendMessage(string notification)
         {
-            await Clients.All.SendAsync("ReceiveMessage", message);
+            await Clients.All.SendAsync("ReceiveNotification", notification);
         }
     }
 }

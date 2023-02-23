@@ -6,6 +6,7 @@ using TassskAPI.DTOs.User;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.User;
 using ToDoAPI.Helpers;
+using ToDoAPI.Helpers.Models;
 using ToDoAPI.Interfaces;
 using ToDoAPI.Models.ItemList;
 using ToDoAPI.Models.User;
@@ -25,11 +26,11 @@ namespace ToDoAPI.Services
             _tokenService = tokenService;
         }
 
-        public UserDataDTO Login(LoginDTO loginDTO)
+        public async Task<UserDataDTO> Login(LoginDTO loginDTO)
         {
             try
             {
-                var user = db.FindFirstByEmail<User>(collectionName, loginDTO.Email);
+                var user = await db.FindFirstAsync<User>(collectionName, new MongoFilterHelper("Email", loginDTO.Email));
 
                 if (user == null)
                     return null;
@@ -54,7 +55,7 @@ namespace ToDoAPI.Services
                 throw;
             }
         }
-        public User Register(RegisterDTO registerDTO)
+        public async Task<User> Register(RegisterDTO registerDTO)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace ToDoAPI.Services
 
                 using var hmac = new HMACSHA512();
 
-                if (db.FindFirstByEmail<User>(collectionName, registerDTO.Email) != null)
+                if (await db.FindFirstAsync<User>(collectionName, new MongoFilterHelper("Email", registerDTO.Email)) != null)
                     throw new Exception(message: "Email already exist!");
 
                 var newUser = new User
@@ -73,7 +74,7 @@ namespace ToDoAPI.Services
                     PasswordSalt = hmac.Key,
                     BirthDate = registerDTO.BirthDate,
                 };
-                db.InsertRecord<User>("User", newUser);
+                await db.InsertOneAsync<User>("User", newUser);
                 return newUser;
             }
             catch (Exception)
@@ -109,36 +110,35 @@ namespace ToDoAPI.Services
             }
             return true;
         }
-        public bool DeleteAccount(string email)
+        public async Task<bool> DeleteAccount(string email)
         {
-            var userId = db.FindFirstByEmail<User>(collectionName, email).Id;
+            var user = await db.FindFirstAsync<User>(collectionName, new MongoFilterHelper("Email", email));
 
-            var userLists = db.FindListsByEmail<ItemList>("ItemList", email).ToList();
+            var userLists = await db.FindManyAsync<ItemList>("ItemList", new MongoFilterHelper("Email", email));
             foreach (var list in userLists)
             {
-                db.DeleteRecord<ItemList>("ItemList", list.Id);
+                await db.DeleteOneAsync<ItemList>("ItemList", list.Id.ToString());
             }
-            db.DeleteRecord<User>(collectionName, userId);
+            await db.DeleteOneAsync<User>(collectionName, user.Id.ToString());
             return true;
         }
 
-        public bool ChangeTheme(string email)
+        public async Task<bool> ChangeTheme(string email)
         {
-            var user = db.FindFirstByEmail<User>(collectionName, email);
+            var user = await db.FindFirstAsync<User>(collectionName, new MongoFilterHelper("Email", email));
 
             if (user == null)
                 return false;
 
             user.DarkMode = !user.DarkMode;
 
-
-            db.UpsertRecord<User>(collectionName, user.Id, user);
+            await db.FindOneAndReplaceAsync<User>(collectionName, user.Id.ToString(), user);
             return user.DarkMode;
         }
 
-        public bool ChangePassword(string email, string password)
+        public async Task<bool> ChangePassword(string email, string password)
         {
-            var user = db.FindFirstByEmail<User>(collectionName, email);
+            var user = await db.FindFirstAsync<User>(collectionName, new MongoFilterHelper("Email", email));
 
             if (user == null)
                 return false;
@@ -147,7 +147,7 @@ namespace ToDoAPI.Services
             user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             user.PasswordSalt = hmac.Key;
 
-            db.UpsertRecord<User>(collectionName, user.Id, user);
+            await db.FindOneAndReplaceAsync<User>(collectionName, user.Id.ToString(), user);
 
             return true;
         }

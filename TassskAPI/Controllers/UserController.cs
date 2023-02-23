@@ -18,7 +18,7 @@ namespace ToDoAPI.Controllers
         }
         [AllowAnonymous]
         [HttpPost("Login")]
-        public ReturnResult<UserDataDTO> Login(LoginDTO loginDTO)
+        public async Task<ReturnResult<UserDataDTO>> Login(LoginDTO loginDTO)
         {
             var result = new ReturnResult<UserDataDTO>()
             {
@@ -28,7 +28,7 @@ namespace ToDoAPI.Controllers
             };
 
 
-            var userData = _userService.Login(loginDTO);
+            var userData = await _userService.Login(loginDTO);
 
             if (userData != null)
             {
@@ -75,7 +75,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpDelete("DeleteAccount")]
-        public ReturnResult<bool> DeleteAccount(string password)
+        public async Task<ReturnResult<bool>> DeleteAccount(string password)
         {
             var result = new ReturnResult<bool>()
             {
@@ -94,7 +94,7 @@ namespace ToDoAPI.Controllers
             if (_userService.Login(loginDTO) == null)
                 return result;
 
-            _userService.DeleteAccount(GetUserEmail());
+            await _userService.DeleteAccount(GetUserEmail());
             SetReturnResult(result, ResultCodes.BadRequest, "Account deleted!", true);
 
             return result;
@@ -104,20 +104,20 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("ChangeTheme")]
-        public ReturnResult<bool> ChangeTheme()
+        public async Task<ReturnResult<bool>> ChangeTheme()
         {
             var result = new ReturnResult<bool>()
             {
                 Code = ResultCodes.Ok,
                 Message = "Theme changed!",
-                Data = _userService.ChangeTheme(GetUserEmail())
-            };            
+                Data = await _userService.ChangeTheme(GetUserEmail())
+            };
             return result;
 
         }
         [Authorize]
         [HttpPut("ChangePassword")]
-        public ActionResult ChangePassword(ChangePasswordDTO changePasswordDTO)
+        public async Task<ActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
         {
             var loginDTO = new LoginDTO()
             {
@@ -127,7 +127,7 @@ namespace ToDoAPI.Controllers
             if (_userService.Login(loginDTO) == null)
                 return BadRequest("Wrong data!");
 
-            _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
+            await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
 
             return Ok("Password changed!");
         }
