@@ -20,6 +20,8 @@ import "./Login.scss";
 export default function Login() {
   const navigate = useNavigate();
   const [, setToken] = useLocalStorage("token", "");
+  const [, setEmail] = useLocalStorage("email", "");
+
   const toastRef = useToastContext();
   const setTheme = useThemeUpdateContext();
   const setAuth = useAuthUpdateContext();
@@ -42,20 +44,19 @@ export default function Login() {
   async function onSubmit(data, form) {
     try {
       await LoginUser(data).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          setToken(res.data.token);
+          setEmail(res.data.email);
+          setAuth(true);
+          // setTheme(res.data.darkMode);
+        }
         ToastAPI(toastRef, res);
-        setToken(res.data.token);
-        setAuth(true);
-        // setTheme(res.data.darkMode);
       });
 
       navigate("/");
     } catch (error) {
-      toastRef.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message,
-        life: 5000,
-      });
+      ToastAPI(toastRef, error);
     }
   }
 
@@ -91,7 +92,7 @@ export default function Login() {
         <Form
           onSubmit={onSubmit}
           initialValues={{
-            email: "Test1@wp.pl",
+            email: "test@test.pl",
             password: "qwe",
             logedIn: false,
           }}

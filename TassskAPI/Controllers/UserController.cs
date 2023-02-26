@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TassskAPI.DTOs.Core;
+using TassskAPI.DTOs.ItemList;
 using TassskAPI.DTOs.User;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.User;
+using ToDoAPI.Models.User;
 using ToDoAPI.Services;
 
 namespace ToDoAPI.Controllers
@@ -11,7 +13,6 @@ namespace ToDoAPI.Controllers
     public class UserController : BaseAPIController
     {
         private readonly UserService _userService;
-
         public UserController(UserService userService)
         {
             _userService = userService;
@@ -27,7 +28,6 @@ namespace ToDoAPI.Controllers
                 Data = new UserDataDTO()
             };
 
-
             var userData = await _userService.Login(loginDTO);
 
             if (userData != null)
@@ -39,7 +39,6 @@ namespace ToDoAPI.Controllers
             SetReturnResult(result, ResultCodes.BadRequest, "Wrong email or password!", userData);
             return result;
         }
-
         [AllowAnonymous]
         [HttpPost("Register")]
         public ReturnResult<string> Register(RegisterDTO registerDTO)
@@ -58,8 +57,6 @@ namespace ToDoAPI.Controllers
             SetReturnResult(result, ResultCodes.BadRequest, "Cannot create account!", null);
             return result;
         }
-
-
         [Authorize]
         [HttpPost("ValidateToken")]
         public ReturnResult<bool> ValidateToken()
@@ -72,7 +69,6 @@ namespace ToDoAPI.Controllers
             };
             return result;
         }
-
         [Authorize]
         [HttpDelete("DeleteAccount")]
         public async Task<ReturnResult<bool>> DeleteAccount(string password)
@@ -99,9 +95,6 @@ namespace ToDoAPI.Controllers
 
             return result;
         }
-
-
-
         [Authorize]
         [HttpPost("ChangeTheme")]
         public async Task<ReturnResult<bool>> ChangeTheme()
@@ -131,21 +124,83 @@ namespace ToDoAPI.Controllers
 
             return Ok("Password changed!");
         }
-        //[Authorize]
-        //[HttpDelete("DeleteUser")]
-        //public async Task<ActionResult> DeleteUser()
-        //{
-        //    try
-        //    {
-        //        await _userService.DeleteUser(GetUserEmail());
-        //        return Ok("User Deleted");
 
-        //    }
 
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
+        [Authorize]
+        [HttpGet("Notifications")]
+        public async Task<ReturnResult<List<NotificationDTO>>> Notifications()
+        {
+
+            var data = await _userService.GetNotifications(GetUserEmail());
+
+            var list = new List<NotificationDTO>();
+
+            foreach (var notification in data)
+            {
+                NotificationDTO notificationDTO = new NotificationDTO
+                {
+                    Id = notification.Id.ToString(),
+                    CreatedAt = notification.CreatedAt,
+                    Header = notification.Header,
+                    Body = notification.Body,
+                    IsReaded = notification.IsReaded
+                };
+                list.Add(notificationDTO);
+            }
+
+            var result = new ReturnResult<List<NotificationDTO>>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Notifications List",
+                Data = list.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+
+            return result;
+        }
+
+        [Authorize]
+        [HttpPost("AddNotification")]
+        public async Task<ReturnResult<bool>> AddNotification(NewNotificationDTO newNotification)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Notification created",
+                Data = true
+            };
+
+            await _userService.AddNotification(newNotification.Email, newNotification.Header, newNotification.Body);
+            return result;
+        }
+
+        [Authorize]
+        [HttpDelete("DeleteNotification")]
+        public async Task<ReturnResult<bool>> DeleteNotification(string notificationId)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Notification deleted",
+                Data = true
+            };
+
+            await _userService.DeleteNotification(GetUserEmail(), notificationId);
+            return result;
+        }
+        [Authorize]
+        [HttpPut("SetNotificationReaded")]
+        public async Task<ReturnResult<bool>> SetNotificationReaded(string notificationId)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Notification readed",
+                Data = true
+            };
+
+            await _userService.SetNotificationReaded(GetUserEmail(), notificationId);
+            return result;
+        }
     }
+
 }

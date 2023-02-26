@@ -9,17 +9,18 @@ import "./Layout.scss";
 import { Dialog } from "primereact/dialog";
 import Notifications from "../../UI/Notifications/Notifications.js";
 import { useNotificationContext } from "../../context/NotificationContext";
+import { NotificationContextProvider } from "./../../context/NotificationContext";
 
 function Layout(props) {
   return (
-    <>
+    <NotificationContextProvider>
       <Notifications />
       <TopBar />
       <div className="Main">
         <div className="Content">{props.content}</div>
       </div>
       <Footer />
-    </>
+    </NotificationContextProvider>
   );
 }
 

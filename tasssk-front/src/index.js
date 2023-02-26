@@ -8,7 +8,6 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
-import { NotificationContextProvider } from "./context/NotificationContext";
 
 //theme
 import "primereact/resources/themes/lara-dark-indigo/theme.css";
@@ -25,13 +24,11 @@ root.render(
 
   <ToastProvder>
     <BrowserRouter>
-      <NotificationContextProvider>
-        <ThemeContextProvider>
-          <AuthContextProvider>
-            <App />
-          </AuthContextProvider>
-        </ThemeContextProvider>
-      </NotificationContextProvider>
+      <ThemeContextProvider>
+        <AuthContextProvider>
+          <App />
+        </AuthContextProvider>
+      </ThemeContextProvider>
     </BrowserRouter>
   </ToastProvder>
 

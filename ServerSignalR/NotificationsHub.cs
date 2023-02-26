@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ServerSignalR
 {
-    internal class NotificationsHub : Hub
+    //[Authorize]
+    public class NotificationsHub : Hub
     {
-        public async Task SendMessage(string notification)
+        public async Task SendNotification(string who,string message )
         {
-            await Clients.All.SendAsync("ReceiveNotification", notification);
+            await Clients.Group(who).SendAsync("ReceiveNotification", message, default(CancellationToken));
+        }
+
+        public override async Task OnConnectedAsync()
+        {
+            string email = Context.GetHttpContext().Request.Query["email"];
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, email);
+
+            await base.OnConnectedAsync();
         }
     }
 }

@@ -1,11 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using System.Reflection;
 using TassskAPI.DTOs.Core;
+using TassskAPI.DTOs.ItemList;
+using TassskAPI.Helpers;
+using TassskAPI.Helpers.Models;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.ItemList;
+using ToDoAPI.DTOs.User;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
+using ToDoAPI.Models.User;
 using ToDoAPI.Services;
 using FileInfo = ToDoAPI.Models.ItemList.FileInfo;
 
@@ -15,11 +21,14 @@ namespace ToDoAPI.Controllers
     {
         //TODO: Add validation if user have access 
         private readonly ItemListService _listsService;
-
         public ItemListController(ItemListService listsService)
         {
             _listsService = listsService;
         }
+
+        #region List
+
+
         [Authorize]
         [HttpGet("GetListsNames")]
         public async Task<ReturnResult<List<ListsNamesDTO>>> GetListsNames()
@@ -49,8 +58,6 @@ namespace ToDoAPI.Controllers
         [HttpPost("AddList")]
         public async Task<ReturnResult<bool>> AddList(NewListDTO newList)
         {
-            newList.Name.Trim();
-
             var result = new ReturnResult<bool>()
             {
                 Code = ResultCodes.BadRequest,
@@ -63,6 +70,7 @@ namespace ToDoAPI.Controllers
             }
 
             var res = await _listsService.AddList(newList, GetUserEmail());
+
 
             if (res)
             {
@@ -78,10 +86,10 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetLists")]
-        public async Task<ReturnResult<List<ItemListDTO>>> GetLists()
+        public async Task<ReturnResult<List<ItemsListDTO>>> GetLists()
         {
 
-            var result = new ReturnResult<List<ItemListDTO>>()
+            var result = new ReturnResult<List<ItemsListDTO>>()
             {
                 Code = ResultCodes.Ok,
                 Message = "Lists",
@@ -90,11 +98,9 @@ namespace ToDoAPI.Controllers
 
             var data = await _listsService.GetListsByEmail(GetUserEmail());
 
-            var dataDto = data.Select(x => new ItemListDTO
+            var dataDto = data.Select(x => new ItemsListDTO
             {
-                Email = x.Email,
                 Name = x.Name,
-
                 Finished = x.Finished,
                 FinishDate = x.FinishDate,
                 CreatedDate = x.CreatedDate,
@@ -123,10 +129,10 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetListById")]
-        public async Task<ReturnResult<ItemListDTO>> GetListById(string listId)
+        public async Task<ReturnResult<ItemsListDTO>> GetListById(string listId)
         {
 
-            var result = new ReturnResult<ItemListDTO>()
+            var result = new ReturnResult<ItemsListDTO>()
             {
                 Code = ResultCodes.Ok,
                 Message = "List by id",
@@ -138,9 +144,9 @@ namespace ToDoAPI.Controllers
 
                 var x = await _listsService.GetListById(listId);
 
-                var dataDto = new ItemListDTO
+                var dataDto = new ItemsListDTO
                 {
-                    Email = x.Email,
+
                     Name = x.Name,
 
                     Finished = x.Finished,
@@ -180,7 +186,7 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpPut("UpdateList")]
-        public async Task<ReturnResult<bool>> UpdateList(ItemListDTO updateList)
+        public async Task<ReturnResult<bool>> UpdateList(ItemsListDTO updateList)
         {
             var result = new ReturnResult<bool>()
             {
@@ -202,7 +208,7 @@ namespace ToDoAPI.Controllers
             var update = new ItemList
             {
                 Id = list.Id,
-                Email = list.Email,
+
                 Name = updateList.Name,
                 Finished = updateList.Finished,
                 FinishDate = updateList.FinishDate,
@@ -238,16 +244,21 @@ namespace ToDoAPI.Controllers
                 return result;
 
 
-            await _listsService.DeleteList(listId);
+            await _listsService.DeleteList(GetUserEmail(), listId);
+
             SetReturnResult(result, ResultCodes.Ok, "List deleted", true);
 
             return result;
         }
-        //Items
+        #endregion
+
+        #region Item
+
         [Authorize]
         [HttpPost("AddItem")]
         public async Task<ReturnResult<bool>> AddItem(string listId, string itemName)
         {
+
             var result = new ReturnResult<bool>()
             {
                 Code = ResultCodes.BadRequest,
@@ -336,7 +347,9 @@ namespace ToDoAPI.Controllers
 
             return result;
         }
+        #endregion
 
+        #region File
         [Authorize]
         [HttpPost("AddFile")]
         public async Task<ReturnResult<List<FileInfo>>> AddFileAsync(string listId, List<IFormFile> formData)
@@ -384,9 +397,9 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpGet("GetFile")]
-        public async Task<ReturnResult<FileData>> GetFile(string fileId)
+        public async Task<ReturnResult<FilesData>> GetFile(string fileId)
         {
-            var result = new ReturnResult<FileData>()
+            var result = new ReturnResult<FilesData>()
             {
                 Code = ResultCodes.Ok,
                 Message = "File by id",
@@ -405,6 +418,24 @@ namespace ToDoAPI.Controllers
                 return result;
             }
         }
+        #endregion
 
+        #region Privilages
+        [Authorize]
+        [HttpPost("SendInviteToList")]
+        public async Task<ReturnResult<bool>> SendInviteToList(SendInviteToListDTO inviteInfo)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Invite send!",
+                Data = true
+            };
+
+            //share only admin?
+
+            return result;
+        }
+        #endregion
     }
 }

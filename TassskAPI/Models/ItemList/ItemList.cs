@@ -8,7 +8,6 @@ namespace ToDoAPI.Models.ItemList
         [BsonId]
         public ObjectId Id { get; set; }
         public string Name { get; set; }
-        public string Email { get; set; }
         public bool Finished { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime FinishDate { get; set; }
@@ -20,7 +19,7 @@ namespace ToDoAPI.Models.ItemList
         [BsonId]
         public ObjectId Id { get; set; }
         public bool Finished { get; set; }
-        public DateTime CreatedAt { get; set; }  
+        public DateTime CreatedAt { get; set; }
         public string Name { get; set; }
     }
 
@@ -28,7 +27,7 @@ namespace ToDoAPI.Models.ItemList
     {
         public ObjectId Id { get; set; }
         public string Name { get; set; }
-        public string  Type { get; set; }
+        public string Type { get; set; }
         public long Size { get; set; }
         public ObjectId FileId { get; set; }
     }

@@ -1,9 +1,12 @@
 ﻿using MongoDB.Bson;
+using TassskAPI.DTOs.ItemList;
+using TassskAPI.Helpers.Models;
 using ToDoAPI.DTOs;
 using ToDoAPI.Helpers;
 using ToDoAPI.Helpers.Models;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
+using ToDoAPI.Models.User;
 using FileInfo = ToDoAPI.Models.ItemList.FileInfo;
 
 namespace ToDoAPI.Services
@@ -13,16 +16,25 @@ namespace ToDoAPI.Services
         private readonly MongoCRUD db;
         private readonly string ItemListCollection;
         private readonly string FileDataCollection;
+        private readonly string UserCollection;
+
         public ItemListService()
         {
             ItemListCollection = "ItemList";
             FileDataCollection = "FileData";
+            UserCollection = "User";
             db = new MongoCRUD();
         }
+        #region List
         public async Task<bool> AddList(NewListDTO newList, string email)
         {
+            var filterHelper = new MongoFilterHelper
+            {
+                FilterField = "Name",
+                FilterValue = newList.Name
+            };
 
-            var nameExist = await db.FindFirstAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Name", newList.Name));
+            var nameExist = await db.FindFirstAsync<ItemList>(ItemListCollection, filterHelper);
 
             if (nameExist != null)
                 return false;
@@ -31,27 +43,75 @@ namespace ToDoAPI.Services
             {
                 Id = ObjectId.GenerateNewId(),
                 Name = newList.Name.Trim(),
-                Email = email.Trim(),
                 Finished = false,
                 FinishDate = newList.FinishDate,
                 CreatedDate = DateTime.Now,
-                Items = new List<Item>(),
-                Files = new List<FileInfo>()
+            };
+            //Create document in ItemList
+            await db.InsertOneAsync(ItemListCollection, list);
+
+            var privilages = new Priviliges
+            {
+                ListObjectId = list.Id,
+                ListPermission = new PermissionModel
+                {
+                    Owner = true,
+                    Share = true,
+                    Read = true,
+                    Write = true,
+                    Modify = true,
+                    Delete = true,
+                }
             };
 
-            await db.InsertOneAsync(ItemListCollection, list);
+            //Add access to user
+            var nestedHelper = new MongoNestedArrayHelper<Priviliges>
+            {
+                FilterField = "Email",
+                FilterValue = email,
+
+                NestedArray = "Priviliges",
+                NestedObject = privilages
+            };
+            await db.PushObjectToNestedArrayAsync(UserCollection, nestedHelper);
+
             return true;
         }
         public async Task<List<ItemList>> GetListsByEmail(string email)
         {
-            return await db.FindManyAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Email", email));
+            var filter = new MongoFilterHelper
+            {
+                FilterField = "Email",
+                FilterValue = email
+            };
+
+            //  var user = await db.FindManyAsync<User>(UserCollection, filter).Result.Select(x => x.Priviliges);
+
+            var user = await db.FindFirstAsync<User>(UserCollection, filter);
+            var listsIds = user.Priviliges.Select(x => x.ListObjectId).ToList();
+
+            var result = new List<ItemList>();
+
+
+            foreach (var id in listsIds)
+            {
+                var list = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, id.ToString());
+                result.Add(list);
+            }
+
+            return result;
         }
 
 
 
         public async Task<List<ItemList>> GetListsByEmailAsync(string email)
         {
-            return await db.FindManyAsync<ItemList>(ItemListCollection, new MongoFilterHelper("Email", email));
+            var filter = new MongoFilterHelper
+            {
+                FilterField = "Email",
+                FilterValue = email
+            };
+            return await db.FindManyAsync<ItemList>(ItemListCollection, filter);
         }
 
         public async Task<ItemList> GetListById(string id)
@@ -62,19 +122,38 @@ namespace ToDoAPI.Services
         {
             await db.FindOneAndReplaceAsync<ItemList>(ItemListCollection, id, list);
         }
-        public async Task DeleteList(string id)
+        public async Task DeleteList(string email, string id)
         {
             var files = db.FindFirstByIdAsync<ItemList>(ItemListCollection, id).Result.Files;
 
             foreach (var file in files)
             {
-                await db.DeleteOneAsync<FileData>(FileDataCollection, file.FileId.ToString());
+                await db.DeleteOneAsync<FilesData>(FileDataCollection, file.FileId.ToString());
             }
-
             await db.DeleteOneAsync<ItemList>(ItemListCollection, id);
-        }
 
-        //Items 
+            var userFilter = new MongoFilterHelper
+            {
+                FilterField = "Email",
+                FilterValue = email
+            };
+            var user = await db.FindFirstAsync<User>(UserCollection, userFilter);
+
+            var privilage = user.Priviliges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(id));
+
+            var nestedFilter = new MongoNestedArrayHelper<Priviliges>
+            {
+                FilterField = "Email",
+                FilterValue = email,
+                NestedArray = "Priviliges",
+                NestedObject = privilage
+
+            };
+            await db.PullObjectFromNestedArrayAsync<Priviliges>(UserCollection, nestedFilter);
+        }
+        #endregion
+        #region Item
+        //Item
 
         public async Task AddItem(string listId, string itemName)
         {
@@ -119,6 +198,8 @@ namespace ToDoAPI.Services
             }
         }
 
+        #endregion
+        #region File
 
         //Files
 
@@ -131,7 +212,7 @@ namespace ToDoAPI.Services
 
 
             var filesInfoList = new List<FileInfo>();
-            var filesDataList = new List<FileData>();
+            var filesDataList = new List<FilesData>();
 
             foreach (var file in files)
             {
@@ -152,7 +233,7 @@ namespace ToDoAPI.Services
                             FileId = fileId
                         };
 
-                        var fileData = new FileData()
+                        var fileData = new FilesData()
                         {
                             Id = fileId,
                             FileString = stringBase64
@@ -172,7 +253,7 @@ namespace ToDoAPI.Services
 
             foreach (var item in filesDataList)
             {
-                await db.InsertOneAsync<FileData>(FileDataCollection, item);
+                await db.InsertOneAsync<FilesData>(FileDataCollection, item);
             };
             return filesInfoList;
 
@@ -187,15 +268,19 @@ namespace ToDoAPI.Services
             var file = list.Files.Find(x => x.FileId == ObjectId.Parse(fileId));
             list.Files.Remove(file);
 
-            await db.DeleteOneAsync<FileData>(FileDataCollection, fileId);
+            await db.DeleteOneAsync<FilesData>(FileDataCollection, fileId);
             await db.FindOneAndReplaceAsync<ItemList>(ItemListCollection, listId, list);
 
             return true;
         }
 
-        public async Task<FileData> GetFile(string fileId)
+        public async Task<FilesData> GetFile(string fileId)
         {
-            return await db.FindFirstByIdAsync<FileData>(FileDataCollection, fileId);
+            return await db.FindFirstByIdAsync<FilesData>(FileDataCollection, fileId);
         }
+        #endregion
+        #region Privilages
+
+        #endregion
     }
 }

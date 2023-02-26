@@ -9,16 +9,20 @@ namespace ToDoAPI.Services
     public class EventService
     {
         private readonly MongoCRUD db;
-        private readonly string collectionName;
+        private readonly string ItemListCollection;
         public EventService()
         {
-            collectionName = "ItemList";
+            ItemListCollection = "ItemLists";
             db = new MongoCRUD();
         }
         public async Task<List<EventDTO>> GetEvents(string email)
         {
-
-            var events = await db.FindManyAsync<ItemList>(collectionName, new MongoFilterHelper("Email", email));
+            var filterHelper = new MongoFilterHelper
+            {
+                FilterField = "Email",
+                FilterValue = email
+            };
+            var events = await db.FindManyAsync<ItemList>(ItemListCollection, filterHelper);
 
             var resullt = events.Select(x =>
             new EventDTO

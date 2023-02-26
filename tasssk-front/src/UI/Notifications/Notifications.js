@@ -7,56 +7,28 @@ import { useContext, useEffect } from "react";
 import { Button } from "primereact/button";
 
 import "./Notifications.scss";
-
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import { Badge } from "primereact/badge";
+import moment from "moment";
+import * as signalR from "@microsoft/signalr";
+import {
+  AddNotification,
+  DeleteNotification,
+  GetNotifications,
+  SetNotificationReaded,
+} from "../../services/UserService";
+import { useToastContext } from "../../context/ToastContext";
+import { ToastAPI } from "./../../context/ToastContext";
 
 export default function Notifications() {
-  const [notificationsVisible, setNotificationsVisible] =
+  const { visible, notifications, badge, send } =
     useContext(NotificationContext);
+  const [notificationsVisible, setNotificationsVisible] = visible;
+  const [notificationsList, setNotificationsList] = notifications;
+  const [badgeCount, setBadgeCount] = badge;
 
-  const [connection, setConnection] = useState(null);
+  const [SginalRnotifications, SginalRsendNotification] = send;
 
-  const [notifications, setNoticiations] = useState();
-
-  useEffect(() => {
-    const newConnection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5000/notifications")
-      .configureLogging(LogLevel.Information)
-      .build();
-
-    setConnection(newConnection);
-  }, []);
-
-  useEffect(() => {
-    if (connection) {
-      async function start() {
-        try {
-          await connection.start();
-          console.log("SignalR Connected.");
-          connection.on("ReceiveNotification", (notifcation) => {
-            console.log(notifcation);
-          });
-        } catch (err) {
-          console.log(err);
-          setTimeout(start, 5000);
-        }
-      }
-
-      connection.onclose(async () => {
-        await start();
-      });
-
-      // Start the connection.
-      start();
-    }
-  }, [connection]);
-
-  var items = [
-    "Rate us!",
-    "Tutorial",
-    "Tips and tricks",
-    "Welcone coś tam dłuższego trochę bardziej jescze bardzieje coś tam dłuższego trochę bardziej jescze bardziej zeby było dluzej zeby było dluzej",
-  ];
+  const toastRef = useToastContext();
 
   return (
     <Sidebar
@@ -69,25 +41,81 @@ export default function Notifications() {
         <>
           <i className="pi pi-fw pi-bell" style={{ fontSize: "2rem" }} />
           NOTIFICATIONS
-          <Button
-            label="Send Test"
-            onClick={() => {
-              connection.invoke("SendMessage", "test message");
-            }}
-          ></Button>
         </>
       }
     >
-      {items ? (
-        items.map((element) => {
+      <Button
+        label="AddNotification"
+        onClick={() => {
+          var data = {
+            Email: "test@test.pl",
+            Header: "Gorące Mamuśki w twojej okolicy!",
+            Body: "Zobacz sam w twojej okolicy znaleziono 54 chętne mamuśki",
+          };
+          AddNotification(data)
+            .then((res) => {
+              ToastAPI(toastRef, res);
+            })
+            .then(() => {
+              SginalRsendNotification(data.Email, "Got new notification!");
+            });
+        }}
+      ></Button>
+      {notificationsList ? (
+        notificationsList.map((element) => {
           return (
-            <div className="single-notification" key={element}>
-              <div className="text">{element}</div>
+            <div className="single-notification" key={element.id}>
+              <div className="notification-body">
+                <div
+                  className="text"
+                  onClick={() =>
+                    SetNotificationReaded(element.id)
+                      .then(() => {
+                        setNotificationsList(
+                          notificationsList.map((x) => {
+                            if (x.id == element.id) x.isReaded = true;
+                            return x;
+                          })
+                        );
+                      })
+                      .finally(() => {
+                        var notReaded = notificationsList.filter((val) => {
+                          return val.isReaded == false;
+                        });
+                        setBadgeCount(notReaded.length);
+                      })
+                  }
+                >
+                  <h5>{element.header.toUpperCase()}</h5>
+                </div>
+                <div className="date">
+                  {" "}
+                  <h5 style={{ fontSize: "0.6rem" }}>
+                    {moment(element.createdAt).calendar()}
+                  </h5>
+                </div>
+              </div>
+
+              {element.isReaded ? (
+                <></>
+              ) : (
+                <Badge style={{ margin: "0.5rem" }} severity="info"></Badge>
+              )}
+
               <Button
                 icon="pi pi-trash"
                 severity="danger"
                 rounded
-                outlined
+                text
+                onClick={() =>
+                  DeleteNotification(element.id).then(() => {
+                    setNotificationsList(
+                      notificationsList.filter((x) => {
+                        return x.id != element.id;
+                      })
+                    );
+                  })
+                }
               ></Button>
             </div>
           );

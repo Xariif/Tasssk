@@ -5,13 +5,15 @@ import { useThemeContext } from "../../../context/ThemeContext";
 import { useThemeUpdateContext } from "../../../context/ThemeContext";
 import logo from "./../../../logo.png";
 import { useContext } from "react";
+import { Badge } from "primereact/badge";
 
 import "./TopBar.scss";
 import { NotificationContext } from "./../../../context/NotificationContext";
 
 function TopBar() {
-  const [notificationsVisible, setNotificationsVisible] =
-    useContext(NotificationContext);
+  const { visible, notifications, badge } = useContext(NotificationContext);
+  const [notificationsVisible, setNotificationsVisible] = visible;
+  const [badgeCount, setBadgeCount] = badge;
 
   const setAuth = useAuthUpdateContext();
   const location = useLocation();
@@ -19,7 +21,6 @@ function TopBar() {
 
   const logOut = () => {
     localStorage.clear();
-
     setTheme(false);
     setAuth(false);
   };
@@ -70,7 +71,9 @@ function TopBar() {
               setNotificationsVisible(true);
             }}
           >
-            <i className="pi pi-fw pi-bell" />
+            <i className="pi pi-bell p-overlay-badge">
+              {badgeCount ? <Badge value={badgeCount}></Badge> : <></>}
+            </i>
           </Link>
         </li>
         <li>

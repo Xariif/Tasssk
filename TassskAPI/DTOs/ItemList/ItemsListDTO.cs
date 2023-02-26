@@ -3,7 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace ToDoAPI.DTOs.ItemList
 {
-    public class ItemListDTO
+    public class ItemsListDTO
     {
 
         public string Id { get; set; }
