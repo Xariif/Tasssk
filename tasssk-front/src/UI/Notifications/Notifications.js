@@ -5,6 +5,7 @@ import { Sidebar } from "primereact/sidebar";
 import { NotificationContext } from "../../context/NotificationContext";
 import { useContext, useEffect } from "react";
 import { Button } from "primereact/button";
+import { ConfirmDialog } from "primereact/confirmdialog"; // For <ConfirmDialog /> component
 
 import "./Notifications.scss";
 import { Badge } from "primereact/badge";
@@ -15,9 +16,10 @@ import {
   DeleteNotification,
   GetNotifications,
   SetNotificationReaded,
-} from "../../services/UserService";
+} from "../../services/NotificationService";
 import { useToastContext } from "../../context/ToastContext";
 import { ToastAPI } from "./../../context/ToastContext";
+import { SendInviteToList } from "../../services/ToDoService";
 
 export default function Notifications() {
   const { visible, notifications, badge, send } =
@@ -32,6 +34,7 @@ export default function Notifications() {
 
   return (
     <Sidebar
+      style={{ width: "30%" }}
       className="notifications"
       position="right"
       visible={notificationsVisible}
@@ -55,70 +58,32 @@ export default function Notifications() {
           AddNotification(data)
             .then((res) => {
               ToastAPI(toastRef, res);
+              return res;
             })
-            .then(() => {
-              SginalRsendNotification(data.Email, "Got new notification!");
+            .then((res) => {
+              console.log(res);
+              SginalRsendNotification(data.Email, res.message);
             });
         }}
       ></Button>
+      <Button
+        label="add invite "
+        onClick={() => {
+          SendInviteToList()
+            .then((res) => {
+              ToastAPI(toastRef, res);
+              return res;
+            })
+            .then((res) => {
+              console.log(res);
+              SginalRsendNotification("test@test.pl", res.message);
+            });
+        }}
+      ></Button>
+
       {notificationsList ? (
         notificationsList.map((element) => {
-          return (
-            <div className="single-notification" key={element.id}>
-              <div className="notification-body">
-                <div
-                  className="text"
-                  onClick={() =>
-                    SetNotificationReaded(element.id)
-                      .then(() => {
-                        setNotificationsList(
-                          notificationsList.map((x) => {
-                            if (x.id == element.id) x.isReaded = true;
-                            return x;
-                          })
-                        );
-                      })
-                      .finally(() => {
-                        var notReaded = notificationsList.filter((val) => {
-                          return val.isReaded == false;
-                        });
-                        setBadgeCount(notReaded.length);
-                      })
-                  }
-                >
-                  <h5>{element.header.toUpperCase()}</h5>
-                </div>
-                <div className="date">
-                  {" "}
-                  <h5 style={{ fontSize: "0.6rem" }}>
-                    {moment(element.createdAt).calendar()}
-                  </h5>
-                </div>
-              </div>
-
-              {element.isReaded ? (
-                <></>
-              ) : (
-                <Badge style={{ margin: "0.5rem" }} severity="info"></Badge>
-              )}
-
-              <Button
-                icon="pi pi-trash"
-                severity="danger"
-                rounded
-                text
-                onClick={() =>
-                  DeleteNotification(element.id).then(() => {
-                    setNotificationsList(
-                      notificationsList.filter((x) => {
-                        return x.id != element.id;
-                      })
-                    );
-                  })
-                }
-              ></Button>
-            </div>
-          );
+          return <Notification element={element} key={element.id} />;
         })
       ) : (
         <div className="no-notifications">
@@ -127,4 +92,136 @@ export default function Notifications() {
       )}
     </Sidebar>
   );
+
+  function Notification({ element }) {
+    switch (element.type) {
+      case "Notification":
+        return (
+          <div className="notification">
+            <div
+              style={{
+                opacity: element.isReaded ? "0.5" : "1",
+              }}
+              className="notification-body"
+              onClick={() =>
+                SetNotificationReaded(element.id).then(() => {
+                  setNotificationsList(
+                    notificationsList.map((x) => {
+                      if (x.id == element.id) x.isReaded = true;
+                      return x;
+                    })
+                  );
+                })
+              }
+            >
+              <div style={{ paddingRight: "8px" }}>
+                <div style={{ fontWeight: "bold" }}>{element.header}</div>
+                {element.body}
+                <h5 style={{ color: " var(--primary-color)" }}>
+                  {moment(element.createdAt).calendar()}
+                </h5>{" "}
+              </div>
+            </div>
+
+            <div style={{ display: "inline-flex", alignItems: "center" }}>
+              {!element.isReaded && <Badge severity="info"></Badge>}
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                rounded
+                text
+                onClick={() =>
+                  DeleteNotification(element.id).then(() => {
+                    setNotificationsList((notificationsList) =>
+                      notificationsList.filter((x) => {
+                        return x.id != element.id;
+                      })
+                    );
+                  })
+                }
+              ></Button>
+            </div>
+          </div>
+        );
+        break;
+      case "Invite":
+        return (
+          <div
+            className="notification"
+            key={element.id}
+            style={{ color: "lightgreen" }}
+          >
+            <div
+              className="notification-body"
+              onClick={() => {
+                setNotificationsList(
+                  notificationsList.map((x) => {
+                    if (x.id == element.id) x.isReaded = true;
+                    return x;
+                  })
+                ).then(() => SetNotificationReaded(element.id));
+              }}
+            >
+              <div style={{ fontWeight: "bold" }}>{element.header}</div>
+              {element.body}
+              <h5 style={{ color: " var(--primary-color)" }}>
+                {moment(element.createdAt).calendar()}
+              </h5>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                icon="pi pi-check"
+                text
+                severity="success"
+                size="sm"
+                rounded
+                label="Accept"
+                onClick={() =>
+                  DeleteNotification(element.id)
+                    .then(() => {
+                      setNotificationsList((notificationsList) =>
+                        notificationsList.filter((x) => {
+                          return x.id != element.id;
+                        })
+                      );
+                    })
+                    .finally(() => {
+                      //add to list
+                    })
+                }
+              ></Button>
+              <Button
+                text
+                icon="pi pi-times"
+                label="Reject"
+                severity="danger"
+                size="sm"
+                rounded
+                onClick={() =>
+                  DeleteNotification(element.id)
+                    .then(() => {
+                      setNotificationsList((notificationsList) =>
+                        notificationsList.filter((x) => {
+                          return x.id != element.id;
+                        })
+                      );
+                    })
+                    .finally(() => {
+                      //send notification rejected
+                    })
+                }
+              ></Button>
+            </div>
+          </div>
+        );
+
+        break;
+    }
+  }
 }

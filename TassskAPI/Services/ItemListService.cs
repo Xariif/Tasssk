@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using TassskAPI.DTOs.ItemList;
 using TassskAPI.Helpers.Models;
+using TassskAPI.Models.Notification;
 using ToDoAPI.DTOs;
 using ToDoAPI.Helpers;
 using ToDoAPI.Helpers.Models;
@@ -56,7 +57,6 @@ namespace ToDoAPI.Services
                 ListPermission = new PermissionModel
                 {
                     Owner = true,
-                    Share = true,
                     Read = true,
                     Write = true,
                     Modify = true,
@@ -280,7 +280,46 @@ namespace ToDoAPI.Services
         }
         #endregion
         #region Privilages
+        public async Task<bool> SendInviteToList(SendInviteToListDTO inviteInfo)
+        {
+            var listName = db.FindFirstByIdAsync<ItemList>(ItemListCollection, inviteInfo.Priviliges.ListObjectId).Result.Name;
 
+            var notification = new Notification
+            {
+                Type = "Invite",
+                Receiver = inviteInfo.Receiver,
+                Sender = inviteInfo.Sender,
+                Header = $"You've got invite",
+                Body = $"You've got invite to list from {inviteInfo.Sender}!",
+                CreatedAt = DateTime.Now,
+                IsReaded = false,
+                Priviliges = new Priviliges
+                {
+                    ListObjectId = ObjectId.Parse(inviteInfo.Priviliges.ListObjectId),
+                    ListPermission = new PermissionModel
+                    {
+                        Owner = false,
+                        Read = inviteInfo.Priviliges.ListPermission.Read,
+                        Write = inviteInfo.Priviliges.ListPermission.Write,
+                        Modify = inviteInfo.Priviliges.ListPermission.Modify,
+                        Delete = inviteInfo.Priviliges.ListPermission.Delete
+                    }
+
+                }
+            };
+
+            var helper = new MongoNestedArrayHelper<Notification>
+            {
+                FilterField = "Email",
+                FilterValue = inviteInfo.Sender,
+                NestedArray = "Notifications",
+                NestedObject = notification
+            };
+
+            await db.PushObjectToNestedArrayAsync(UserCollection, helper);
+
+            return true;
+        }
         #endregion
     }
 }

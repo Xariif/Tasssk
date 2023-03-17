@@ -15,8 +15,12 @@ export default function Delete({ list, loadData }) {
         visible={deleteListDialog}
         draggable={false}
         onHide={() => setDeleteListDialog(false)}
-        icon="pi pi-trash"
-        header={"Delete list?"}
+        header={
+          <>
+            <i className="pi pi-trash" style={{ marginRight: ".5rem" }}></i>
+            Delete list?
+          </>
+        }
         message={
           <div
             style={{

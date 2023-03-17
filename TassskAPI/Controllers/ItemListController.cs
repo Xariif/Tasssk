@@ -6,6 +6,7 @@ using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.ItemList;
 using TassskAPI.Helpers;
 using TassskAPI.Helpers.Models;
+using TassskAPI.Services;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.ItemList;
 using ToDoAPI.DTOs.User;
@@ -21,6 +22,7 @@ namespace ToDoAPI.Controllers
     {
         //TODO: Add validation if user have access 
         private readonly ItemListService _listsService;
+
         public ItemListController(ItemListService listsService)
         {
             _listsService = listsService;
@@ -432,10 +434,32 @@ namespace ToDoAPI.Controllers
                 Data = true
             };
 
-            //share only admin?
+            inviteInfo.Sender = GetUserEmail();
+
+            await _listsService.SendInviteToList(inviteInfo);
 
             return result;
         }
+
+
+        [Authorize]
+        [HttpPost("SetUserPrivilages")]
+        public async Task<ReturnResult<bool>> SetUserPrivilages(UserPrivilagesDTO privilages)
+        {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Invite send!",
+                Data = true
+            };
+
+
+
+            await _listsService.SendInviteToList(inviteInfo);
+
+            return result;
+        }
+
         #endregion
     }
 }

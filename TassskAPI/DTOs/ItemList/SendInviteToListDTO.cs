@@ -1,8 +1,12 @@
-﻿namespace TassskAPI.DTOs.ItemList
+﻿using TassskAPI.DTOs.User;
+using ToDoAPI.Models.User;
+
+namespace TassskAPI.DTOs.ItemList
 {
     public class SendInviteToListDTO
     {
-        public string ListId { get; set; }
-        public string Email { get; set; }
+        public string Sender { get; set; }
+        public string Receiver { get; set; }
+        public PrivilagesDTO Priviliges { get; set; }
     }
 }

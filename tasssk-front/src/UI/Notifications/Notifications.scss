@@ -1,42 +1,28 @@
 .notifications {
   user-select: none;
-
   .p-sidebar-header {
     font-size: 1.5rem;
     font-weight: 500;
-    height: auto;
-    display: flex;
     justify-content: space-between;
     background-color: var(--surface-ground);
   }
   .p-sidebar-content {
     padding: 0 !important;
-
-    .single-notification {
-      width: 100%;
-      padding: 0.2rem !important;
-      font-size: 0.8rem;
+    min-width: 100%;
+    .notification {
+      padding: 0 8px;
       display: flex;
       justify-content: space-between;
+      border-bottom: 1px solid var(--surface-ground);
       align-items: center;
       .notification-body {
-        width: calc(100% - 42px);
-
-        .text {
-          display: -webkit-inline-box;
-          -webkit-line-clamp: 3;
-
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-height: 50px;
-        }
+        width: 100%;
+        min-height: 35px;
       }
     }
 
-    .single-notification:hover {
+    .notification:hover {
       background-color: var(--surface-hover);
-      border-radius: var(--);
     }
   }
 

@@ -1,7 +1,11 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
+using TassskAPI.Models.Notification;
+using ToDoAPI.Models.ItemList;
 
 namespace ToDoAPI.Models.User
 {
@@ -18,6 +22,7 @@ namespace ToDoAPI.Models.User
         public bool DarkMode { get; set; } = false;
         public List<Notification> Notifications { get; set; } = new List<Notification>();
         public List<Priviliges> Priviliges { get; set; } = new List<Priviliges>();
+
     }
 
     public class Priviliges
@@ -29,7 +34,6 @@ namespace ToDoAPI.Models.User
     public class PermissionModel
     {
         public bool Owner { get; set; }
-        public bool Share { get; set; } //Can share?
         public bool Read { get; set; }
         public bool Write { get; set; }
         public bool Modify { get; set; }
@@ -37,22 +41,5 @@ namespace ToDoAPI.Models.User
     }
 
 
-    public class Notification
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId Id { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string Header { get; set; }
-        public string Body { get; set; }
-        public bool IsReaded { get; set; } = false;
-    }
 
-    public class InviteToListNotification : Notification
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId ListId { get; set; }
-        public bool Accepted { get; set; }
-    }
 }

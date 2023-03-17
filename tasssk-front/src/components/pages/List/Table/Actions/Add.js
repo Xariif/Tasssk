@@ -11,7 +11,7 @@ export const Add = ({ list, fetchData, style }) => {
   const refFocusName = useRef(null);
   const [addItemDialog, setAddItemDialog] = useState(false);
 
-  function AddNewItem() {
+  function Add() {
     return new Promise((resolve, reject) => {
       const props = {
         listId: list.id,
@@ -32,8 +32,14 @@ export const Add = ({ list, fetchData, style }) => {
     <div style={style}>
       <Dialog
         visible={addItemDialog}
+        resizable={false}
         draggable={false}
-        header={"Add item to list"}
+        header={
+          <>
+            <i className="pi pi-plus" style={{ marginRight: ".5rem" }}></i>Add
+            item to list
+          </>
+        }
         onHide={() => {
           setAddItemDialog(false);
           setValue("");
@@ -55,7 +61,7 @@ export const Add = ({ list, fetchData, style }) => {
               className=" p-button-accept"
               icon="pi pi-check"
               onClick={() => {
-                AddNewItem();
+                Add();
                 setValue("");
               }}
             />

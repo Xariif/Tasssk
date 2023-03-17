@@ -73,7 +73,12 @@ export const File = ({ list, loadData }) => {
         visible={fileDialog}
         draggable={false}
         style={{ width: "80%" }}
-        header="Files manager"
+        header={
+          <>
+            <i className="pi pi-file" style={{ marginRight: ".5rem" }}></i>
+            Files manager
+          </>
+        }
         onHide={() => setFileDialog(false)}
       >
         <DataTable

@@ -44,12 +44,11 @@ export default function Login() {
   async function onSubmit(data, form) {
     try {
       await LoginUser(data).then((res) => {
-        console.log(res);
         if (res.code == 200) {
           setToken(res.data.token);
           setEmail(res.data.email);
           setAuth(true);
-          // setTheme(res.data.darkMode);
+          setTheme(res.data.darkMode);
         }
         ToastAPI(toastRef, res);
       });

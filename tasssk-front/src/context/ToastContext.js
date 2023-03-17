@@ -3,7 +3,6 @@ import { createContext, useContext, useRef } from "react";
 const ToastContext = createContext();
 
 export function ToastAPI(toastRef, response) {
-  console.log(response);
   switch (response.code) {
     case 200:
       toastRef.current.show({

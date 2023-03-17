@@ -1,4 +1,5 @@
-﻿using ToDoAPI.Interfaces;
+﻿using TassskAPI.Services;
+using ToDoAPI.Interfaces;
 using ToDoAPI.Services;
 
 namespace ToDoAPI.Extensions
@@ -11,7 +12,7 @@ namespace ToDoAPI.Extensions
             services.AddScoped<UserService>();
             services.AddScoped<ItemListService>();
             services.AddScoped<EventService>();
-
+            services.AddScoped<NotificationService>();
             return services;
         }
     }

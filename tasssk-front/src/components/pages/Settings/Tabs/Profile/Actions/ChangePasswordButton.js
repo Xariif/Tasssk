@@ -73,14 +73,14 @@ export default function ChangePasswordButton() {
         }
       >
         <Password
-          style={{ paddingBottom: "1rem" }}
+          //  style={{ paddingBottom: "1rem" }}
           value={passOld}
           feedback={false}
           onChange={(e) => setPassOld(e.target.value)}
           placeholder="Old Password"
           toggleMask
         />
-
+        <br />
         <Password
           value={passNew}
           onChange={(e) => setPassNew(e.target.value)}

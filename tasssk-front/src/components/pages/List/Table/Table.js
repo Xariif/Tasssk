@@ -11,6 +11,7 @@ import { Edit } from "./Actions/Edit";
 import { Delete } from "./Actions/Delete";
 import { InputText } from "primereact/inputtext";
 import { useState } from "react";
+import Privilages from "./Actions/Privilages";
 
 function Table({ list, loadData: fetchData }) {
   var finishDate = new Date(list.finishDate);
@@ -58,7 +59,7 @@ function Table({ list, loadData: fetchData }) {
   };
 
   const createadAtTemplate = (row) => {
-    return <>{moment(row.createdAt).format("L HH:mm:ss ")}</>;
+    return <>{moment(row.createdAt).format("MMMM Do YYYY, HH:mm:ss ")}</>;
   };
 
   const finishedSort = (event) => {
@@ -101,12 +102,12 @@ function Table({ list, loadData: fetchData }) {
           field="createdAt"
           sortable
           body={createadAtTemplate}
-          style={{ textAlign: "center", width: "58px" }}
+          style={{ textAlign: "center", width: " min-content" }}
         />
         <Column
           header="Finished"
-          //   sortable
-          // sortFunction={finishedSort}
+          //  sortable
+          //  sortFunction={finishedSort}
           body={finishedTemplate}
           style={{ textAlign: "center", width: "58px" }}
         />
@@ -177,7 +178,8 @@ function Table({ list, loadData: fetchData }) {
   }
   function Footer() {
     return (
-      <div style={{ display: "flex", justifyContent: "right" }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Privilages list={list}></Privilages>
         <Add fetchData={fetchData} list={list} />
       </div>
     );

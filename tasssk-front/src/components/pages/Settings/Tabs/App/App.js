@@ -5,6 +5,8 @@ import { useState } from "react";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useToastContext } from "../../../../../context/ToastContext";
 import { ChangeTheme } from "../../../../../services/UserService";
+import { ScrollPanel } from "primereact/scrollpanel";
+
 import {
   useThemeContext,
   useThemeUpdateContext,
@@ -12,8 +14,6 @@ import {
 export default function App() {
   const [reportDialog, setReportDialog] = useState();
   const toastRef = useToastContext();
-  const setTheme = useThemeUpdateContext();
-  const theme = useThemeContext();
 
   const ReportDialog = () => {
     function SendReport() {
@@ -37,6 +37,7 @@ export default function App() {
         }}
         className=" text-xl"
         visible={reportDialog}
+        resizable={false}
         draggable={false}
         headerStyle={{ display: "flex", justifyContent: "space-between" }}
         footer={
@@ -55,13 +56,15 @@ export default function App() {
             </Button>
           </div>
         }
-        header="Any problems? Let us know"
+        header="Any problems? Let us know!"
       >
-        <InputTextarea rows={8} cols={30} />
+        <InputTextarea placeholder="Describe " autoResize rows={14} cols={50} />
       </Dialog>
     );
   };
+  const theme = useThemeContext();
 
+  const setDarkTheme = useThemeUpdateContext();
   return (
     <>
       <ReportDialog />
@@ -72,10 +75,12 @@ export default function App() {
       <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>
         <h2>Dark mode?</h2>
         <InputSwitch
-          checked={false}
+          checked={theme}
           onChange={() => {
-            console.log(theme);
-            setTheme(!theme);
+            ChangeTheme().then((res) => {
+              if (res.data === true) setDarkTheme(res.data);
+              else setDarkTheme(false);
+            });
           }}
         />
       </div>

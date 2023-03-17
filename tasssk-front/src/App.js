@@ -17,12 +17,13 @@ import { useToastContext } from "./context/ToastContext";
 import useLocalStorage from "./hooks/useLocalStorage";
 
 import "./App.css";
+import { useThemeContext } from "./context/ThemeContext";
 
 function App() {
   const auth = useAuthContext();
   const toastRef = useToastContext();
-
   const [token, setToken] = useLocalStorage("token");
+  const theme = useThemeContext();
 
   useEffect(() => {
     if (auth == false) {
@@ -34,9 +35,18 @@ function App() {
       }
     }
   }, [token]);
-
   return (
     <>
+      <link
+        id="app-theme"
+        rel="stylesheet"
+        type="text/css"
+        href={
+          theme === true
+            ? "https://unpkg.com/primereact/resources/themes/bootstrap4-dark-purple/theme.css"
+            : "https://unpkg.com/primereact/resources/themes/bootstrap4-light-purple/theme.css"
+        }
+      />
       <Toast ref={toastRef} position={"bottom-center"} />
 
       <Routes>
@@ -56,7 +66,6 @@ function App() {
         </Route>
 
         <Route path="/Login" element={<Login />} />
-
         <Route path="/Register" element={<Register />} />
 
         <Route path="*" exact={true} element={<NotFound />} />

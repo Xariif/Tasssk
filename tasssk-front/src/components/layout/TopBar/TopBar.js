@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useLocation, Link } from "react-router-dom";
 import { useAuthUpdateContext } from "../../../context/AuthContext";
 import { useThemeContext } from "../../../context/ThemeContext";
@@ -21,7 +22,6 @@ function TopBar() {
 
   const logOut = () => {
     localStorage.clear();
-    setTheme(false);
     setAuth(false);
   };
 
@@ -40,7 +40,7 @@ function TopBar() {
             className={location.pathname === "/Events" ? "active-link" : "link"}
           >
             <i className="pi pi-fw pi-calendar" />
-            Events
+            {location.pathname === "/Events" && "Events"}
           </Link>
         </li>
         <li>
@@ -51,7 +51,7 @@ function TopBar() {
             }
           >
             <i className="pi pi-fw pi-list" />
-            To Do List
+            {location.pathname === "/ToDoList" && "To Do List"}
           </Link>
         </li>
         <li>
@@ -62,7 +62,7 @@ function TopBar() {
             }
           >
             <i className="pi pi-fw pi-cog" />
-            Settings
+            {location.pathname === "/Settings" && "Settings"}
           </Link>
         </li>
         <li>
@@ -77,7 +77,13 @@ function TopBar() {
           </Link>
         </li>
         <li>
-          <Link to="/Login" onClick={() => logOut()}>
+          <Link
+            to="/Login"
+            onClick={() => {
+              logOut();
+              setTheme(false);
+            }}
+          >
             <i className="pi pi-fw pi-power-off" />
           </Link>
         </li>

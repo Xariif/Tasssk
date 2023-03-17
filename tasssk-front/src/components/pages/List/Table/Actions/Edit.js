@@ -40,7 +40,12 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
       <Dialog
         visible={editItemDialog}
         draggable={false}
-        header={"Edit"}
+        header={
+          <>
+            <i className="pi pi-pencil" style={{ marginRight: ".5rem" }}></i>
+            Edit
+          </>
+        }
         onShow={() => inputRef.current.focus()}
         onHide={() => setEditItemDialog(false)}
         footer={

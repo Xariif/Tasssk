@@ -31,13 +31,17 @@ export const Delete = ({ style, selectedItem, list, fetchData }) => {
       <ConfirmDialog
         visible={deleteItemDialog}
         draggable={false}
-        header={"Delete item?"}
+        header={
+          <>
+            <i className="pi pi-trash" style={{ marginRight: ".5rem" }}></i>
+            Delete item?
+          </>
+        }
         onHide={() => {
           setDeleteItemDialog(false);
         }}
         focusOnShow
         style={{ wordBreak: "break-all", wordWrap: "break-word" }}
-        icon="pi pi-trash"
         message={
           <div
             style={{

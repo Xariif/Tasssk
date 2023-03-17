@@ -28,13 +28,18 @@ function New({ loadData, dateNow }, props) {
           setDate();
         }}
         onShow={() => refFocusName.current.focus()}
+        header={
+          <>
+            <i className="pi pi-plus" style={{ marginRight: ".5rem" }}></i>
+            Create new list
+          </>
+        }
         message={
           <>
             <span
               className="p-input-icon-right"
               style={{
                 display: "flex",
-                marginTop: "1rem",
               }}
             >
               <i className="pi pi-book" />
@@ -101,7 +106,6 @@ function New({ loadData, dateNow }, props) {
             </p>
           </>
         }
-        header="Create new list"
         accept={() => {
           AddList({
             listName: name,

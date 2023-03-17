@@ -3,6 +3,7 @@ using ToDoAPI.DTOs.Event;
 using ToDoAPI.Helpers;
 using ToDoAPI.Helpers.Models;
 using ToDoAPI.Models.ItemList;
+using ToDoAPI.Models.User;
 
 namespace ToDoAPI.Services
 {
@@ -10,9 +11,12 @@ namespace ToDoAPI.Services
     {
         private readonly MongoCRUD db;
         private readonly string ItemListCollection;
+        private readonly string UserCollection;
+
         public EventService()
         {
-            ItemListCollection = "ItemLists";
+            ItemListCollection = "ItemList";
+            UserCollection = "User";
             db = new MongoCRUD();
         }
         public async Task<List<EventDTO>> GetEvents(string email)
@@ -22,9 +26,25 @@ namespace ToDoAPI.Services
                 FilterField = "Email",
                 FilterValue = email
             };
-            var events = await db.FindManyAsync<ItemList>(ItemListCollection, filterHelper);
 
-            var resullt = events.Select(x =>
+            var user = await db.FindFirstAsync<User>(UserCollection, filterHelper);
+
+            var privilages = user.Priviliges.Select(x => x.ListObjectId).ToList();
+
+
+            List<ItemList> itemLists = new List<ItemList>();
+
+            foreach (var privilage in privilages)
+            {
+
+                var res = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, privilage.ToString());
+
+                itemLists.Add(res);
+            }
+
+
+
+            var result = itemLists.Select(x =>
             new EventDTO
             {
                 ListId = x.Id.ToString(),
@@ -32,7 +52,7 @@ namespace ToDoAPI.Services
                 Name = x.Name
             }).ToList();
 
-            return resullt;
+            return result;
         }
     }
 }

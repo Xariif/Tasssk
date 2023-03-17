@@ -1,4 +1,4 @@
-﻿namespace TassskAPI.DTOs.ItemList
+﻿namespace TassskAPI.DTOs.Notification
 {
     public class NewNotificationDTO
     {

@@ -28,18 +28,12 @@ export default function useSignalR() {
         });
 
       connection.on("ReceiveNotification", (notification) => {
-        console.log(notification);
-        setNotifications((prevNotifications) => [
-          ...prevNotifications,
-          notifications,
-        ]);
+        setNotifications((notifications) => [...notifications, notification]); //czy powinienem to robić używając true/false state?
       });
     }
   }, [connection]);
 
   const sendNotification = (who, notification) => {
-    console.log(who, notification);
-
     connection.invoke("SendNotification", who, notification).catch((error) => {
       console.error(error);
     });

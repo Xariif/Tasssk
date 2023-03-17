@@ -36,9 +36,9 @@ function Bar({
             <div>
               <Dropdown
                 value={selectedListDropdown}
-                style={{ marginRight: "1rem", borderRadius: "2em" }}
+                style={{ marginRight: "1rem", borderRadius: "2rem" }}
                 panelStyle={{
-                  borderRadius: "2em",
+                  borderRadius: "2rem",
                   overflow: "hidden",
                 }}
                 optionLabel="name"

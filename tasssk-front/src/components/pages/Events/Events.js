@@ -8,6 +8,7 @@ import { GetEvents } from "../../../services/EventService";
 import Spinner from "./../../../UI/Spinner";
 import { useToastContext } from "../../../context/ToastContext";
 import { useNavigate } from "react-router-dom";
+
 function Events() {
   const toastRef = useToastContext();
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function Events() {
     const fetchData = () => {
       GetEvents()
         .then((res) => {
+          console.log(res);
           setEvents(
             res.data.map((x) => ({
               title: x.name,

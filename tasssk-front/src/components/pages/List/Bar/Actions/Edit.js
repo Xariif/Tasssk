@@ -35,7 +35,12 @@ export default function Delete({ list, loadData }) {
         onHide={() => {
           exit();
         }}
-        header={"Edit list"}
+        header={
+          <>
+            <i className="pi pi-pencil" style={{ marginRight: ".5rem" }}></i>
+            Edit list
+          </>
+        }
         onShow={() => refFocusName.current.focus()}
         footer={
           <div>
@@ -85,7 +90,6 @@ export default function Delete({ list, loadData }) {
           className="p-input-icon-right"
           style={{
             display: "flex",
-            marginTop: "1rem",
           }}
         >
           <i className="pi pi-book" />

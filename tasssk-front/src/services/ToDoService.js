@@ -180,3 +180,28 @@ export function DeleteFile({ listId, fileId }) {
 
   return useAPI(config);
 }
+
+export function SendInviteToList() {
+  const x = {
+    Sender: "John",
+    Receiver: "Mary",
+    Priviliges: {
+      ListObjectId: "63fbe50e3760ee8d9e059030",
+      ListPermission: {
+        Owner: true,
+        Share: true,
+        Read: true,
+        Write: false,
+        Modify: false,
+        Delete: false,
+      },
+    },
+  };
+  var config = {
+    method: "post",
+    url: process.env.REACT_APP_BASE_URL + "ItemList/SendInviteToList",
+    data: x,
+  };
+
+  return useAPI(config);
+}
