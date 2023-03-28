@@ -11,7 +11,6 @@ namespace TassskAPI.DTOs.User
     public class PermissionModelDTO
     {
         public bool Owner { get; set; }
-        public bool Share { get; set; }
         public bool Read { get; set; }
         public bool Write { get; set; }
         public bool Modify { get; set; }

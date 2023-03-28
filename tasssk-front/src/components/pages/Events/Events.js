@@ -20,7 +20,6 @@ function Events() {
     const fetchData = () => {
       GetEvents()
         .then((res) => {
-          console.log(res);
           setEvents(
             res.data.map((x) => ({
               title: x.name,

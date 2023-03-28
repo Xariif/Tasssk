@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 import useLocalStorage from "./useLocalStorage";
+import notificationSound from "./notification_sound.mp3";
 
 export default function useSignalR() {
   const [connection, setConnection] = useState(null);
@@ -28,6 +29,11 @@ export default function useSignalR() {
         });
 
       connection.on("ReceiveNotification", (notification) => {
+        const sound = new Audio(notificationSound);
+
+        console.log("play", notification);
+        console.log(notifications);
+        sound.play();
         setNotifications((notifications) => [...notifications, notification]); //czy powinienem to robić używając true/false state?
       });
     }

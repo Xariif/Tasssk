@@ -60,7 +60,7 @@ namespace ToDoAPI.Services
                     Token = _tokenService.CreateTokenDisciple(user)
                 };
             }
-            catch (Exception ex)
+             catch (Exception ex)
             {
                 throw;
             }

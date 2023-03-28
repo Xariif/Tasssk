@@ -1,11 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { GetNotifications } from "../services/NotificationService";
-import { useAPI } from "./../hooks/useAPI";
-import useSignalR from "./../hooks/useSignalR";
+import useSignalR from "../hooks/useSignalR";
 
-import notificationSound from "./notification_sound.mp3";
-
-export const NotificationContext = createContext();
+export const NotificationContext = createContext(null);
 
 export function useNotificationContext() {
   return useContext(NotificationContext);
@@ -16,7 +13,6 @@ export function NotificationContextProvider({ children }) {
   const [visible, setVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [badgeCount, setBadgeCount] = useState(0);
-  const sound = new Audio(notificationSound);
 
   useEffect(() => {
     GetNotifications().then((res) => {

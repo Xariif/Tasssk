@@ -6,7 +6,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 
 import { AddItem } from "../../../../../services/ToDoService";
 
-export const Add = ({ list, fetchData, style }) => {
+export const Add = ({ list, fetchData }) => {
   const [value, setValue] = useState("");
   const refFocusName = useRef(null);
   const [addItemDialog, setAddItemDialog] = useState(false);
@@ -29,7 +29,7 @@ export const Add = ({ list, fetchData, style }) => {
     });
   }
   return (
-    <div style={style}>
+    <div >
       <Dialog
         visible={addItemDialog}
         resizable={false}

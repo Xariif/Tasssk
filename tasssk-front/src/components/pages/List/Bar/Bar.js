@@ -38,6 +38,7 @@ function Bar({
                 value={selectedListDropdown}
                 style={{ marginRight: "1rem", borderRadius: "2rem" }}
                 panelStyle={{
+                  padding: ".5rem 0",
                   borderRadius: "2rem",
                   overflow: "hidden",
                 }}
@@ -69,7 +70,6 @@ function Bar({
       )}
     </div>
   );
-  exports.loadData = loadData;
 }
 
 export default Bar;

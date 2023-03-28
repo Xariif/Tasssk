@@ -3,6 +3,7 @@ import {
   GetListById,
   GetLists,
   GetListsNames,
+  GetUserPrivilages,
 } from "../../../services/ToDoService";
 import Table from "./Table/Table";
 import Bar from "./Bar/Bar";
@@ -17,11 +18,14 @@ const List = (props) => {
   const [listStorage, setListStorage] = useLocalStorage("selectedList");
   const [listNames, setListNames] = useState();
   const [selectedListDropdown, setSelectedListDropdown] = useState();
+  const [privileges, setPrivileges] = useState();
+
   useEffect(() => {
     loadData();
   }, []);
 
   function loadData() {
+    console.log("load");
     GetListsNames().then((res) => {
       setListNames((prev) => res.data);
       if (
@@ -30,16 +34,40 @@ const List = (props) => {
         GetListById(
           res.data.find((x) => x.name === localStorage.getItem("selectedList"))
             .id
-        ).then((res) => setList((prev) => res.data));
+        )
+          .then((res) => {
+            setList((prev) => res.data);
+            return res.data;
+          })
+          .then((res) => {
+            console.log(res);
+
+            GetUserPrivilages(res.id).then((res) => {
+              setPrivileges(res.data.listPermission);
+            });
+          });
         setSelectedListDropdown(
           res.data.find((x) => x.name === localStorage.getItem("selectedList"))
         );
       } else if (res.data.length > 0) {
-        GetListById(res.data[0].id).then((res) => setList((prev) => res.data));
+        GetListById(res.data[0].id)
+          .then((res) => {
+            setList((prev) => res.data);
+            return res.data;
+          })
+          .then((res) => {
+            console.log(res);
+            GetUserPrivilages(res.id).then((res) => {
+              console.log(res);
+
+              setPrivileges(res.data.listPermission);
+            });
+          });
         setSelectedListDropdown(res.data[0]);
       } else {
         setList();
         setSelectedListDropdown();
+        setPrivileges();
       }
     });
   }
@@ -53,7 +81,9 @@ const List = (props) => {
         selectedListDropdown={selectedListDropdown}
         setSelectedListDropdown={setSelectedListDropdown}
       />
-      {list && <Table list={list} loadData={loadData} />}
+      {list && privileges && (
+        <Table list={list} privileges={privileges} loadData={loadData} />
+      )}
     </div>
   );
 };

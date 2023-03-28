@@ -22,7 +22,7 @@ export default function App() {
       return toastRef.current.show({
         severity: "success",
         summary: "Report send",
-        detail: "Thank you for your help!",
+        detail: "Thank you for your feedback!",
         life: 5000,
       });
     }
@@ -51,9 +51,9 @@ export default function App() {
               className="p-button-rounded p-button-success"
               onClick={() => SendReport()}
               label="Send"
-            >
-              &nbsp; <i className="pi pi-send" />
-            </Button>
+              icon={"pi pi-send"}
+              iconPos="right"
+            ></Button>
           </div>
         }
         header="Any problems? Let us know!"
@@ -68,8 +68,13 @@ export default function App() {
   return (
     <>
       <ReportDialog />
-      <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>
-        <h2>Reminders</h2>
+      <div
+        style={{
+          borderBottom: "1px solid #383838",
+          padding: " 1rem 0px",
+        }}
+      >
+        <h2 style={{ opacity: ".5" }}>Reminders - In progress</h2>
         <InputSwitch checked={false} disabled />
       </div>
       <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>

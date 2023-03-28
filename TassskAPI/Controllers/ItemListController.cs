@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using System.Reflection;
 using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.ItemList;
-using TassskAPI.Helpers;
-using TassskAPI.Helpers.Models;
-using TassskAPI.Services;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.ItemList;
-using ToDoAPI.DTOs.User;
 using ToDoAPI.Models;
 using ToDoAPI.Models.ItemList;
 using ToDoAPI.Models.User;
@@ -436,26 +431,103 @@ namespace ToDoAPI.Controllers
 
             inviteInfo.Sender = GetUserEmail();
 
-            await _listsService.SendInviteToList(inviteInfo);
+            if (inviteInfo.Sender == inviteInfo.Receiver)
+            {
+                SetReturnResult<bool>(result, ResultCodes.BadRequest, "You cannot send invite to yourself!", false);
+                return result;
+            }
+
+            var ok = await _listsService.SendListInvite(inviteInfo);
+
+            if (ok == false)
+            {
+                SetReturnResult<bool>(result, ResultCodes.BadRequest, "User with that e-mail not exist!", false);
+            }
+
+            return result;
+        }
+
+        [Authorize]
+        [HttpPost("AcceptInvite")]
+        public async Task<ReturnResult<bool>> AcceptInvite(SendInviteToListDTO inviteInfo)
+        {
+            var result = new ReturnResult<bool>
+            {
+                Code = ResultCodes.Ok,
+                Message = "Invite accepted!",
+                Data = true
+            };
+            if (inviteInfo.Receiver != GetUserEmail())
+            {
+                SetReturnResult<bool>(result, ResultCodes.BadRequest, "Error, no privilages to that list!", false);
+                return result;
+            }
+            await _listsService.AcceptListInvite(inviteInfo);
+
+            return result;
+        }
+        [Authorize]
+        [HttpGet("GetUserPrivilages")]
+        public async Task<ReturnResult<Privileges>> GetUserPrivilages(string listId)
+        {
+            var result = new ReturnResult<Privileges>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "User privileges!",
+                Data = null
+            };
+
+            var data = await _listsService.GetUserPrivilages(GetUserEmail(), listId);
+
+            if (data == null)
+            {
+                SetReturnResult(result, ResultCodes.BadRequest, "Error", null);
+            }
+            result.Data = data;
+
+            return result;
+        }
+
+        [Authorize]
+        [HttpGet("GetUsersListPrivilages")]
+        public async Task<ReturnResult<List<UserPrivilagesDTO>>> GetUsersListPrivilages(string listId)
+        {
+            var result = new ReturnResult<List<UserPrivilagesDTO>>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Privileges list!",
+                Data = null
+            };
+
+            var data = await _listsService.GetUsersListPrivilages(GetUserEmail(), listId);
+
+            if (data == null)
+            {
+                SetReturnResult(result, ResultCodes.BadRequest, "Error", null);
+            }
+            result.Data = data;
 
             return result;
         }
 
 
         [Authorize]
-        [HttpPost("SetUserPrivilages")]
-        public async Task<ReturnResult<bool>> SetUserPrivilages(UserPrivilagesDTO privilages)
+        [HttpDelete("RemovePrivilages")]
+        public async Task<ReturnResult<bool>> RemovePrivilages(RemovePrivilagesDTO removePrivilages)
         {
             var result = new ReturnResult<bool>()
             {
                 Code = ResultCodes.Ok,
-                Message = "Invite send!",
+                Message = "Privilages removed!",
                 Data = true
             };
 
+            var res = await _listsService.RemoveListPrivilages(removePrivilages, GetUserEmail());
 
-
-            await _listsService.SendInviteToList(inviteInfo);
+            if (res == false)
+            {
+                SetReturnResult<bool>(result, ResultCodes.BadRequest, "Error", false);
+            }
 
             return result;
         }

@@ -123,7 +123,7 @@ export default function Delete({ list, loadData }) {
         className="p-button-rounded p-button-warning"
         icon="pi pi-pencil"
         label="Edit"
-        style={{ marginRight: "5px" }}
+        style={{ marginRight: "1rem" }}
         onClick={() => setEditListDialog(true)}
       />
     </>

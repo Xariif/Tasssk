@@ -138,7 +138,7 @@ function New({ loadData, dateNow }, props) {
       <Button
         className="p-button-rounded p-button-success"
         icon="pi pi-plus"
-        style={{ marginRight: "5px" }}
+        style={{ marginRight: "1rem" }}
         label="New"
         onClick={() => {
           setNewListDialog(true);

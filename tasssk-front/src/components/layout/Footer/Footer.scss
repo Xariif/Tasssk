@@ -7,16 +7,30 @@
   width: 100%;
   justify-content: space-between;
   a {
-    user-select: none;
-    -webkit-user-drag: none;
+    margin: auto
   }
   p {
     text-align: right;
     margin: auto 0px auto 0px;
   }
 
-  a:link {
-    text-decoration: none;
-    color: var(--text-color);
+  b{font-size: .8rem;}
+
+  a:link ,
+ 
+  a:visited,
+  a:active{
+    text-decoration: inherit;
+    margin-left: 1rem;
+    color: inherit;
+  }
+ a:hover{
+  color: var(--primary-color);
+ }
+
+  i{
+    font-size: 1.8rem;
   }
 }
+
+

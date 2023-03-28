@@ -7,6 +7,6 @@ namespace TassskAPI.DTOs.ItemList
     {
         public string Sender { get; set; }
         public string Receiver { get; set; }
-        public PrivilagesDTO Priviliges { get; set; }
+        public PrivilagesDTO Privileges { get; set; }
     }
 }

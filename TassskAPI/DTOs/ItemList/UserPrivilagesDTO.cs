@@ -2,7 +2,6 @@
 {
     public class UserPrivilagesDTO
     {
-        public string MyProperty { get; set; }
         public string Email { get; set; }
         public string ListId { get; set; }
 

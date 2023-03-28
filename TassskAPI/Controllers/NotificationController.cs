@@ -30,12 +30,12 @@ namespace TassskAPI.Controllers
 
                 PriviligesDTO priviligesDTO = null;
 
-                if (notification.Priviliges != null)
+                if (notification.Privileges != null)
                 {
                     priviligesDTO = new PriviligesDTO
                     {
-                        ListObjectId = notification.Priviliges.ListObjectId.ToString(),
-                        ListPermission = notification.Priviliges.ListPermission
+                        ListObjectId = notification.Privileges.ListObjectId.ToString(),
+                        ListPermission = notification.Privileges.ListPermission
                     };
                 }
 
@@ -49,7 +49,7 @@ namespace TassskAPI.Controllers
                     IsReaded = notification.IsReaded,
                     Sender = notification.Sender,
                     Receiver = notification.Receiver,
-                    Priviliges = priviligesDTO
+                    Privileges = priviligesDTO
 
                 };
                 list.Add(notificationDTO);

@@ -1,9 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Collections;
 using TassskAPI.Helpers.Models;
 using ToDoAPI.Helpers.Models;
-using ToDoAPI.Models.ItemList;
 using ToDoAPI.Models.User;
 
 namespace ToDoAPI.Helpers
@@ -28,11 +26,17 @@ namespace ToDoAPI.Helpers
             var filter = Builders<T>.Filter.Eq("_id", ObjectId.Parse(id));
             return await collection.FindAsync(filter).Result.FirstOrDefaultAsync();
         }
+
+
+
         public async Task<T> FindFirstAsync<T>(string collectionName, MongoFilterHelper filterHelper)
         {
             var collection = db.GetCollection<T>(collectionName);
             var filter = Builders<T>.Filter.Eq(filterHelper.FilterField, filterHelper.FilterValue);
-            return await collection.FindAsync(filter).Result.FirstOrDefaultAsync();
+            var x = await collection.FindAsync(filter).Result.FirstOrDefaultAsync();
+
+
+            return x;
         }
         public async Task<List<T>> FindManyAsync<T>(string collectionName, MongoFilterHelper filterHelper)
         {
@@ -93,5 +97,28 @@ namespace ToDoAPI.Helpers
             var update = Builders<T>.Update.Pull(nestedHelper.NestedArray, nestedHelper.NestedObject);
             return await collection.UpdateOneAsync(filter, update);
         }
+           
+        //public async Task<List<UpdateResult>> GetByNestedValue<T>(string collectionName, MongoNestedArrayHelper<T> nestedHelper)
+        //{
+        //    var collection = db.GetCollection<T>(collectionName);
+        //    var filter = Builders<T>.Filter.Eq(nestedHelper.FilterField, nestedHelper.FilterValue);
+        //    return await collection.FindAsync(filter).Result;
+        //}
+        //public async Task<UpdateResult> UpdateNestedArray<T>(string collectionName, MongoNestedArrayHelper<T> nestedHelper)
+        //{
+        //    var collection = db.GetCollection<T>(collectionName);
+        //    var filter = Builders<T>.Filter.Eq(nestedHelper.FilterField, nestedHelper.FilterValue);
+        //    var update = Builders<T>.Update.Set(nestedHelper.NestedArray, nestedHelper.NestedObject);
+        //    return await collection.UpdateOneAsync(filter, update);
+        //}
+
+        public async Task<List<T1>> FindByIdInNestedArrayAsync<T1,T2>(string collectionName, MongoNestedArrayHelper<T1> helper)
+        {
+            var collection = db.GetCollection<T1>(collectionName);
+            var filter = Builders<T1>.Filter.ElemMatch(helper.NestedArray,
+                Builders<T2>.Filter.Eq(helper.FilterField, new ObjectId(helper.FilterValue)));
+            return await collection.Find(filter).ToListAsync();      
+        }
+
     }
 }

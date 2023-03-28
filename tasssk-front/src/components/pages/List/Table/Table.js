@@ -4,17 +4,20 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
 import { Checkbox } from "primereact/checkbox";
-import { UpdateItem } from "../../../../services/ToDoService";
+import {
+  GetUserPrivilages,
+  UpdateItem,
+} from "../../../../services/ToDoService";
 import moment from "moment";
 import { Edit } from "./Actions/Edit";
-
-import { Delete } from "./Actions/Delete";
+import { useEffect, useState } from "react";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { Delete } from "./Actions/Delete";
 import Privilages from "./Actions/Privilages";
 
-function Table({ list, loadData: fetchData }) {
+function Table({ list, privileges, loadData: fetchData }) {
   var finishDate = new Date(list.finishDate);
+  // console.log(privileges, list);
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
       item.finished = !item.finished;
@@ -49,7 +52,7 @@ function Table({ list, loadData: fetchData }) {
         <Edit selectedItem={row} list={list} fetchData={fetchData} />
 
         <Delete
-          style={{ marginLeft: "10px" }}
+          style={{ marginLeft: "1rem" }}
           selectedItem={row}
           list={list}
           fetchData={fetchData}
@@ -63,13 +66,19 @@ function Table({ list, loadData: fetchData }) {
   };
 
   const finishedSort = (event) => {
-    list.items.sort((val1, val2) => {
-      const f1 = val1[event.field];
-      const f2 = val2[event.field];
-      let result = null;
+    event.data.sort((data1, data2) => {
+      const val1 = data1[event.field];
+      const val2 = data2[event.field];
 
-      return f1;
+      if (val1 === val2) {
+        return 0;
+      } else if (val1 === true && val2 === false) {
+        return -1 * event.order || 1; // odwrócenie sortowania, jeśli order = -1
+      } else {
+        return 1 * event.order || 1; // zachowanie porządku sortowania, jeśli order = 1 lub niezdefiniowany
+      }
     });
+    return event.data;
   };
 
   return (
@@ -102,22 +111,22 @@ function Table({ list, loadData: fetchData }) {
           field="createdAt"
           sortable
           body={createadAtTemplate}
-          style={{ textAlign: "center", width: " min-content" }}
+          style={{ textAlign: "center", width: " 250px" }}
         />
         <Column
           header="Finished"
-          //  sortable
-          //  sortFunction={finishedSort}
+          sortable
+          sortField="finished"
+          sortFunction={finishedSort}
           body={finishedTemplate}
-          style={{ textAlign: "center", width: "58px" }}
+          style={{ textAlign: "center" }}
         />
         <Column
           header="Actions"
           body={actionsTemplate}
-          headerStyle={{ width: "95px" }}
           style={{
             textAlign: "center",
-            width: "132px",
+            width: "108px",
           }}
         />
       </DataTable>
@@ -179,7 +188,11 @@ function Table({ list, loadData: fetchData }) {
   function Footer() {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Privilages list={list}></Privilages>
+        {privileges.owner ? (
+          <Privilages privileges={privileges} list={list}></Privilages>
+        ) : (
+          <div> </div>
+        )}
         <Add fetchData={fetchData} list={list} />
       </div>
     );

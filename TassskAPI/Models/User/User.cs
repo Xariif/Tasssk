@@ -21,11 +21,11 @@ namespace ToDoAPI.Models.User
         public DateTime BirthDate { get; set; }
         public bool DarkMode { get; set; } = false;
         public List<Notification> Notifications { get; set; } = new List<Notification>();
-        public List<Priviliges> Priviliges { get; set; } = new List<Priviliges>();
+        public List<Privileges> Privileges { get; set; } = new List<Privileges>();
 
     }
 
-    public class Priviliges
+    public class Privileges
     {
         public ObjectId ListObjectId { get; set; }
         public PermissionModel ListPermission { get; set; }
@@ -39,7 +39,4 @@ namespace ToDoAPI.Models.User
         public bool Modify { get; set; }
         public bool Delete { get; set; }
     }
-
-
-
 }

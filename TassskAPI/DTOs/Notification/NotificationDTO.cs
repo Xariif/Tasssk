@@ -13,7 +13,7 @@ namespace TassskAPI.DTOs.Notification
         public bool IsReaded { get; set; }  
         public string Sender { get; set; }
         public string Receiver { get; set; }
-        public PriviligesDTO Priviliges { get; set; }
+        public PriviligesDTO Privileges { get; set; }
     }
     public class PriviligesDTO
     {

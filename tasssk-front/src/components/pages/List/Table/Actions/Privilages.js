@@ -1,49 +1,69 @@
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { useState } from "react";
-import { Dropdown } from "primereact/dropdown";
+import { useContext, useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Checkbox } from "primereact/checkbox";
+import { InputText } from "primereact/inputtext";
+import {
+  GetUserPrivilages,
+  GetUsersListPrivilages,
+  SendInviteToList,
+} from "services/ToDoService";
+import { ToastAPI, useToastContext } from "context/ToastContext";
+import { NotificationContext } from "context/NotificationContext";
 
-export default function Privilages({ list }) {
+export default function Privilages({ list, privileges }) {
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const toastRef = useToastContext();
+  const { send } = useContext(NotificationContext);
+  const [SginalRnotifications, SginalRsendNotification] = send;
 
-  console.log(list);
-  const access = [
-    {
-      name: "marek",
-      owner: true,
-      read: true,
-      write: true,
-      delete: true,
-      modify: true,
-    },
-    {
-      name: "klaudia",
-      owner: false,
-      read: true,
-      write: false,
-      delete: false,
-      modify: false,
-    },
-    {
-      name: "kuba",
-      owner: false,
-      read: true,
-      write: false,
-      delete: false,
-      modify: true,
-    },
-    {
-      name: "maciek",
-      owner: false,
-      read: true,
-      write: true,
-      delete: false,
-      modify: false,
-    },
-  ];
+  const [usersPrivilages, setUserPrivilages] = useState([]);
+  useEffect(() => {
+    GetUsersListPrivilages(list.id).then((res) => {
+      setUserPrivilages(
+        res.data.sort((a, b) => {
+          return a === b ? 0 : a ? -1 : 1;
+        })
+      );
+    });
+  }, []);
+
+  const footer = (options) => {
+    return (
+      <div style={{ textAlign: "right" }}>
+        <InputText
+          style={{ borderRadius: "2rem" }}
+          placeholder="E-mail address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value.trim())}
+        ></InputText>
+        <Button
+          style={{ marginLeft: "1rem" }}
+          className="p-button-rounded p-button-success"
+          icon="pi pi-send"
+          label="Send"
+          disabled={email === ""}
+          onClick={() => {
+            if (email) {
+              setEmail("");
+              SendInviteToList({ list, email })
+                .then((res) => {
+                  ToastAPI(toastRef, res);
+                  return res;
+                })
+                .then((res) => {
+                  console.log(res);
+                  res.code === 200 &&
+                    SginalRsendNotification(email, res.message);
+                });
+            }
+          }}
+        ></Button>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -52,7 +72,7 @@ export default function Privilages({ list }) {
         onHide={() => setDialogVisible(false)}
         draggable={false}
         resizable={false}
-        style={{ width: "90%" }}
+        style={{ width: "80%" }}
         header={
           <>
             <i className="pi pi-lock" style={{ marginRight: ".5rem" }}></i>
@@ -60,17 +80,18 @@ export default function Privilages({ list }) {
           </>
         }
       >
-        <DataTable value={access} paginator rows={5} footer={<Button></Button>}>
+        <DataTable value={usersPrivilages} paginator rows={8} footer={footer}>
           <Column
-            field="name"
+            field="email"
             header="E-mail"
             body={(user) => {
               if (user.owner)
-                return <div style={{ color: "red" }}>{user.name}</div>;
-              return user.name;
+                return <div style={{ color: "red" }}>{user.email}</div>;
+              return user.email;
             }}
           ></Column>
-          <Column
+          {/*
+  <Column
             field="read"
             header="Read"
             dataType="boolean"
@@ -104,14 +125,30 @@ export default function Privilages({ list }) {
               return <Checkbox disabled checked={user.delete}></Checkbox>;
             }}
           ></Column>
+       
+
+          */}
           <Column
             field="actions"
             header="Actions"
             dataType="boolean"
+            style={{ width: "108px" }}
             body={(user) => {
-              return (
+              return user.owner ? (
+                <div style={{ color: "red", textAlign: "center" }}>Owner</div>
+              ) : (
                 <div>
-                  <Button> Delete</Button>
+                  <Button
+                    disabled
+                    className="p-button-rounded p-button-warning"
+                    icon="pi pi-pencil"
+                  ></Button>
+                  <Button
+                    disabled={user.owner}
+                    className="p-button-rounded p-button-danger"
+                    icon="pi pi-trash"
+                    style={{ marginLeft: "1rem" }}
+                  ></Button>
                 </div>
               );
             }}

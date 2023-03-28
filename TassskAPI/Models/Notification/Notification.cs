@@ -17,7 +17,7 @@ namespace TassskAPI.Models.Notification
         public bool IsReaded { get; set; } = false;
         public string Sender { get; set; }
         public string Receiver { get; set; }
-        public Priviliges Priviliges { get; set; }
+        public Privileges Privileges { get; set; }
     }
 }
 

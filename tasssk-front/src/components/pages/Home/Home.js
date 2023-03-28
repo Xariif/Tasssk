@@ -1,18 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
 
-import { useAuthContext } from "../../../context/AuthContext";
-import { useAuthUpdateContext } from "../../../context/AuthContext";
-
 import "./Home.scss";
 
 function Home() {
-  const setAuth = useAuthUpdateContext();
-  const auth = useAuthContext();
-
   return (
     <div className="Home">
       <h1>Welcome on my page! </h1>
@@ -20,7 +14,7 @@ function Home() {
       <div className="Cards">
         <Card
           header={<i className="pi pi-list" />}
-          title={"To Do List"}
+          title={<div style={{ textAlign: "center" }}>To Do List</div>}
           className="Card"
           footer={
             <Link to="/ToDoList">
@@ -33,77 +27,51 @@ function Home() {
             </Link>
           }
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-          ullamcorper rutrum sagittis. Praesent neque mauris, molestie ut
-          condimentum et, feugiat eget sem. Duis dictum ipsum sed neque porta
-          scelerisque. Ut convallis enim ligula, at pharetra mauris egestas
-          vitae. Vivamus fringilla sollicitudin pretium. Proin euismod, ante et
-          porttitor pretium, ante nisi lobortis massa, vitae commodo tellus
-          libero at nibh. Donec placerat est mauris, in interdum tellus
-          ullamcorper ac. Duis a erat viverra enim luctus facilisis. Sed
-          fringilla metus sit amet orci tincidunt dignissim. Vestibulum viverra
-          neque quis sapien imperdiet ultrices. Proin sed tellus egestas,
-          molestie libero non, tincidunt erat. Nam dictum eu nisi at tincidunt.
-          Mauris convallis nisl nisl, eu ultricies metus porta ac. Maecenas et
-          consectetur lectus. Etiam sagittis mattis tellus quis interdum.
+          This module is an essential part of any productivity application. It
+          provides a platform for users to organize their tasks and manage their
+          time effectively. The module includes various functions such as
+          adding, editing, and deleting tasks, as well as setting deadlines and
+          marking them as completed. Additionally, it offers the ability to
+          manage files, including adding, deleting, and downloading them. The
+          to-do list module also allows users to control access to their lists
+          by adding privileges to other users. Overall, the module helps users
+          increase productivity, reduce stress, and stay on top of their daily
+          tasks.
         </Card>
         <Card
           header={<i className="pi pi-calendar-times" />}
-          title={"Events"}
+          title={<div style={{ textAlign: "center" }}>Events</div>}
           className="Card"
           footer={
             <Link to="/Events">
               <Button
                 label="Check Events"
                 className="p-button-rounded p-button-secondary"
-              >
-                {" "}
-              </Button>
+              ></Button>
             </Link>
           }
         >
-          Suspendisse potenti. Aliquam quis suscipit lorem, sit amet pulvinar
-          diam. Nullam molestie, augue eu porta consequat, mauris dolor eleifend
-          leo, sed hendrerit enim lacus eu mi. In sit amet consectetur lorem,
-          nec vulputate dui. Nulla varius, felis ut euismod suscipit, lorem
-          lectus venenatis felis, et viverra lectus justo placerat lorem. Nunc
-          tempor urna sit amet leo porta mattis. Duis pharetra congue dui, sed
-          rutrum lectus porta vel. Duis vehicula ante eros, sed facilisis libero
-          consectetur molestie. Suspendisse ac tincidunt leo. Pellentesque
-          habitant morbi tristique senectus et netus et malesuada fames ac
-          turpis egestas. Sed vitae felis pellentesque orci rhoncus fermentum et
-          eget est. Suspendisse ac commodo arcu, eu fermentum ante. Ut ac
-          aliquam odio. Nulla eros leo, hendrerit tristique laoreet in, egestas
-          vel nunc. Integer commodo tortor bibendum, venenatis justo quis,
-          mattis nisl. Nulla pharetra, leo eget rutrum semper, magna libero
-          posuere nisi, at sollicitudin mi massa quis mauris. In non hendrerit
-          sapien. Proin euismod blandit vehicula. Etiam eget interdum eros, eu
-          bibendum nulla. Duis nulla augue, bibendum viverra auctor at,
-          fringilla vel elit. Donec eu est urna. Nunc congue felis arcu, vel
-          aliquam leo sollicitudin eu. Aenean egestas id sapien a dapibus. Donec
-          bibendum eget tellus ut dictum.
+          The Events module allows users to visualize their tasks in a calendar
+          view. The module displays each list name and its corresponding
+          deadline on the calendar, providing users with a comprehensive
+          overview of their tasks.Clicking on a task in the calendar will take
+          the user to the corresponding To-Do list, where they can manage the
+          task further. The Events module is a useful tool for users who prefer
+          a visual representation of their tasks and want to plan their schedule
+          effectively.
         </Card>
         <Card
           header={<i className="pi pi-info-circle" />}
-          title={"About us"}
+          title={<div style={{ textAlign: "center" }}>About me</div>}
           className="Card"
-          footer={
-            <Link to="/Info">
-              <Button
-                disabled
-                label="Check Info"
-                className="p-button-rounded p-button-secondary"
-              />
-            </Link>
-          }
         >
-          Nullam in finibus neque. Vivamus porta, nisi et feugiat luctus, nisl
-          orci eleifend augue, at molestie est nisl vitae odio. In sit amet
-          elementum mi. Donec et mauris ex. In consequat euismod augue id
-          ornare. Proin interdum nisl eget maximus consequat. Class aptent
-          taciti sociosqu ad litora torquent per conubia nostra, per inceptos
-          himenaeos. Aenean ipsum lorem, imperdiet ut leo quis, tristique
-          efficitur mi
+          Hello! I'm Jakub Filiks, the creator of this app. I'm a software
+          engineer with a passion for building useful tools that make people's
+          lives easier. In my free time, I enjoy hiking, riding motorcycle, and
+          experimenting with new technologies. I built this app as a way to help
+          myself and others stay organized and on top of their to-do lists. I
+          hope you find it helpful, and please don't hesitate to reach out if
+          you have any questions or feedback!
         </Card>
       </div>
     </div>

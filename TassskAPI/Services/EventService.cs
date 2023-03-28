@@ -29,7 +29,7 @@ namespace ToDoAPI.Services
 
             var user = await db.FindFirstAsync<User>(UserCollection, filterHelper);
 
-            var privilages = user.Priviliges.Select(x => x.ListObjectId).ToList();
+            var privilages = user.Privileges.Select(x => x.ListObjectId).ToList();
 
 
             List<ItemList> itemLists = new List<ItemList>();

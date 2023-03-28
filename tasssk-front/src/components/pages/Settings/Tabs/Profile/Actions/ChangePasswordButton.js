@@ -25,8 +25,14 @@ export default function ChangePasswordButton() {
           detail: "Write correct values!",
           life: 5000,
         });
+      } else if (passOld !== passNew) {
+        return toastRef.current.show({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Passwords are diffrent!",
+          life: 5000,
+        });
       }
-
       ChangePassword({ passOld, passNew });
 
       setPassOld("");
@@ -44,7 +50,7 @@ export default function ChangePasswordButton() {
       <Dialog
         onHide={() => setChangePasswordDialog(false)}
         style={{
-          borderRadius: "2rem",
+          borderRadius: "1rem",
           border: "none",
           overflow: "hidden",
           textAlign: "center",
@@ -73,7 +79,7 @@ export default function ChangePasswordButton() {
         }
       >
         <Password
-          //  style={{ paddingBottom: "1rem" }}
+          inputStyle={{ borderRadius: "1rem" }}
           value={passOld}
           feedback={false}
           onChange={(e) => setPassOld(e.target.value)}
@@ -82,6 +88,7 @@ export default function ChangePasswordButton() {
         />
         <br />
         <Password
+          inputStyle={{ borderRadius: "1rem" }}
           value={passNew}
           onChange={(e) => setPassNew(e.target.value)}
           placeholder="New Password"

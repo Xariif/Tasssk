@@ -1,16 +1,12 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Dialog } from "primereact/dialog";
 import { Sidebar } from "primereact/sidebar";
 import { NotificationContext } from "../../context/NotificationContext";
 import { useContext, useEffect } from "react";
 import { Button } from "primereact/button";
-import { ConfirmDialog } from "primereact/confirmdialog"; // For <ConfirmDialog /> component
 
 import "./Notifications.scss";
 import { Badge } from "primereact/badge";
 import moment from "moment";
-import * as signalR from "@microsoft/signalr";
 import {
   AddNotification,
   DeleteNotification,
@@ -19,7 +15,8 @@ import {
 } from "../../services/NotificationService";
 import { useToastContext } from "../../context/ToastContext";
 import { ToastAPI } from "./../../context/ToastContext";
-import { SendInviteToList } from "../../services/ToDoService";
+import { AcceptInvite } from "services/ToDoService";
+import { ConnectedOverlayScrollHandler } from "primereact/utils";
 
 export default function Notifications() {
   const { visible, notifications, badge, send } =
@@ -66,20 +63,6 @@ export default function Notifications() {
             });
         }}
       ></Button>
-      <Button
-        label="add invite "
-        onClick={() => {
-          SendInviteToList()
-            .then((res) => {
-              ToastAPI(toastRef, res);
-              return res;
-            })
-            .then((res) => {
-              console.log(res);
-              SginalRsendNotification("test@test.pl", res.message);
-            });
-        }}
-      ></Button>
 
       {notificationsList ? (
         notificationsList.map((element) => {
@@ -107,7 +90,7 @@ export default function Notifications() {
                 SetNotificationReaded(element.id).then(() => {
                   setNotificationsList(
                     notificationsList.map((x) => {
-                      if (x.id == element.id) x.isReaded = true;
+                      if (x.id === element.id) x.isReaded = true;
                       return x;
                     })
                   );
@@ -134,7 +117,7 @@ export default function Notifications() {
                   DeleteNotification(element.id).then(() => {
                     setNotificationsList((notificationsList) =>
                       notificationsList.filter((x) => {
-                        return x.id != element.id;
+                        return x.id !== element.id;
                       })
                     );
                   })
@@ -156,7 +139,7 @@ export default function Notifications() {
               onClick={() => {
                 setNotificationsList(
                   notificationsList.map((x) => {
-                    if (x.id == element.id) x.isReaded = true;
+                    if (x.id === element.id) x.isReaded = true;
                     return x;
                   })
                 ).then(() => SetNotificationReaded(element.id));
@@ -183,13 +166,14 @@ export default function Notifications() {
                 rounded
                 label="Accept"
                 onClick={() =>
-                  DeleteNotification(element.id)
-                    .then(() => {
+                  AcceptInvite(element)
+                    .then((res) => {
                       setNotificationsList((notificationsList) =>
                         notificationsList.filter((x) => {
-                          return x.id != element.id;
+                          return x.id !== element.id;
                         })
                       );
+                      console.log(res);
                     })
                     .finally(() => {
                       //add to list
@@ -221,6 +205,8 @@ export default function Notifications() {
           </div>
         );
 
+        break;
+      default:
         break;
     }
   }

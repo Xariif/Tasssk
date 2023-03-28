@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using TassskAPI.DTOs.ItemList;
 using TassskAPI.Helpers.Models;
 using TassskAPI.Models.Notification;
@@ -51,7 +53,7 @@ namespace ToDoAPI.Services
             //Create document in ItemList
             await db.InsertOneAsync(ItemListCollection, list);
 
-            var privilages = new Priviliges
+            var privilages = new Privileges
             {
                 ListObjectId = list.Id,
                 ListPermission = new PermissionModel
@@ -65,7 +67,7 @@ namespace ToDoAPI.Services
             };
 
             //Add access to user
-            var nestedHelper = new MongoNestedArrayHelper<Priviliges>
+            var nestedHelper = new MongoNestedArrayHelper<Privileges>
             {
                 FilterField = "Email",
                 FilterValue = email,
@@ -85,10 +87,9 @@ namespace ToDoAPI.Services
                 FilterValue = email
             };
 
-            //  var user = await db.FindManyAsync<User>(UserCollection, filter).Result.Select(x => x.Priviliges);
 
             var user = await db.FindFirstAsync<User>(UserCollection, filter);
-            var listsIds = user.Priviliges.Select(x => x.ListObjectId).ToList();
+            var listsIds = user.Privileges.Select(x => x.ListObjectId).ToList();
 
             var result = new List<ItemList>();
 
@@ -132,24 +133,28 @@ namespace ToDoAPI.Services
             }
             await db.DeleteOneAsync<ItemList>(ItemListCollection, id);
 
-            var userFilter = new MongoFilterHelper
+
+            var usersFilter = new MongoNestedArrayHelper<User>
             {
-                FilterField = "Email",
-                FilterValue = email
+                FilterField = "ListObjectId",
+                FilterValue = id,
+                NestedArray = "Privileges"
             };
-            var user = await db.FindFirstAsync<User>(UserCollection, userFilter);
+            var users = await db.FindByIdInNestedArrayAsync<User, Privileges>(UserCollection, usersFilter);
 
-            var privilage = user.Priviliges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(id));
 
-            var nestedFilter = new MongoNestedArrayHelper<Priviliges>
+            foreach (var user in users)
             {
-                FilterField = "Email",
-                FilterValue = email,
-                NestedArray = "Priviliges",
-                NestedObject = privilage
 
-            };
-            await db.PullObjectFromNestedArrayAsync<Priviliges>(UserCollection, nestedFilter);
+                var pullFilter = new MongoNestedArrayHelper<Privileges>
+                {
+                    FilterField = "Email",
+                    FilterValue = user.Email,
+                    NestedArray = "Privileges",
+                    NestedObject = user.Privileges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(id))
+                };
+                var res = await db.PullObjectFromNestedArrayAsync(UserCollection, pullFilter);
+            }
         }
         #endregion
         #region Item
@@ -280,29 +285,39 @@ namespace ToDoAPI.Services
         }
         #endregion
         #region Privilages
-        public async Task<bool> SendInviteToList(SendInviteToListDTO inviteInfo)
+        public async Task<bool> SendListInvite(SendInviteToListDTO inviteInfo)
         {
-            var listName = db.FindFirstByIdAsync<ItemList>(ItemListCollection, inviteInfo.Priviliges.ListObjectId).Result.Name;
+            MongoFilterHelper filterHelper = new MongoFilterHelper()
+            {
+                FilterField = "Email",
+                FilterValue = inviteInfo.Receiver
+            };
+            var receiver = await db.FindFirstAsync<User>(UserCollection, filterHelper);
+
+            if (receiver == null) { return false; };
+
+
+            var listName = db.FindFirstByIdAsync<ItemList>(ItemListCollection, inviteInfo.Privileges.ListObjectId).Result.Name;
 
             var notification = new Notification
             {
                 Type = "Invite",
                 Receiver = inviteInfo.Receiver,
                 Sender = inviteInfo.Sender,
-                Header = $"You've got invite",
-                Body = $"You've got invite to list from {inviteInfo.Sender}!",
+                Header = $"New invite!",
+                Body = $"You've got invite to {listName} list from {inviteInfo.Sender}!",
                 CreatedAt = DateTime.Now,
                 IsReaded = false,
-                Priviliges = new Priviliges
+                Privileges = new Privileges
                 {
-                    ListObjectId = ObjectId.Parse(inviteInfo.Priviliges.ListObjectId),
+                    ListObjectId = ObjectId.Parse(inviteInfo.Privileges.ListObjectId),
                     ListPermission = new PermissionModel
                     {
                         Owner = false,
-                        Read = inviteInfo.Priviliges.ListPermission.Read,
-                        Write = inviteInfo.Priviliges.ListPermission.Write,
-                        Modify = inviteInfo.Priviliges.ListPermission.Modify,
-                        Delete = inviteInfo.Priviliges.ListPermission.Delete
+                        Read = inviteInfo.Privileges.ListPermission.Read,
+                        Write = inviteInfo.Privileges.ListPermission.Write,
+                        Modify = inviteInfo.Privileges.ListPermission.Modify,
+                        Delete = inviteInfo.Privileges.ListPermission.Delete
                     }
 
                 }
@@ -311,7 +326,7 @@ namespace ToDoAPI.Services
             var helper = new MongoNestedArrayHelper<Notification>
             {
                 FilterField = "Email",
-                FilterValue = inviteInfo.Sender,
+                FilterValue = inviteInfo.Receiver,
                 NestedArray = "Notifications",
                 NestedObject = notification
             };
@@ -319,6 +334,143 @@ namespace ToDoAPI.Services
             await db.PushObjectToNestedArrayAsync(UserCollection, helper);
 
             return true;
+        }
+
+
+        public async Task<bool> AcceptListInvite(SendInviteToListDTO inviteInfo)
+        {
+            MongoFilterHelper filterHelper = new MongoFilterHelper()
+            {
+                FilterField = "Email",
+                FilterValue = inviteInfo.Receiver
+            };
+            var receiver = await db.FindFirstAsync<User>(UserCollection, filterHelper);
+
+            if (receiver == null) { return false; };
+
+            var have = !receiver.Privileges.Where(x => x.ListObjectId == ObjectId.Parse(inviteInfo.Privileges.ListObjectId)).IsNullOrEmpty();
+
+            if (have)
+            {
+                return false;
+            }
+
+
+            var pushFilter = new MongoNestedArrayHelper<Privileges>
+            {
+                FilterField = "Email",
+                FilterValue = inviteInfo.Receiver,
+                NestedArray = "Privileges",
+                NestedObject = new Privileges
+                {
+                    ListObjectId = ObjectId.Parse(inviteInfo.Privileges.ListObjectId),
+                    ListPermission = new PermissionModel
+                    {
+                        Owner = false,
+                        Delete = inviteInfo.Privileges.ListPermission.Delete,
+                        Modify = inviteInfo.Privileges.ListPermission.Modify,
+                        Read = inviteInfo.Privileges.ListPermission.Read,
+                        Write = inviteInfo.Privileges.ListPermission.Write,
+                    }
+                }
+            };
+            await db.PushObjectToNestedArrayAsync(UserCollection, pushFilter);
+            return true;
+        }
+
+        public async Task<Privileges> GetUserPrivilages(string email, string listId)
+        {
+            try
+            {
+                var userFilter = new MongoFilterHelper
+                {
+                    FilterField = "Email",
+                    FilterValue = email
+                };
+
+                var user = await db.FindFirstAsync<User>(UserCollection, userFilter);
+
+                return user.Privileges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(listId));
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<UserPrivilagesDTO>> GetUsersListPrivilages(string email, string listId)
+        {
+
+
+            var userFilter = new MongoFilterHelper
+            {
+                FilterField = "Email",
+                FilterValue = email
+            };
+
+            var user = await db.FindFirstAsync<User>(UserCollection, userFilter);
+            var privileges = user.Privileges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(listId));
+
+            if (privileges.ListPermission.Owner == false)
+                return null;
+
+            var userPrivilegesFilter = new MongoNestedArrayHelper<User>
+            {
+                FilterField = "ListObjectId",
+                FilterValue = listId,
+                NestedArray = "Privileges"
+            };
+            var users = await db.FindByIdInNestedArrayAsync<User, Privileges>(UserCollection, userPrivilegesFilter);
+
+            var data = users
+              .Where(u => u.Privileges.Any(p => p.ListObjectId == ObjectId.Parse(listId)))
+              .SelectMany(u => u.Privileges.Where(p => p.ListObjectId == ObjectId.Parse(listId)), (u, p) => new UserPrivilagesDTO
+              {
+                  Email = u.Email,
+                  ListId = p.ListObjectId.ToString(),
+                  Owner = p.ListPermission.Owner,
+                  Read = p.ListPermission.Read,
+                  Write = p.ListPermission.Write,
+                  Modify = p.ListPermission.Modify,
+                  Delete = p.ListPermission.Delete
+              })
+              .ToList();
+
+            return data;
+        }
+
+
+
+        public async Task<bool> RemoveListPrivilages(RemovePrivilagesDTO removePrivilages, string email)
+        {
+            try
+            {
+                var userFilter = new MongoFilterHelper
+                {
+                    FilterField = "Email",
+                    FilterValue = removePrivilages.Email
+                };
+
+                var user = await db.FindFirstAsync<User>(UserCollection, userFilter);
+
+                var pullFilter = new MongoNestedArrayHelper<Privileges>
+                {
+                    FilterField = "Email",
+                    FilterValue = removePrivilages.Email,
+                    NestedArray = "Privileges",
+                    NestedObject = user.Privileges.FirstOrDefault(x => x.ListObjectId == ObjectId.Parse(removePrivilages.ListId))
+                };
+                var res = await db.PullObjectFromNestedArrayAsync(UserCollection, pullFilter);
+
+                return true;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+
+            }
         }
         #endregion
     }

@@ -20,6 +20,7 @@ export default function DeleteAccountButton() {
           <Password
             placeholder="Password"
             style={{ marginRight: "1rem" }}
+            inputStyle={{ borderRadius: "1rem" }}
             feedback={false}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -67,7 +68,7 @@ export default function DeleteAccountButton() {
     return (
       <Dialog
         style={{
-          borderRadius: "2rem",
+          borderRadius: "1rem",
           border: "none",
           overflow: "hidden",
           textAlign: "center",
@@ -97,7 +98,7 @@ export default function DeleteAccountButton() {
             }}
           >
             {" "}
-            <Countdown date={Date.now() + 10000} daysInHours>
+            <Countdown date={Date.now() + 1000} daysInHours>
               <Delete />
             </Countdown>
           </div>
