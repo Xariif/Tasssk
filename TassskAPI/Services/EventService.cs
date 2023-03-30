@@ -1,52 +1,25 @@
-﻿using MongoDB.Bson;
+﻿using MongoDB.Driver;
+using TassskAPI.Models;
+using TassskAPI.Services;
 using ToDoAPI.DTOs.Event;
-using ToDoAPI.Helpers;
-using ToDoAPI.Helpers.Models;
-using ToDoAPI.Models.ItemList;
-using ToDoAPI.Models.User;
 
 namespace ToDoAPI.Services
 {
-    public class EventService
+    public class EventService : BaseService
     {
-        private readonly MongoCRUD db;
-        private readonly string ItemListCollection;
-        private readonly string UserCollection;
-
-        public EventService()
-        {
-            ItemListCollection = "ItemList";
-            UserCollection = "User";
-            db = new MongoCRUD();
-        }
         public async Task<List<EventDTO>> GetEvents(string email)
-        {
-            var filterHelper = new MongoFilterHelper
-            {
-                FilterField = "Email",
-                FilterValue = email
-            };
+        { 
+            var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
 
-            var user = await db.FindFirstAsync<User>(UserCollection, filterHelper);
-
-            var privilages = user.Privileges.Select(x => x.ListObjectId).ToList();
+            var lists=  await db.GetCollection<List>(ListCollection)
+                 .Find(Builders<List>.Filter
+                 .ElemMatch(x => x.Privileges, z => z.UserId == user.Id))
+                 .ToListAsync();
 
 
-            List<ItemList> itemLists = new List<ItemList>();
-
-            foreach (var privilage in privilages)
-            {
-
-                var res = await db.FindFirstByIdAsync<ItemList>(ItemListCollection, privilage.ToString());
-
-                itemLists.Add(res);
-            }
-
-
-
-            var result = itemLists.Select(x =>
+            var result = lists.Select(x =>
             new EventDTO
-            {
+            {                
                 ListId = x.Id.ToString(),
                 Date = x.FinishDate,
                 Name = x.Name

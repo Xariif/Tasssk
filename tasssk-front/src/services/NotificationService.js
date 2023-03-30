@@ -5,11 +5,11 @@ var url = process.env.REACT_APP_BASE_URL + "Notification/";
 export async function GetNotifications() {
   var config = {
     method: "get",
-    url: url + "Notifications",
+    url: url + "GetNotifications",
   };
   return useAPI(config);
 }
-export async function AddNotification(props) {
+export async function CreateNotification(props) {
   var data = {
     Email: props.Email,
     Header: props.Header,
@@ -17,7 +17,7 @@ export async function AddNotification(props) {
   };
   var config = {
     method: "post",
-    url: url + "AddNotification",
+    url: url + "CreateNotification",
     data,
   };
   return useAPI(config);

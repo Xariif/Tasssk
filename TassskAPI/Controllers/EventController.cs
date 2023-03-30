@@ -16,7 +16,6 @@ namespace ToDoAPI.Controllers
             _eventService = eventService;
         }
 
-
         [Authorize]
         [HttpGet("GetEvents")]
         public async Task<ReturnResult<List<EventDTO>>> GetEvents()

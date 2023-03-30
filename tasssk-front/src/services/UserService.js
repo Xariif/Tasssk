@@ -51,8 +51,8 @@ export async function ChangeTheme() {
 
 export async function ChangePassword(props) {
   var data = {
-    OldPassword: props.OldPassword,
-    NewPassword: props.NewPassword,
+    OldPassword: props.passOld,
+    NewPassword: props.passNew,
   };
   var config = {
     method: "put",

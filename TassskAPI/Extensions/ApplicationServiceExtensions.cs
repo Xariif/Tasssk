@@ -10,8 +10,11 @@ namespace ToDoAPI.Extensions
         {
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<UserService>();
-            services.AddScoped<ItemListService>();
+            services.AddScoped<BaseService>();
+            services.AddScoped<ListService>();
+            services.AddScoped<ItemService>();
             services.AddScoped<EventService>();
+            services.AddScoped<FileService>();
             services.AddScoped<NotificationService>();
             return services;
         }

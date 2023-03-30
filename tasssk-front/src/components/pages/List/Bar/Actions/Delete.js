@@ -3,12 +3,15 @@ import { useState } from "react";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Button } from "primereact/button";
 
-import { DeleteList } from "../../../../../services/ToDoService";
+import { DeleteList } from "../../../../../services/ListService";
 import { useToastContext } from "../../../../../context/ToastContext";
+import useLocalStorage from "hooks/useLocalStorage";
 
-export default function Delete({ list, loadData }) {
+export default function Delete({ fetchData, selectedData }) {
   const toastRef = useToastContext();
   const [deleteListDialog, setDeleteListDialog] = useState(false);
+  const [listStorage, setListStorage] = useLocalStorage("selectedList");
+
   return (
     <>
       <ConfirmDialog
@@ -27,20 +30,20 @@ export default function Delete({ list, loadData }) {
               marginLeft: "1rem",
             }}
           >
-            {list.name}
+            {selectedData.list.name}
           </div>
         }
         accept={() => {
-          DeleteList(list)
+          DeleteList(selectedData.list)
             .then((res) => {
-              loadData();
-
               toastRef.current.show({
                 severity: "error",
                 summary: "Deleted",
                 detail: res.message,
                 life: 5000,
               });
+              setListStorage("");
+              fetchData("delete");
             })
             .catch((error) => {
               toastRef.current.show({

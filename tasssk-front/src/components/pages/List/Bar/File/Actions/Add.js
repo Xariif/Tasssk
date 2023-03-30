@@ -8,10 +8,11 @@ import { Tag } from "primereact/tag";
 import { useState } from "react";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { AddFile } from "../../../../../../services/ToDoService";
-import { ProgressBar } from "primereact/progressbar";
 
-export const Add = ({ list, loadData }) => {
+import { ProgressBar } from "primereact/progressbar";
+import { CreateFile } from "services/FileService";
+
+export const Add = ({ fetchData, selectedData }) => {
   const [uploadFileDialog, setUploadFileDialog] = useState(false);
   const [uploadedPercent, setUploadedPecent] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
@@ -28,7 +29,7 @@ export const Add = ({ list, loadData }) => {
         <span className="flex flex-column text-left   text-overflow-ellipsis">
           <h5 style={{ margin: "0px" }}>{file.name}</h5>
           <small>{new Date(file.lastModifiedDate).toLocaleDateString()}</small>
-        </span>{" "}
+        </span>
         <div className="flex justify-content-center">
           <Tag
             value={props.formatSize}
@@ -89,18 +90,17 @@ export const Add = ({ list, loadData }) => {
   const uploadHandler = (event) => {
     setProgressBar(true);
     const body = {
-      listId: list.id,
+      listId: selectedData.list.id,
       files: event.files,
     };
 
-    AddFile({ body, setUploadedPecent })
+    CreateFile({ body, setUploadedPecent })
       .then((res) => {
         ToastAPI(toastRef, res);
         setUploadFileDialog(false);
-        loadData();
+        fetchData();
       })
       .catch((error) => {
-        console.log(error);
         toastRef.current.show({
           severity: "error",
           summary: "Error",

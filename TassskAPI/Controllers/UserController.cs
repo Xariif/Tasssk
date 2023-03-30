@@ -4,7 +4,6 @@ using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.User;
 using ToDoAPI.DTOs;
 using ToDoAPI.DTOs.User;
-using ToDoAPI.Models.User;
 using ToDoAPI.Services;
 
 namespace ToDoAPI.Controllers
@@ -39,6 +38,8 @@ namespace ToDoAPI.Controllers
             return result;
         }
         [AllowAnonymous]
+
+
         [HttpPost("Register")]
         public ReturnResult<string> Register(RegisterDTO registerDTO)
         {
@@ -56,6 +57,8 @@ namespace ToDoAPI.Controllers
             SetReturnResult(result, ResultCodes.BadRequest, "Cannot create account!", null);
             return result;
         }
+
+
         [Authorize]
         [HttpPost("ValidateToken")]
         public ReturnResult<bool> ValidateToken()
@@ -109,19 +112,31 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpPut("ChangePassword")]
-        public async Task<ActionResult> ChangePassword(ChangePasswordDTO changePasswordDTO)
+        public async Task<ReturnResult<bool>> ChangePassword(ChangePasswordDTO changePasswordDTO)
         {
+            var result = new ReturnResult<bool>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Password changed!",
+                Data = false
+            };
+
+
             var loginDTO = new LoginDTO()
             {
                 Email = GetUserEmail(),
                 Password = changePasswordDTO.OldPassword
             };
-            if (_userService.Login(loginDTO) == null)
-                return BadRequest("Wrong data!");
 
-            await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
+            if (await _userService.Login(loginDTO) == null)
+            {
+                SetReturnResult<bool>(result, ResultCodes.BadRequest, "Wrong data", false);
+                return result;
+            }
 
-            return Ok("Password changed!");
+             await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
+
+            return result;
         }
     }
 

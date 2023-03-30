@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { UpdateItem } from "services/ItemService";
 
-import { UpdateItem } from "../../../../../services/ToDoService";
 export const Edit = ({ selectedItem, list, fetchData }) => {
   const inputRef = useRef();
   const [itemName, setItemName] = useState();
@@ -14,17 +14,8 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
 
   function ChangeItemName() {
     return new Promise((resolve, reject) => {
-      const props = {
-        listId: list.id,
-        item: {
-          id: selectedItem.id,
-          name: itemName,
-          finished: selectedItem.finished,
-          createdAt: selectedItem.createdAt,
-        },
-      };
-
-      UpdateItem(props)
+      selectedItem.name = itemName;
+      UpdateItem(selectedItem)
         .then((res) => {
           fetchData();
           resolve(res);

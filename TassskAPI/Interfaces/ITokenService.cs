@@ -1,4 +1,4 @@
-﻿using ToDoAPI.Models.User;
+﻿using TassskAPI.Models;
 
 namespace ToDoAPI.Interfaces
 {

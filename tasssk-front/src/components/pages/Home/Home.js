@@ -10,7 +10,6 @@ function Home() {
   return (
     <div className="Home">
       <h1>Welcome on my page! </h1>
-
       <div className="Cards">
         <Card
           header={<i className="pi pi-list" />}
@@ -21,9 +20,7 @@ function Home() {
               <Button
                 label="Check To Do List"
                 className="p-button-rounded p-button-secondary"
-              >
-                {" "}
-              </Button>
+              ></Button>
             </Link>
           }
         >

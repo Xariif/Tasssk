@@ -8,7 +8,7 @@ import {
   GetUserPrivilages,
   GetUsersListPrivilages,
   SendInviteToList,
-} from "services/ToDoService";
+} from "services/ListService";
 import { ToastAPI, useToastContext } from "context/ToastContext";
 import { NotificationContext } from "context/NotificationContext";
 

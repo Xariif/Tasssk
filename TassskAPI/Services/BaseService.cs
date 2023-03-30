@@ -1,11 +1,18 @@
 ﻿using MongoDB.Driver;
 
-namespace ToDoAPI.Helpers
+namespace TassskAPI.Services
 {
-    public class MongoDbHelper
+    public class BaseService
     {
         protected IMongoDatabase db;
-        public MongoDbHelper()
+        protected readonly string FileDataCollection = "FileData";
+        protected readonly string FileCollection = "File";
+        protected readonly string ItemCollection = "Item";
+        protected readonly string ListCollection = "List";
+        protected readonly string NotificationCollection = "Notification";
+        protected readonly string UserCollection = "User";
+
+        public BaseService()
         {
             var builder = new ConfigurationBuilder();
             builder.AddJsonFile("appsettings.json", optional: false);

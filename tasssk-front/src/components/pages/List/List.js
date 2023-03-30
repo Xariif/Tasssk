@@ -1,88 +1,88 @@
-import React, { useState, useEffect, useReducer } from "react";
-import {
-  GetListById,
-  GetLists,
-  GetListsNames,
-  GetUserPrivilages,
-} from "../../../services/ToDoService";
-import Table from "./Table/Table";
+import useLocalStorage from "hooks/useLocalStorage";
+import { useState, useEffect } from "react";
+import { GetItems } from "services/ItemService";
+import { GetLists } from "services/ListService";
+
 import Bar from "./Bar/Bar";
-import { useCallback } from "react";
-import { useToastContext } from "../../../context/ToastContext";
-import Spinner from "../../../UI/Spinner";
-import useLocalStorage from "../../../hooks/useLocalStorage";
+import Table from "./Table/Table";
 
-const List = (props) => {
-  const toastRef = useToastContext();
-  const [list, setList] = useState();
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-  const [listNames, setListNames] = useState();
-  const [selectedListDropdown, setSelectedListDropdown] = useState();
-  const [privileges, setPrivileges] = useState();
+const List = () => {
+  const [listStorage] = useLocalStorage("selectedList");
+  const [selectedData, setSelectedData] = useState({
+    list: {},
+    items: [],
+  });
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const [lists, setLists] = useState();
 
-  function loadData() {
-    console.log("load");
-    GetListsNames().then((res) => {
-      setListNames((prev) => res.data);
-      if (
-        res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-      ) {
-        GetListById(
-          res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-            .id
-        )
-          .then((res) => {
-            setList((prev) => res.data);
-            return res.data;
-          })
-          .then((res) => {
-            console.log(res);
+  const fetchData = (type) => {
+    console.log("fecz", listStorage, type);
+    GetLists().then((res) => {
+      console.log(res.data);
 
-            GetUserPrivilages(res.id).then((res) => {
-              setPrivileges(res.data.listPermission);
+      setLists((lists) => res.data);
+      let list = res.data.find((x) => x.name === listStorage);
+      if (list) {
+        GetItems(list.id).then((resItem) => {
+          setSelectedData({
+            list: list,
+            items: resItem.data,
+          });
+        });
+      } else if (type === "new") {
+        GetItems(res.data.at(-1).id).then((resItem) => {
+          setSelectedData({
+            list: res.data.at(-1),
+            items: resItem.data,
+          });
+        });
+      } else if (type === "update") {
+        GetItems(selectedData.list.id).then((resItem) => {
+          setSelectedData({
+            list: res.data.find((x) => x.id === selectedData.list.id),
+            items: resItem.data,
+          });
+        });
+      } else if (type === "delete") {
+        if (res.data.length > 0) {
+          GetItems(res.data[0].id).then((resItem) => {
+            setSelectedData({
+              list: res.data[0],
+              items: resItem.data,
             });
           });
-        setSelectedListDropdown(
-          res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-        );
+        } else {
+          setSelectedData({
+            list: {},
+            items: [],
+          });
+        }
       } else if (res.data.length > 0) {
-        GetListById(res.data[0].id)
-          .then((res) => {
-            setList((prev) => res.data);
-            return res.data;
-          })
-          .then((res) => {
-            console.log(res);
-            GetUserPrivilages(res.id).then((res) => {
-              console.log(res);
-
-              setPrivileges(res.data.listPermission);
-            });
+        GetItems(res.data[0].id).then((resItem) => {
+          setSelectedData({
+            list: res.data[0],
+            items: resItem.data,
           });
-        setSelectedListDropdown(res.data[0]);
+        });
       } else {
-        setList();
-        setSelectedListDropdown();
-        setPrivileges();
       }
     });
-  }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div className="ToDoList">
       <Bar
-        list={list}
-        setList={setList}
-        loadData={loadData}
-        listNames={listNames}
-        selectedListDropdown={selectedListDropdown}
-        setSelectedListDropdown={setSelectedListDropdown}
+        selectedData={selectedData}
+        setSelectedData={setSelectedData}
+        fetchData={fetchData}
+        lists={lists}
       />
-      {list && privileges && (
-        <Table list={list} privileges={privileges} loadData={loadData} />
+      {selectedData.list.name && (
+        <Table selectedData={selectedData} fetchData={fetchData} />
       )}
     </div>
   );

@@ -13,18 +13,18 @@ import "primeicons/primeicons.css";
 import "/node_modules/primeflex/primeflex.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+//<React.StrictMode></React.StrictMode>
+
 root.render(
   <>
-    <React.StrictMode>
-      <ToastProvder>
-        <BrowserRouter>
-          <ThemeContextProvider>
-            <AuthContextProvider>
-              <App />
-            </AuthContextProvider>
-          </ThemeContextProvider>
-        </BrowserRouter>
-      </ToastProvder>
-    </React.StrictMode>
+    <ToastProvder>
+      <BrowserRouter>
+        <ThemeContextProvider>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+        </ThemeContextProvider>
+      </BrowserRouter>
+    </ToastProvder>
   </>
 );

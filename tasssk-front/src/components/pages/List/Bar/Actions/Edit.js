@@ -5,27 +5,22 @@ import { InputText } from "primereact/inputtext";
 import { useEffect } from "react";
 import useLocalStorage from "../../../../../hooks/useLocalStorage";
 import { useToastContext } from "../../../../../context/ToastContext";
-
-import { EditList } from "../../../../../services/ToDoService";
+import { UpdateList } from "../../../../../services/ListService";
 import { Calendar } from "primereact/calendar";
 
-export default function Delete({ list, loadData }) {
-  const [storage, setStorage] = useLocalStorage("selectedList");
+export default function Edit({ fetchData, selectedData }) {
+  const [listStorage, setListStorage] = useLocalStorage("selectedList");
   const refFocusName = useRef(null);
 
   const toastRef = useToastContext();
   const [editListDialog, setEditListDialog] = useState(false);
   const [value, setValue] = useState();
-  const [date, setDate] = useState();
+  const [date, setDate] = useState(null);
 
   useEffect(() => {
-    setValue(list.name);
-    setDate(new Date(list.finishDate));
-  }, [list]);
-
-  const exit = () => {
-    setEditListDialog(false);
-  };
+    setValue(selectedData.list.name);
+    setDate((date) => new Date(selectedData.list.finishDate));
+  }, [selectedData.list]);
 
   return (
     <>
@@ -33,7 +28,7 @@ export default function Delete({ list, loadData }) {
         visible={editListDialog}
         draggable={false}
         onHide={() => {
-          exit();
+          setEditListDialog(false);
         }}
         header={
           <>
@@ -48,7 +43,7 @@ export default function Delete({ list, loadData }) {
               label="Discard"
               icon="pi pi-times"
               onClick={() => {
-                exit();
+                setEditListDialog(false);
               }}
               className="p-button-text"
             />
@@ -56,13 +51,13 @@ export default function Delete({ list, loadData }) {
               label="Save"
               icon="pi pi-check"
               onClick={() => {
-                list.name = value;
-                list.finishDate = date;
-                EditList(list)
+                selectedData.list.name = value;
+                selectedData.list.finishDate = date;
+                UpdateList(selectedData.list)
                   .then((res) => {
-                    loadData();
-                    setStorage(value);
+                    setListStorage(value);
                     setEditListDialog(false);
+                    fetchData("update");
 
                     toastRef.current.show({
                       severity: "info",
@@ -79,7 +74,7 @@ export default function Delete({ list, loadData }) {
                       life: 5000,
                     });
                   })
-                  .finally(() => exit());
+                  .finally(() => setEditListDialog(false));
               }}
               autoFocus
             />
@@ -115,7 +110,9 @@ export default function Delete({ list, loadData }) {
             showTime
             showIcon
             value={date}
-            onChange={(e) => setDate(new Date(e.value.setSeconds(0)))}
+            onChange={(e) => {
+              setDate(e.value);
+            }}
           />
         </div>
       </Dialog>

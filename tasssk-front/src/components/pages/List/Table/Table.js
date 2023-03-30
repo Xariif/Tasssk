@@ -1,32 +1,27 @@
-import { Add } from "./Actions/Add";
 import Countdown from "react-countdown";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 
 import { Checkbox } from "primereact/checkbox";
-import {
-  GetUserPrivilages,
-  UpdateItem,
-} from "../../../../services/ToDoService";
 import moment from "moment";
-import { Edit } from "./Actions/Edit";
-import { useEffect, useState } from "react";
-import { InputText } from "primereact/inputtext";
-import { Delete } from "./Actions/Delete";
-import Privilages from "./Actions/Privilages";
+import Moment from "react-moment";
 
-function Table({ list, privileges, loadData: fetchData }) {
-  var finishDate = new Date(list.finishDate);
-  // console.log(privileges, list);
+import { UpdateItem } from "services/ItemService";
+import { Edit } from "./Actions/Edit";
+import { Delete } from "./Actions/Delete";
+import { Add } from "./Actions/Add";
+
+function Table({ selectedData, fetchData }) {
+  var finishDate = new Date(selectedData.list.finishDate);
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
       item.finished = !item.finished;
       const body = {
-        listId: list.id,
+        listId: selectedData.list.id,
         item: item,
       };
 
-      UpdateItem(body)
+      UpdateItem(row)
         .then((res) => {
           fetchData();
         })
@@ -49,12 +44,16 @@ function Table({ list, privileges, loadData: fetchData }) {
   const actionsTemplate = (row) => {
     return (
       <>
-        <Edit selectedItem={row} list={list} fetchData={fetchData} />
+        <Edit
+          selectedItem={row}
+          list={selectedData.list}
+          fetchData={fetchData}
+        />
 
         <Delete
           style={{ marginLeft: "1rem" }}
           selectedItem={row}
-          list={list}
+          list={selectedData.list}
           fetchData={fetchData}
         />
       </>
@@ -85,7 +84,7 @@ function Table({ list, privileges, loadData: fetchData }) {
     <div className="ToDoItem">
       <DataTable
         emptyMessage={"Your list is empty! Add somethning using button bellow"}
-        value={list.items}
+        value={selectedData.items}
         header={<Topbar />}
         footer={<Footer />}
         responsiveLayout="scroll"
@@ -144,11 +143,11 @@ function Table({ list, privileges, loadData: fetchData }) {
       >
         <h1 style={{ color: "var(--green-300)" }}>
           <i className="pi pi-book" style={{ fontSize: " 2rem" }} />{" "}
-          {list.name.toUpperCase()}
+          {selectedData.list.name.toUpperCase()}
         </h1>
         <h3 style={{ textAlign: "center", display: "flex" }}>
           <Countdown
-            date={finishDate}
+            date={selectedData.list.finishDate}
             renderer={(e) => {
               if (e.days >= 1) {
                 return (
@@ -175,7 +174,9 @@ function Table({ list, privileges, loadData: fetchData }) {
                   >
                     Attention your list is overdone! <br />
                     Finish date:&nbsp;
-                    {moment(finishDate, "HH:mm a").calendar()}
+                    {moment(selectedData.list.finishDate).format(
+                      "MMMM Do YYYY, HH:mm:ss "
+                    )}
                   </div>
                 );
               }
@@ -185,18 +186,31 @@ function Table({ list, privileges, loadData: fetchData }) {
       </div>
     );
   }
+
   function Footer() {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {privileges.owner ? (
-          <Privilages privileges={privileges} list={list}></Privilages>
+        {true ? (
+          <>
+            xxxx
+            {/*
+
+            privileges.owner
+          <Privilages
+            privileges={privileges}
+            list={selectedData.list}
+          ></Privilages>  
+        */}
+          </>
         ) : (
           <div> </div>
         )}
-        <Add fetchData={fetchData} list={list} />
+        <Add fetchData={fetchData} list={selectedData.list} />
       </div>
     );
   }
+
+  return <>Table</>;
 }
 
 export default Table;

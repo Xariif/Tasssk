@@ -2,7 +2,10 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Password } from "primereact/password";
 import { useState } from "react";
-import { useToastContext } from "../../../../../../context/ToastContext";
+import {
+  ToastAPI,
+  useToastContext,
+} from "../../../../../../context/ToastContext";
 import { ChangePassword } from "../../../../../../services/UserService";
 import { Divider } from "primereact/divider";
 
@@ -25,24 +28,13 @@ export default function ChangePasswordButton() {
           detail: "Write correct values!",
           life: 5000,
         });
-      } else if (passOld !== passNew) {
-        return toastRef.current.show({
-          severity: "warn",
-          summary: "Warning",
-          detail: "Passwords are diffrent!",
-          life: 5000,
-        });
       }
-      ChangePassword({ passOld, passNew });
-
-      setPassOld("");
-      setPassNew("");
-
-      return toastRef.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Password changed!",
-        life: 5000,
+      ChangePassword({ passOld, passNew }).then((res) => {
+        ToastAPI(toastRef, res);
+        if (res.code === 200) {
+          setPassOld("");
+          setPassNew("");
+        }
       });
     }
 

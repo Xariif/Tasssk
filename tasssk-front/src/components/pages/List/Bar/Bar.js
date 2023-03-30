@@ -3,39 +3,32 @@ import { Dropdown } from "primereact/dropdown";
 import New from "./Actions/New";
 import Delete from "./Actions/Delete";
 import Edit from "./Actions/Edit";
-
-import { File } from "./File/File";
-
 import useLocalStorage from "../../../../hooks/useLocalStorage";
 import EmptyArr from "../../../../UI/EmptyArr";
-import { GetListById } from "../../../../services/ToDoService";
 import Spinner from "../../../../UI/Spinner";
+import { GetItems } from "services/ItemService";
+import { File } from "./File/File";
 
-function Bar({
-  list,
-  setList,
-  loadData,
-  listNames,
-  selectedListDropdown,
-  setSelectedListDropdown,
-}) {
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-  var dateNow = new Date();
-  dateNow.setDate(dateNow.getDate());
-  dateNow.setMonth(dateNow.getMonth());
-  dateNow.setFullYear(dateNow.getFullYear());
+function Bar({ selectedData, setSelectedData, fetchData, lists }) {
+  const [, setListStorage] = useLocalStorage("selectedList");
 
   return (
-    <div className="ListBar" style={{ marginBottom: "1rem" }}>
-      {listNames ? (
-        listNames.length === 0 ? (
-          <EmptyArr addButton={<New dateNow={dateNow} loadData={loadData} />} />
+    <div className="Bar" style={{ marginBottom: "1rem" }}>
+      {lists ? (
+        lists.length === 0 ? (
+          <EmptyArr addButton={<New fetchData={fetchData} />} />
         ) : (
-          <div style={{ justifyContent: "space-between", display: "flex" }}>
-            <div> {list && <File list={list} loadData={loadData} />}</div>
-            <div>
+          <div
+            style={{
+              justifyContent: "space-between",
+
+              display: "flex",
+            }}
+          >
+            <File selectedData={selectedData} />
+            <div style={{ display: "flex" }}>
               <Dropdown
-                value={selectedListDropdown}
+                value={selectedData.list}
                 style={{ marginRight: "1rem", borderRadius: "2rem" }}
                 panelStyle={{
                   padding: ".5rem 0",
@@ -44,24 +37,20 @@ function Bar({
                 }}
                 optionLabel="name"
                 placeholder={"Select list"}
-                options={listNames}
+                options={lists}
                 onChange={(e) => {
-                  GetListById(e.value.id).then((res) => {
-                    setList((prev) => res.data);
+                  GetItems(e.value.id).then((resItem) => {
+                    setSelectedData({
+                      list: lists.find((x) => x.id === e.value.id),
+                      items: resItem.data,
+                    });
+                    setListStorage(e.value.name);
                   });
-                  setSelectedListDropdown(
-                    listNames.find((x) => x.name === e.value.name)
-                  );
-                  setListStorage(e.value.name);
                 }}
               />
-              <New dateNow={dateNow} loadData={loadData} />
-              {list && (
-                <>
-                  <Edit list={list} loadData={loadData} />
-                  <Delete list={list} loadData={loadData} />
-                </>
-              )}
+              <New fetchData={fetchData} />
+              <Edit fetchData={fetchData} selectedData={selectedData} />
+              <Delete fetchData={fetchData} selectedData={selectedData} />
             </div>
           </div>
         )

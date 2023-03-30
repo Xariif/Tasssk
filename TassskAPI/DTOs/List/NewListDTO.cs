@@ -1,4 +1,4 @@
-﻿namespace ToDoAPI.DTOs
+﻿namespace TassskAPI.DTOs.List
 {
     public class NewListDTO
     {

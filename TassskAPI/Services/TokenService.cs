@@ -2,8 +2,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using TassskAPI.Models;
 using ToDoAPI.Interfaces;
-using ToDoAPI.Models.User;
 
 namespace ToDoAPI.Services
 

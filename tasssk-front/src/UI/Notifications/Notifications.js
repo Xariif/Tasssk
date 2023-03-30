@@ -8,14 +8,14 @@ import "./Notifications.scss";
 import { Badge } from "primereact/badge";
 import moment from "moment";
 import {
-  AddNotification,
+  CreateNotification,
   DeleteNotification,
   GetNotifications,
   SetNotificationReaded,
 } from "../../services/NotificationService";
 import { useToastContext } from "../../context/ToastContext";
 import { ToastAPI } from "./../../context/ToastContext";
-import { AcceptInvite } from "services/ToDoService";
+import { AcceptInvite } from "services/ListService";
 import { ConnectedOverlayScrollHandler } from "primereact/utils";
 
 export default function Notifications() {
@@ -52,13 +52,12 @@ export default function Notifications() {
             Header: "Gorące Mamuśki w twojej okolicy!",
             Body: "Zobacz sam w twojej okolicy znaleziono 54 chętne mamuśki",
           };
-          AddNotification(data)
+          CreateNotification(data)
             .then((res) => {
               ToastAPI(toastRef, res);
               return res;
             })
             .then((res) => {
-              console.log(res);
               SginalRsendNotification(data.Email, res.message);
             });
         }}
@@ -66,6 +65,7 @@ export default function Notifications() {
 
       {notificationsList ? (
         notificationsList.map((element) => {
+          //  console.log(element);
           return <Notification element={element} key={element.id} />;
         })
       ) : (
@@ -80,7 +80,7 @@ export default function Notifications() {
     switch (element.type) {
       case "Notification":
         return (
-          <div className="notification">
+          <div className="notification" key={element.id}>
             <div
               style={{
                 opacity: element.isReaded ? "0.5" : "1",

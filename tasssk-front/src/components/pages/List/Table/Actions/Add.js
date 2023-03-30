@@ -3,8 +3,7 @@ import { useState, useRef } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-
-import { AddItem } from "../../../../../services/ToDoService";
+import { CreateItem } from "services/ItemService";
 
 export const Add = ({ list, fetchData }) => {
   const [value, setValue] = useState("");
@@ -14,10 +13,10 @@ export const Add = ({ list, fetchData }) => {
   function Add() {
     return new Promise((resolve, reject) => {
       const props = {
-        listId: list.id,
-        itemName: value,
+        ListId: list.id,
+        Name: value,
       };
-      AddItem(props)
+      CreateItem(props)
         .then((res) => {
           setAddItemDialog(false);
           resolve(res);
@@ -29,7 +28,7 @@ export const Add = ({ list, fetchData }) => {
     });
   }
   return (
-    <div >
+    <div>
       <Dialog
         visible={addItemDialog}
         resizable={false}
