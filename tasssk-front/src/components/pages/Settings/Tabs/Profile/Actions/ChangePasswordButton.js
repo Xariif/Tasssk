@@ -29,13 +29,21 @@ export default function ChangePasswordButton() {
           life: 5000,
         });
       }
-      ChangePassword({ passOld, passNew }).then((res) => {
-        ToastAPI(toastRef, res);
-        if (res.code === 200) {
+      ChangePassword({ passOld, passNew })
+        .then((res) => {
           setPassOld("");
           setPassNew("");
-        }
-      });
+          toastRef.current.show({
+            severity: "success",
+            summary: "Success",
+            detail: "Password Changed",
+            life: 3000,
+          });
+          setChangePasswordDialog(false);
+        })
+        .catch((err) => {
+          ToastAPI(toastRef, err.response);
+        });
     }
 
     return (

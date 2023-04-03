@@ -16,7 +16,7 @@ export const File = ({ selectedData }) => {
   const [files, setFiles] = useState([]);
 
   const getFiles = () => {
-    GetFiles(selectedData.list.id).then((res) => {
+    GetFiles(selectedData.id).then((res) => {
       setFiles((files) => res.data);
     });
   };

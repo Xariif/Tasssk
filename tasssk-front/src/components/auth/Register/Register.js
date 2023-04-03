@@ -60,20 +60,17 @@ export const Register = () => {
   };
 
   const onSubmit = async (data, form) => {
-    try {
-      await RegisterUser(data).then((res) => {
-        ToastAPI(toastRef, res);
+    RegisterUser(data)
+      .then((res) => {
+        console.log(res);
+        ToastAPI(toastRef, res.response);
         form.restart();
         navigate("/Login");
+      })
+      .catch((error) => {
+        console.log(error);
+        ToastAPI(toastRef, error.response);
       });
-    } catch (error) {
-      toastRef.current.show({
-        severity: "error",
-        summary: "Error",
-        detail: error.message,
-        life: 5000,
-      });
-    }
   };
 
   const isFormFieldValid = (meta) => !!(meta.touched && meta.error);
@@ -241,19 +238,30 @@ export const Register = () => {
                   position="bottom"
                   style={{ maxWidth: "400px" }}
                 >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Phasellus eget est tellus. Mauris cursus leo quis mi congue
-                  faucibus. Donec aliquam condimentum elementum. Quisque porta
-                  lacus a mi rutrum consectetur. Aliquam pretium tincidunt
-                  dolor, efficitur placerat purus lacinia lacinia. Donec
-                  fringilla posuere luctus. Interdum et malesuada fames ac ante
-                  ipsum primis in faucibus. Phasellus nulla sapien, commodo sit
-                  amet volutpat at, viverra a sapien. Aliquam vitae consectetur
-                  nunc. Fusce fermentum quam a tincidunt sodales. Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Praesent ac dolor
-                  sagittis dui sodales faucibus. Lorem ipsum dolor sit amet,
-                  consectetur adipiscing elit. Nam ex mi, iaculis sed libero
-                  nec, scelerisque tincidunt dolor.
+                  <ol>
+                    <li>
+                      Using the application is only allowed for lawful purposes.
+                    </li>
+                    <li>
+                      Creating an account is required to use the application.
+                    </li>
+                    <li>
+                      The user is responsible for maintaining the
+                      confidentiality of their account and password.
+                    </li>
+                    <li>
+                      All content, features, and elements of the application are
+                      owned by us or our licensors.
+                    </li>
+                    <li>
+                      The user is responsible for the accuracy and completeness
+                      of any information they provide in the application.
+                    </li>
+                    <li>
+                      The user may not use the application to harass,
+                      intimidate, or threaten others.
+                    </li>
+                  </ol>
                 </Tooltip>
                 <Field
                   name="accept"

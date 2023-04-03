@@ -43,7 +43,7 @@ export async function DeleteAccount(password) {
 
 export async function ChangeTheme() {
   var config = {
-    method: "post",
+    method: "put",
     url: url + "ChangeTheme",
   };
   return useAPI(config);

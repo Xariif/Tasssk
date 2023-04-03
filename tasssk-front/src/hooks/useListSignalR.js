@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as signalR from "@microsoft/signalr";
 import useLocalStorage from "./useLocalStorage";
-import notificationSound from "./notification_sound.mp3";
+import { SelecetedDataContext } from "context/SelectedDataContext";
 
-export default function useSignalR() {
+export default function useListSignalR(prop) {
   const [connection, setConnection] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [email, setEmail] = useLocalStorage("email");
-
+  const [listStorage, setListStorage] = useLocalStorage("selectedList");
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5000/notifications?email=" + email)
+      .withUrl("http://localhost:5000/list?listId=" + listStorage)
       .withAutomaticReconnect()
       .build();
 
@@ -29,9 +29,7 @@ export default function useSignalR() {
         });
 
       connection.on("ReceiveNotification", (notification) => {
-        const sound = new Audio(notificationSound);
-
-        sound.play();
+        console.log(notification);
         setNotifications((notifications) => [...notifications, notification]); //czy powinienem to robić używając true/false state?
       });
     }

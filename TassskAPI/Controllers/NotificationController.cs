@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TassskAPI.DTOs.Core;
+using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Models;
 using TassskAPI.Services;
@@ -30,6 +31,24 @@ namespace TassskAPI.Controllers
         
             return result;
         }
+
+        [Authorize]
+        [HttpGet("GetInviteNotification")]
+        public async Task<ReturnResult<InviteNotificationDTO>> GetInviteNotification(string id)
+        {
+            var result = new ReturnResult<InviteNotificationDTO>()
+            {
+                Code = ResultCodes.Ok,
+                Message = "Notifications List",
+                Data = null
+            };
+
+            result.Data = await _notificationService.GetInviteNotification(id);
+
+            return result;
+        }
+
+
 
         [Authorize]
         [HttpPost("CreateNotification")]

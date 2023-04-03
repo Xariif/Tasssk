@@ -3,22 +3,12 @@ import { createContext, useContext, useRef } from "react";
 const ToastContext = createContext();
 
 export function ToastAPI(toastRef, response) {
-  switch (response.code) {
-    case 200:
-      toastRef.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: response.message,
-        life: 3000,
-      });
-
-      break;
+  switch (response.status) {
     case 400:
       toastRef.current.show({
         severity: "error",
         summary: "Error",
-        detail: response.message,
-
+        detail: response.data,
         life: 5000,
       });
       break;

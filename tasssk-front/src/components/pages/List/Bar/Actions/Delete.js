@@ -11,7 +11,6 @@ export default function Delete({ fetchData, selectedData }) {
   const toastRef = useToastContext();
   const [deleteListDialog, setDeleteListDialog] = useState(false);
   const [listStorage, setListStorage] = useLocalStorage("selectedList");
-
   return (
     <>
       <ConfirmDialog
@@ -30,11 +29,11 @@ export default function Delete({ fetchData, selectedData }) {
               marginLeft: "1rem",
             }}
           >
-            {selectedData.list.name}
+            {selectedData.name}
           </div>
         }
         accept={() => {
-          DeleteList(selectedData.list)
+          DeleteList(selectedData)
             .then((res) => {
               toastRef.current.show({
                 severity: "error",
@@ -43,7 +42,7 @@ export default function Delete({ fetchData, selectedData }) {
                 life: 5000,
               });
               setListStorage("");
-              fetchData("delete");
+              fetchData();
             })
             .catch((error) => {
               toastRef.current.show({

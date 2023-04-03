@@ -26,8 +26,6 @@ namespace TassskAPI.Services
 
         public async Task<List<FileDTO>> CreateFile(string listId, List<IFormFile> files)
         {
-
-
             var filesInfoList = new List<File>();
             var filesDataList = new List<FilesData>();
 
@@ -41,6 +39,7 @@ namespace TassskAPI.Services
                         var fileBytes = ms.ToArray();
                         string stringBase64 = Convert.ToBase64String(fileBytes);
                         ObjectId fileId = ObjectId.GenerateNewId();
+
                         var fileInfo = new File()
                         {
                             Id = ObjectId.GenerateNewId(),
@@ -61,15 +60,11 @@ namespace TassskAPI.Services
                         filesDataList.Add(fileData);
                     }
                 }
-
             }
+
             await db.GetCollection<File>(FileCollection).InsertManyAsync(filesInfoList);
 
             await db.GetCollection<FilesData>(FileDataCollection).InsertManyAsync(filesDataList);
-
-
-
-
 
             return filesInfoList.Select(x => new FileDTO
             {
@@ -80,17 +75,17 @@ namespace TassskAPI.Services
                 Size = x.Size,
                 Type = x.Type,
             }).ToList();
-
         }
 
         public async Task<bool> DeleteFile(string id)
         {
             var fileDataRes = await db.GetCollection<FilesData>(FileDataCollection).DeleteOneAsync(x => x.Id == ObjectId.Parse(id));
-            var fileInfoRes = await db.GetCollection<File>(FileCollection).DeleteOneAsync(x => x.FileId == ObjectId.Parse(id));
 
+            var fileInfoRes = await db.GetCollection<File>(FileCollection).DeleteOneAsync(x => x.FileId == ObjectId.Parse(id));
 
             return fileInfoRes.IsAcknowledged;
         }
+
         public async Task<FilesData> DownloadFile(string id)
         {
           return await db.GetCollection<FilesData>(FileDataCollection).Find(x=>x.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();

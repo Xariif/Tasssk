@@ -9,6 +9,18 @@ export async function GetNotifications() {
   };
   return useAPI(config);
 }
+
+export async function GetInviteNotification(id) {
+  const params = {
+    id: id,
+  };
+  var config = {
+    method: "get",
+    url: url + "GetInviteNotification",
+    params,
+  };
+  return useAPI(config);
+}
 export async function CreateNotification(props) {
   var data = {
     Email: props.Email,

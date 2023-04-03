@@ -17,7 +17,7 @@ namespace TassskAPI.Models
 
     public class Privileges
     {
-        public ObjectId UserId { get; set; }
+        public string Email { get; set; }
         public bool Owner { get; set; }
         public bool Read { get; set; }
         public bool Write { get; set; }

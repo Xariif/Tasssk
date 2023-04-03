@@ -13,9 +13,8 @@ namespace ToDoAPI.Services
 
             var lists=  await db.GetCollection<List>(ListCollection)
                  .Find(Builders<List>.Filter
-                 .ElemMatch(x => x.Privileges, z => z.UserId == user.Id))
+                 .ElemMatch(x => x.Privileges, z => z.Email == user.Email))
                  .ToListAsync();
-
 
             var result = lists.Select(x =>
             new EventDTO

@@ -4,30 +4,20 @@ import { useContext, useEffect, useState } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
-import {
-  GetUserPrivilages,
-  GetUsersListPrivilages,
-  SendInviteToList,
-} from "services/ListService";
 import { ToastAPI, useToastContext } from "context/ToastContext";
 import { NotificationContext } from "context/NotificationContext";
+import { SendInvite } from "services/ListService";
 
-export default function Privilages({ list, privileges }) {
+export default function Privilages({ selectedData }) {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [email, setEmail] = useState("");
   const toastRef = useToastContext();
   const { send } = useContext(NotificationContext);
   const [SginalRnotifications, SginalRsendNotification] = send;
 
-  const [usersPrivilages, setUserPrivilages] = useState([]);
+  const [usersPrivileges, setUserPrivileges] = useState([]);
   useEffect(() => {
-    GetUsersListPrivilages(list.id).then((res) => {
-      setUserPrivilages(
-        res.data.sort((a, b) => {
-          return a === b ? 0 : a ? -1 : 1;
-        })
-      );
-    });
+    setUserPrivileges((prev) => selectedData.list.privileges);
   }, []);
 
   const footer = (options) => {
@@ -48,7 +38,7 @@ export default function Privilages({ list, privileges }) {
           onClick={() => {
             if (email) {
               setEmail("");
-              SendInviteToList({ list, email })
+              SendInvite({ email, selectedData })
                 .then((res) => {
                   ToastAPI(toastRef, res);
                   return res;
@@ -80,7 +70,7 @@ export default function Privilages({ list, privileges }) {
           </>
         }
       >
-        <DataTable value={usersPrivilages} paginator rows={8} footer={footer}>
+        <DataTable value={usersPrivileges} paginator rows={8} footer={footer}>
           <Column
             field="email"
             header="E-mail"

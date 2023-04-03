@@ -6,16 +6,15 @@ import Edit from "./Actions/Edit";
 import useLocalStorage from "../../../../hooks/useLocalStorage";
 import EmptyArr from "../../../../UI/EmptyArr";
 import Spinner from "../../../../UI/Spinner";
-import { GetItems } from "services/ItemService";
 import { File } from "./File/File";
 
-function Bar({ selectedData, setSelectedData, fetchData, lists }) {
+function Bar({ selectedData, setSelectedData, fetchData }) {
   const [, setListStorage] = useLocalStorage("selectedList");
 
   return (
     <div className="Bar" style={{ marginBottom: "1rem" }}>
-      {lists ? (
-        lists.length === 0 ? (
+      {selectedData.allLists ? (
+        selectedData.allLists.length === 0 ? (
           <EmptyArr addButton={<New fetchData={fetchData} />} />
         ) : (
           <div
@@ -25,10 +24,10 @@ function Bar({ selectedData, setSelectedData, fetchData, lists }) {
               display: "flex",
             }}
           >
-            <File selectedData={selectedData} />
+            <File selectedData={selectedData.selectedList} />
             <div style={{ display: "flex" }}>
               <Dropdown
-                value={selectedData.list}
+                value={selectedData.selectedList}
                 style={{ marginRight: "1rem", borderRadius: "2rem" }}
                 panelStyle={{
                   padding: ".5rem 0",
@@ -37,20 +36,24 @@ function Bar({ selectedData, setSelectedData, fetchData, lists }) {
                 }}
                 optionLabel="name"
                 placeholder={"Select list"}
-                options={lists}
+                options={selectedData.allLists}
                 onChange={(e) => {
-                  GetItems(e.value.id).then((resItem) => {
-                    setSelectedData({
-                      list: lists.find((x) => x.id === e.value.id),
-                      items: resItem.data,
-                    });
-                    setListStorage(e.value.name);
+                  setSelectedData({
+                    ...selectedData,
+                    selectedList: e.value,
                   });
+                  setListStorage(e.value.name);
                 }}
               />
               <New fetchData={fetchData} />
-              <Edit fetchData={fetchData} selectedData={selectedData} />
-              <Delete fetchData={fetchData} selectedData={selectedData} />
+              <Edit
+                fetchData={fetchData}
+                selectedData={selectedData.selectedList}
+              />
+              <Delete
+                fetchData={fetchData}
+                selectedData={selectedData.selectedList}
+              />
             </div>
           </div>
         )

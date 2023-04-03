@@ -4,10 +4,12 @@ import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { UpdateItem } from "services/ItemService";
 
-export const Edit = ({ selectedItem, list, fetchData }) => {
+export const Edit = ({ selectedItem, fetchData }) => {
   const inputRef = useRef();
   const [itemName, setItemName] = useState();
+
   const [editItemDialog, setEditItemDialog] = useState(false);
+  console.log(selectedItem);
   useEffect(() => {
     setItemName(selectedItem.name);
   }, [selectedItem]);
@@ -17,7 +19,7 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
       selectedItem.name = itemName;
       UpdateItem(selectedItem)
         .then((res) => {
-          fetchData();
+          fetchData(selectedItem.istId);
           resolve(res);
         })
         .catch((error) => {

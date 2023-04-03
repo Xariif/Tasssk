@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Models;
 
@@ -23,6 +24,21 @@ namespace TassskAPI.Services
             }).ToList();
 
             return list;
+        }
+
+
+        public async Task<InviteNotificationDTO> GetInviteNotification(string id)
+        {
+            var notification = await db.GetCollection<InviteNotification>(NotificationCollection).Find(Builders<InviteNotification>.Filter.Eq(x => x.Id, ObjectId.Parse(id))).FirstOrDefaultAsync();
+
+            var res = new InviteNotificationDTO
+            {
+                ListId = notification.ListId.ToString(),
+                Privileges = notification.Privileges,
+            };
+
+
+            return res;
         }
 
         public async Task<bool> CreateNotification(string email, string header, string body)

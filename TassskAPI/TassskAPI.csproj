@@ -11,6 +11,7 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'ToDoAPI' " />
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.9" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.32" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />

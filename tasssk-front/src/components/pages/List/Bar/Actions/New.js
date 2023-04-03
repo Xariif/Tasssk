@@ -110,6 +110,16 @@ function New(props) {
           </>
         }
         accept={() => {
+          if (!name) {
+            toastRef.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Name cannot be empty!",
+              life: 5000,
+            });
+            return;
+          }
+          date.setSeconds(0);
           CreateList({
             listName: name,
             finishDate: date,
@@ -122,6 +132,8 @@ function New(props) {
                 detail: res.message,
                 life: 5000,
               });
+              console.log(res);
+              props.fetchData(res.data);
             })
 
             .catch((error) => {
@@ -135,7 +147,6 @@ function New(props) {
             })
             .finally(() => {
               setNewListDialog(false);
-              props.fetchData("new");
             });
         }}
       />

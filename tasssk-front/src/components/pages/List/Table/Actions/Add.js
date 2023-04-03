@@ -24,7 +24,7 @@ export const Add = ({ list, fetchData }) => {
         .catch((error) => {
           reject(error);
         })
-        .finally(() => fetchData());
+        .finally(() => fetchData(list.id));
     });
   }
   return (

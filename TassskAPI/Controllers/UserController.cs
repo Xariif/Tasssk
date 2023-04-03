@@ -17,126 +17,130 @@ namespace ToDoAPI.Controllers
         }
         [AllowAnonymous]
         [HttpPost("Login")]
-        public async Task<ReturnResult<UserDataDTO>> Login(LoginDTO loginDTO)
+        public async Task<ActionResult<UserDataDTO>> Login(LoginDTO loginDTO)
         {
-            var result = new ReturnResult<UserDataDTO>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Logged in!",
-                Data = new UserDataDTO()
-            };
+                var userData = await _userService.Login(loginDTO);
 
-            var userData = await _userService.Login(loginDTO);
-
-            if (userData != null)
-            {
-                result.Data = userData;
-                return result;
+                return Ok(userData);
             }
-
-            SetReturnResult(result, ResultCodes.BadRequest, "Wrong email or password!", userData);
-            return result;
-        }
-        [AllowAnonymous]
-
-
-        [HttpPost("Register")]
-        public ReturnResult<string> Register(RegisterDTO registerDTO)
-        {
-            var result = new ReturnResult<string>()
+            catch (ArgumentException ex)
             {
-                Code = ResultCodes.Ok,
-                Message = "Register success!",
-                Data = null
-            };
-            var newUser = _userService.Register(registerDTO);
-            if (newUser != null)
-                return result;
+                return BadRequest(ex.Message);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
-            SetReturnResult(result, ResultCodes.BadRequest, "Cannot create account!", null);
-            return result;
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public async Task<ActionResult> Register(RegisterDTO registerDTO)
+        {
+            try
+            {
+                await _userService.Register(registerDTO);
+
+                return Ok("Register complete");
+
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
 
         [Authorize]
         [HttpPost("ValidateToken")]
-        public ReturnResult<bool> ValidateToken()
+        public async Task<ActionResult<bool>> ValidateToken(string token)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Token is valid!",
-                Data = true
-            };
-            return result;
+                var res = await _userService.ValidateToken(token);
+                return Ok(res);
+
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
         [Authorize]
         [HttpDelete("DeleteAccount")]
-        public async Task<ReturnResult<bool>> DeleteAccount(string password)
+        public async Task<ActionResult<bool>> DeleteAccount(string password)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.BadRequest,
-                Message = "Account delete fail!",
-                Data = false
-            };
+                var res = await _userService.DeleteAccount(GetUserEmail());
 
+                return Ok(res);
 
-            var loginDTO = new LoginDTO()
+            }
+            catch (ArgumentException ex)
             {
-                Email = GetUserEmail(),
-                Password = password
-            };
+                return BadRequest(ex.Message);
 
-            if (_userService.Login(loginDTO) == null)
-                return result;
-
-            await _userService.DeleteAccount(GetUserEmail());
-            SetReturnResult(result, ResultCodes.BadRequest, "Account deleted!", true);
-
-            return result;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize]
         [HttpPost("ChangeTheme")]
-        public async Task<ReturnResult<bool>> ChangeTheme()
+        public async Task<ActionResult<bool>> ChangeTheme()
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Theme changed!",
-                Data = await _userService.ChangeTheme(GetUserEmail())
-            };
-            return result;
+                var res = await _userService.ChangeTheme(GetUserEmail());
+                return Ok(res);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize]
         [HttpPut("ChangePassword")]
-        public async Task<ReturnResult<bool>> ChangePassword(ChangePasswordDTO changePasswordDTO)
+        public async Task<ActionResult<bool>> ChangePassword(ChangePasswordDTO changePasswordDTO)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Password changed!",
-                Data = false
-            };
+                var loginDTO = new LoginDTO()
+                {
+                    Email = GetUserEmail(),
+                    Password = changePasswordDTO.OldPassword
+                };
 
-
-            var loginDTO = new LoginDTO()
-            {
-                Email = GetUserEmail(),
-                Password = changePasswordDTO.OldPassword
-            };
-
-            if (await _userService.Login(loginDTO) == null)
-            {
-                SetReturnResult<bool>(result, ResultCodes.BadRequest, "Wrong data", false);
-                return result;
+                var res = await _userService.Login(loginDTO);
+                await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
+                return Ok(res);
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
 
-             await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
-
-            return result;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 

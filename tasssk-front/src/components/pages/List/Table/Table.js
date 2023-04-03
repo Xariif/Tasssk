@@ -10,14 +10,17 @@ import { UpdateItem } from "services/ItemService";
 import { Edit } from "./Actions/Edit";
 import { Delete } from "./Actions/Delete";
 import { Add } from "./Actions/Add";
+import useLocalStorage from "hooks/useLocalStorage";
+import Privilages from "./Actions/Privilages";
 
 function Table({ selectedData, fetchData }) {
-  var finishDate = new Date(selectedData.list.finishDate);
+  const [emailStorage] = useLocalStorage("email");
+  var finishDate = new Date(selectedData.finishDate);
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
       item.finished = !item.finished;
       const body = {
-        listId: selectedData.list.id,
+        listId: selectedData.id,
         item: item,
       };
 
@@ -44,16 +47,11 @@ function Table({ selectedData, fetchData }) {
   const actionsTemplate = (row) => {
     return (
       <>
-        <Edit
-          selectedItem={row}
-          list={selectedData.list}
-          fetchData={fetchData}
-        />
+        <Edit selectedItem={row} fetchData={fetchData} />
 
         <Delete
           style={{ marginLeft: "1rem" }}
           selectedItem={row}
-          list={selectedData.list}
           fetchData={fetchData}
         />
       </>
@@ -143,11 +141,11 @@ function Table({ selectedData, fetchData }) {
       >
         <h1 style={{ color: "var(--green-300)" }}>
           <i className="pi pi-book" style={{ fontSize: " 2rem" }} />{" "}
-          {selectedData.list.name.toUpperCase()}
+          {selectedData.name.toUpperCase()}
         </h1>
         <h3 style={{ textAlign: "center", display: "flex" }}>
           <Countdown
-            date={selectedData.list.finishDate}
+            date={selectedData.finishDate}
             renderer={(e) => {
               if (e.days >= 1) {
                 return (
@@ -174,7 +172,7 @@ function Table({ selectedData, fetchData }) {
                   >
                     Attention your list is overdone! <br />
                     Finish date:&nbsp;
-                    {moment(selectedData.list.finishDate).format(
+                    {moment(selectedData.finishDate).format(
                       "MMMM Do YYYY, HH:mm:ss "
                     )}
                   </div>
@@ -190,22 +188,21 @@ function Table({ selectedData, fetchData }) {
   function Footer() {
     return (
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {true ? (
+        {false ? (
           <>
-            xxxx
-            {/*
-
-            privileges.owner
-          <Privilages
-            privileges={privileges}
-            list={selectedData.list}
-          ></Privilages>  
-        */}
+            {selectedData.list.privileges.find((x) => x.email === emailStorage)
+              .owner ? (
+              <div>
+                <Privilages selectedData={selectedData}></Privilages>
+              </div>
+            ) : (
+              <div> </div>
+            )}
           </>
         ) : (
           <div> </div>
         )}
-        <Add fetchData={fetchData} list={selectedData.list} />
+        <Add fetchData={fetchData} list={selectedData} />
       </div>
     );
   }

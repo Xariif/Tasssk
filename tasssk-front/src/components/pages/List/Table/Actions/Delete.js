@@ -3,21 +3,18 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { Button } from "primereact/button";
 import { DeleteItem } from "services/ItemService";
 
-export const Delete = ({ style, selectedItem, list, fetchData }) => {
+export const Delete = ({ style, selectedItem, fetchData }) => {
   const [deleteItemDialog, setDeleteItemDialog] = useState(false);
 
   function DeleteSelectedItem() {
     return new Promise((resolve, reject) => {
       DeleteItem(selectedItem)
         .then((res) => {
-          fetchData();
+          fetchData(selectedItem.listId);
           resolve(res);
         })
         .catch((error) => {
           reject(error);
-        })
-        .finally(() => {
-          setDeleteItemDialog(false);
         });
     });
   }

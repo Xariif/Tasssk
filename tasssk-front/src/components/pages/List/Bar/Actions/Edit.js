@@ -10,6 +10,7 @@ import { Calendar } from "primereact/calendar";
 
 export default function Edit({ fetchData, selectedData }) {
   const [listStorage, setListStorage] = useLocalStorage("selectedList");
+  const [emailStorage] = useLocalStorage("email");
   const refFocusName = useRef(null);
 
   const toastRef = useToastContext();
@@ -18,8 +19,8 @@ export default function Edit({ fetchData, selectedData }) {
   const [date, setDate] = useState(null);
 
   useEffect(() => {
-    setValue(selectedData.list.name);
-    setDate((date) => new Date(selectedData.list.finishDate));
+    setValue(selectedData.name);
+    setDate(new Date(selectedData.finishDate));
   }, [selectedData.list]);
 
   return (
@@ -51,13 +52,23 @@ export default function Edit({ fetchData, selectedData }) {
               label="Save"
               icon="pi pi-check"
               onClick={() => {
-                selectedData.list.name = value;
-                selectedData.list.finishDate = date;
-                UpdateList(selectedData.list)
+                if (!value) {
+                  toastRef.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Name cannot be empty!",
+                    life: 5000,
+                  });
+                  return;
+                }
+                date.setSeconds(0);
+                selectedData.name = value;
+                selectedData.finishDate = date;
+                UpdateList(selectedData)
                   .then((res) => {
                     setListStorage(value);
                     setEditListDialog(false);
-                    fetchData("update");
+                    fetchData(selectedData.id);
 
                     toastRef.current.show({
                       severity: "info",
@@ -111,7 +122,7 @@ export default function Edit({ fetchData, selectedData }) {
             showIcon
             value={date}
             onChange={(e) => {
-              setDate(e.value);
+              if (e.value) setDate(e.value);
             }}
           />
         </div>

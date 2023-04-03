@@ -21,14 +21,11 @@ namespace ToDoAPI.Services
 
         public async Task<UserDataDTO> Login(LoginDTO loginDTO)
         {
-
-            try
-            {
-
+           
                 var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == loginDTO.Email).FirstOrDefaultAsync();
 
                 if (user == null)
-                    return null;
+                    throw new ArgumentException("User not exist");
 
                 using var hmac = new HMACSHA512(user.PasswordSalt);
 
@@ -37,7 +34,7 @@ namespace ToDoAPI.Services
                 for (int i = 0; i < computedHash.Length; i++)
                 {
                     if (computedHash[i] != user.PasswordHash[i])
-                        return null;
+                        throw new ArgumentException("Bad password");
                 }
 
                 return new UserDataDTO
@@ -46,28 +43,19 @@ namespace ToDoAPI.Services
                     DarkMode = user.DarkMode,
                     Token = _tokenService.CreateTokenDisciple(user)
                 };
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
+           
 
             
         }
 
-        public async Task<User> Register(RegisterDTO registerDTO)
+        public async Task Register(RegisterDTO registerDTO)
         {
-
-
             using var hmac = new HMACSHA512();
 
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == registerDTO.Email).FirstOrDefaultAsync();
 
-
-
             if (user != null)
-                throw new Exception(message: "Email already exist!");
+                throw new ArgumentException(message: "Email already exist!");
 
             var newUser = new User
             {
@@ -77,11 +65,9 @@ namespace ToDoAPI.Services
                 BirthDate = registerDTO.BirthDate,
             };
             await db.GetCollection<User>(UserCollection).InsertOneAsync(newUser);
-
-            return newUser;
         }
 
-        public bool ValidateToken(string token)
+        public async Task<bool> ValidateToken(string token)
         {
             var mySecret = "agCa0sg!@FaWFG!KO*UY5hsdf1aq!";
             var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
@@ -104,7 +90,7 @@ namespace ToDoAPI.Services
             }
             catch
             {
-                return false;
+                throw new ArgumentException(message: "Token invalid");
             }
             return true;
         }

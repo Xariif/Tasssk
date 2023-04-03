@@ -20,28 +20,35 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetLists")]
-        public async Task<ReturnResult<List<ListDTO>>> GetLists()
+        public async Task<ReturnResult<UserListsDTO>> GetLists(string selectedItemId)
         {
-            var result = new ReturnResult<List<ListDTO>>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Lists",
-                Data = new List<ListDTO>()
-            };
-            result.Data = await _listService.GetLists(GetUserEmail());
+                var result = new ReturnResult<UserListsDTO>()
+                {
+                    Code = ResultCodes.Ok,
+                    Message = "Lists",
+                    Data = null
+                };
+                result.Data = await _listService.GetLists(GetUserEmail(), selectedItemId);
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         [Authorize]
         [HttpPost("CreateList")]
-        public async Task<ReturnResult<bool>> CreateList(NewListDTO newList)
+        public async Task<ReturnResult<string>> CreateList(NewListDTO newList)
         {
-            var result = new ReturnResult<bool>()
+            var result = new ReturnResult<string>()
             {
                 Code = ResultCodes.Ok,
                 Message = "List created",
-                Data = true
+                Data = null
             };
 
             result.Data = await _listService.CreateList(newList, GetUserEmail());
@@ -80,6 +87,7 @@ namespace ToDoAPI.Controllers
             return result;
         }
 
+  
         [Authorize]
         [HttpPost("SendInvite")]
         public async Task<ReturnResult<bool>> SendInvite(SendInviteDTO sendInviteDTO)
@@ -91,12 +99,23 @@ namespace ToDoAPI.Controllers
                 Data = true
             };
 
-            //   await _notificationService.AddNotification(newNotification.Email, newNotification.Header, newNotification.Body);
+            if(sendInviteDTO.Receiver == GetUserEmail()) 
+            {
+                SetReturnResult(result, ResultCodes.BadRequest, "You cannot send invite to yourself", false);
+                return result;
+            }
+
+            result.Data =   await _listService.SendInvite(sendInviteDTO,GetUserEmail());
+
+            if (result.Data == false)
+                SetReturnResult(result, ResultCodes.BadRequest, "User not exist", false);
+
+
             return result;
         }
         [Authorize]
         [HttpPost("AcceptInvite")]
-        public async Task<ReturnResult<bool>> AcceptInvite(NewNotificationDTO newNotification)
+        public async Task<ReturnResult<bool>> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
         {
             var result = new ReturnResult<bool>()
             {
@@ -105,9 +124,12 @@ namespace ToDoAPI.Controllers
                 Data = true
             };
 
-            //await _notificationService.AcceptInvite(newNotification.Email, newNotification.Header, newNotification.Body);
-            return result;
-        }
+            result.Data = await _listService.AcceptInvite(acceptInviteDTO);
 
+            if (result.Data == false)
+                SetReturnResult(result, ResultCodes.BadRequest, "This list no longer exist", false);
+
+            return result;
+        }     
     }
 }

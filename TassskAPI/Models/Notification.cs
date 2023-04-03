@@ -17,7 +17,7 @@ namespace TassskAPI.Models
    
     public class InviteNotification : Notification
     {        
-        public  string ListId { get; set; }
+        public ObjectId ListId { get; set; }
         public Privileges Privileges{ get; set; }
     }
 }

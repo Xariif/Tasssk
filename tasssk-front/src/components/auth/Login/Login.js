@@ -42,21 +42,18 @@ export default function Login() {
   };
 
   async function onSubmit(data, form) {
-    try {
-      await LoginUser(data).then((res) => {
-        if (res.code == 200) {
-          setToken(res.data.token);
-          setEmail(res.data.email);
-          setAuth(true);
-          setTheme(res.data.darkMode);
-        }
-        ToastAPI(toastRef, res);
-      });
+    LoginUser(data)
+      .then((res) => {
+        setToken(res.token);
+        setEmail(res.email);
+        setAuth(true);
+        setTheme(res.darkMode);
 
-      navigate("/");
-    } catch (error) {
-      ToastAPI(toastRef, error);
-    }
+        navigate("/");
+      })
+      .catch((err) => {
+        ToastAPI(toastRef, err.response);
+      });
   }
 
   const isFormFieldValid = (meta) => !!(meta.touched && meta.error);

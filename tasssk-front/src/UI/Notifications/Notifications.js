@@ -10,13 +10,13 @@ import moment from "moment";
 import {
   CreateNotification,
   DeleteNotification,
+  GetInviteNotification,
   GetNotifications,
   SetNotificationReaded,
 } from "../../services/NotificationService";
 import { useToastContext } from "../../context/ToastContext";
 import { ToastAPI } from "./../../context/ToastContext";
 import { AcceptInvite } from "services/ListService";
-import { ConnectedOverlayScrollHandler } from "primereact/utils";
 
 export default function Notifications() {
   const { visible, notifications, badge, send } =
@@ -31,7 +31,7 @@ export default function Notifications() {
 
   return (
     <Sidebar
-      style={{ width: "30%" }}
+      style={{ width: "450px" }}
       className="notifications"
       position="right"
       visible={notificationsVisible}
@@ -52,20 +52,14 @@ export default function Notifications() {
             Header: "Gorące Mamuśki w twojej okolicy!",
             Body: "Zobacz sam w twojej okolicy znaleziono 54 chętne mamuśki",
           };
-          CreateNotification(data)
-            .then((res) => {
-              ToastAPI(toastRef, res);
-              return res;
-            })
-            .then((res) => {
-              SginalRsendNotification(data.Email, res.message);
-            });
+          CreateNotification(data).then((res) => {
+            SginalRsendNotification(data.Email, res.message);
+          });
         }}
       ></Button>
 
       {notificationsList ? (
         notificationsList.map((element) => {
-          //  console.log(element);
           return <Notification element={element} key={element.id} />;
         })
       ) : (
@@ -151,6 +145,7 @@ export default function Notifications() {
                 {moment(element.createdAt).calendar()}
               </h5>
             </div>
+            {!element.isReaded && <Badge severity="info"></Badge>}
 
             <div
               style={{
@@ -165,20 +160,30 @@ export default function Notifications() {
                 size="sm"
                 rounded
                 label="Accept"
-                onClick={() =>
-                  AcceptInvite(element)
+                onClick={() => {
+                  GetInviteNotification(element.id)
                     .then((res) => {
-                      setNotificationsList((notificationsList) =>
-                        notificationsList.filter((x) => {
-                          return x.id !== element.id;
-                        })
-                      );
                       console.log(res);
+                      AcceptInvite(res.data)
+                        .then((res) => {
+                          ToastAPI(toastRef, res);
+                          return res;
+                        })
+                        .then((res) => {
+                          DeleteNotification(element.id).then(() => {
+                            setNotificationsList((notificationsList) =>
+                              notificationsList.filter((x) => {
+                                return x.id != element.id;
+                              })
+                            );
+                          });
+                        });
                     })
+
                     .finally(() => {
                       //add to list
-                    })
-                }
+                    });
+                }}
               ></Button>
               <Button
                 text
@@ -188,17 +193,13 @@ export default function Notifications() {
                 size="sm"
                 rounded
                 onClick={() =>
-                  DeleteNotification(element.id)
-                    .then(() => {
-                      setNotificationsList((notificationsList) =>
-                        notificationsList.filter((x) => {
-                          return x.id != element.id;
-                        })
-                      );
-                    })
-                    .finally(() => {
-                      //send notification rejected
-                    })
+                  DeleteNotification(element.id).then(() => {
+                    setNotificationsList((notificationsList) =>
+                      notificationsList.filter((x) => {
+                        return x.id != element.id;
+                      })
+                    );
+                  })
                 }
               ></Button>
             </div>

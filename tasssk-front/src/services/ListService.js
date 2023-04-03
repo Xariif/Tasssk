@@ -1,9 +1,14 @@
 import { useAPI, useFileAPI } from "../hooks/useAPI";
 
-export function GetLists() {
+var url = process.env.REACT_APP_BASE_URL + "List/";
+
+export function GetLists(selectedItem) {
   var config = {
     method: "get",
-    url: process.env.REACT_APP_BASE_URL + "List/GetLists",
+    url: process.env.REACT_APP_BASE_URL + "GetLists",
+    params: {
+      selectedItemId: selectedItem,
+    },
   };
   return useAPI(config);
 }
@@ -15,7 +20,7 @@ export function CreateList({ listName, finishDate }) {
   };
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "List/CreateList",
+    url: process.env.REACT_APP_BASE_URL + "CreateList",
     data: data,
   };
 
@@ -25,7 +30,7 @@ export function CreateList({ listName, finishDate }) {
 export function UpdateList(props) {
   var config = {
     method: "put",
-    url: process.env.REACT_APP_BASE_URL + "List/UpdateList",
+    url: process.env.REACT_APP_BASE_URL + "UpdateList",
     data: props,
   };
   return useAPI(config);
@@ -37,36 +42,23 @@ export function DeleteList(props) {
   };
   var config = {
     method: "delete",
-    url: process.env.REACT_APP_BASE_URL + "List/DeleteList",
+    url: process.env.REACT_APP_BASE_URL + "DeleteList",
     params,
   };
   return useAPI(config);
 }
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////
 
-export function SendInviteToList({ email, list }) {
-  console.log(list, email);
-  const x = {
-    Sender: "",
+//PRIVILEGES AND INVITE REQUESTS
+
+export function SendInvite({ email, selectedData }) {
+  const data = {
     Receiver: email,
-    Privileges: {
-      ListObjectId: list.id,
-      ListPermission: {
-        Owner: false,
-        Read: false,
-        Write: false,
-        Modify: false,
-        Delete: false,
-      },
-    },
+    ListId: selectedData.list.id,
   };
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "ItemList/SendInviteToList",
-    data: x,
+    url: process.env.REACT_APP_BASE_URL + "SendInvite",
+    data: data,
   };
 
   return useAPI(config);
@@ -74,50 +66,21 @@ export function SendInviteToList({ email, list }) {
 
 export function AcceptInvite(props) {
   var data = {
-    Sender: props.sender,
-    Receiver: props.receiver,
+    ListId: props.listId,
     Privileges: {
-      ListObjectId: props.privileges.listObjectId,
-      ListPermission: {
-        Owner: props.privileges.listPermission.owner,
-        Read: props.privileges.listPermission.read,
-        Write: props.privileges.listPermission.write,
-        Modify: props.privileges.listPermission.modify,
-        Delete: props.privileges.listPermission.delete,
-      },
+      Email: props.privileges.email,
+      Owner: false,
+      Read: props.privileges.read,
+      Write: props.privileges.write,
+      Modify: props.privileges.modify,
+      Delete: props.privileges.delete,
     },
   };
-
+  console.log(data);
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "ItemList/AcceptInvite",
+    url: process.env.REACT_APP_BASE_URL + "AcceptInvite",
     data: data,
-  };
-  return useAPI(config);
-}
-
-export function GetUserPrivilages(listId) {
-  var params = {
-    listId: listId,
-  };
-
-  var config = {
-    method: "get",
-    url: process.env.REACT_APP_BASE_URL + "ItemList/GetUserPrivilages",
-    params,
-  };
-  return useAPI(config);
-}
-
-export function GetUsersListPrivilages(listId) {
-  var params = {
-    listId: listId,
-  };
-
-  var config = {
-    method: "get",
-    url: process.env.REACT_APP_BASE_URL + "ItemList/GetUsersListPrivilages",
-    params,
   };
   return useAPI(config);
 }

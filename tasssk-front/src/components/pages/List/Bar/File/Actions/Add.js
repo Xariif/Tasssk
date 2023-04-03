@@ -90,7 +90,7 @@ export const Add = ({ fetchData, selectedData }) => {
   const uploadHandler = (event) => {
     setProgressBar(true);
     const body = {
-      listId: selectedData.list.id,
+      listId: selectedData.id,
       files: event.files,
     };
 
@@ -98,7 +98,7 @@ export const Add = ({ fetchData, selectedData }) => {
       .then((res) => {
         ToastAPI(toastRef, res);
         setUploadFileDialog(false);
-        fetchData();
+        fetchData(selectedData.id);
       })
       .catch((error) => {
         toastRef.current.show({

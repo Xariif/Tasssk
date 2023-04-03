@@ -16,6 +16,7 @@ namespace TassskAPI.Services
         {
             var builder = new ConfigurationBuilder();
             builder.AddJsonFile("appsettings.json", optional: false);
+
             var configuration = builder.Build();
             var database = configuration["DatabaseName"];
 
@@ -23,6 +24,7 @@ namespace TassskAPI.Services
             settings.ServerApi = new ServerApi(ServerApiVersion.V1);
 
             var client = new MongoClient(settings);
+
             db = client.GetDatabase(database);
         }
     }
