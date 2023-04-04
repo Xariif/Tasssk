@@ -21,7 +21,7 @@ function Events() {
       GetEvents()
         .then((res) => {
           setEvents(
-            res.data.map((x) => ({
+            res.map((x) => ({
               title: x.name,
               date:
                 moment(x.date).format("HH:mm:ss") === "00:00:00"

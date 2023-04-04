@@ -21,62 +21,79 @@ namespace TassskAPI.Controllers
 
         [Authorize]
         [HttpGet("GetItems")]
-        public async Task<ReturnResult<List<ItemDTO>>> GetItems(string listId)
+        public async Task<ActionResult<List<ItemDTO>>> GetItems(string listId)
         {
-            var result = new ReturnResult<List<ItemDTO>>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Items",
-                Data = new List<ItemDTO>()
-            };
-            result.Data = await _itemService.GetItems(listId);
-
-            return result;
+                var res = await _itemService.GetItems(listId);
+    
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
         [HttpPost("CreateItem")]
-        public async Task<ReturnResult<bool>> CreateItem(CreateItemDTO newItem)
+        public async Task<ActionResult<bool>> CreateItem(CreateItemDTO newItem)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Item created",
-                Data = true
-            };
-
-            result.Data = await _itemService.CreateItem(newItem);
-            return result;
+                var res = await _itemService.CreateItem(newItem);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [Authorize]
         [HttpPut("UpdateItem")]
-        public async Task<ReturnResult<bool>> UpdateItem(ItemDTO updateItem)
+        public async Task<ActionResult<bool>> UpdateItem(ItemDTO updateItem)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Item updated",
-                Data = true
-            };
-
-            result.Data = await _itemService.UpdateItem(updateItem);
-            return result;
+                var res = await _itemService.UpdateItem(updateItem);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
         [HttpDelete("DeleteItem")]
-        public async Task<ReturnResult<bool>> DeleteItem(ItemDTO deleteItem)
+        public async Task<ActionResult<bool>> DeleteItem(ItemDTO deleteItem)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Item deleted",
-                Data = true
-            };
-
-            result.Data = await _itemService.DeleteItem(deleteItem);
-
-            return result;
+                var res = await _itemService.DeleteItem(deleteItem);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

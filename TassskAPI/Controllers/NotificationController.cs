@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
-using TassskAPI.Models;
 using TassskAPI.Services;
 using ToDoAPI.Controllers;
 
@@ -18,79 +17,98 @@ namespace TassskAPI.Controllers
         }
         [Authorize]
         [HttpGet("GetNotifications")]
-        public async Task<ReturnResult<List<NotificationDTO>>> Notifications()
+        public async Task<ActionResult<List<NotificationDTO>>> Notifications()
         {
-            var result = new ReturnResult<List<NotificationDTO>>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Notifications List",
-                Data = null
-            };
-
-            result.Data = await _notificationService.GetNotifications(GetUserEmail());
-        
-            return result;
+                var res = await _notificationService.GetNotifications(GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
         [HttpGet("GetInviteNotification")]
-        public async Task<ReturnResult<InviteNotificationDTO>> GetInviteNotification(string id)
+        public async Task<ActionResult<InviteNotificationDTO>> GetInviteNotification(string id)
         {
-            var result = new ReturnResult<InviteNotificationDTO>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Notifications List",
-                Data = null
-            };
+                var res = await _notificationService.GetInviteNotification(id);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
-            result.Data = await _notificationService.GetInviteNotification(id);
-
-            return result;
         }
 
 
 
         [Authorize]
         [HttpPost("CreateNotification")]
-        public async Task<ReturnResult<bool>> CreateNotification(NewNotificationDTO newNotification)
+        public async Task<ActionResult<bool>> CreateNotification(NewNotificationDTO newNotification)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Notification created",
-                Data = true
-            };
-
-            await _notificationService.CreateNotification(newNotification.Email, newNotification.Header, newNotification.Body);
-            return result;
+                var res = await _notificationService.CreateNotification(newNotification.Email, newNotification.Header, newNotification.Body);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize]
         [HttpDelete("DeleteNotification")]
-        public async Task<ReturnResult<bool>> DeleteNotification(string notificationId)
+        public async Task<ActionResult<bool>> DeleteNotification(string notificationId)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Notification deleted",
-                Data = true
-            };
-
-            await _notificationService.DeleteNotification(notificationId);
-            return result;
+                var res = await _notificationService.DeleteNotification(notificationId);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                    return  BadRequest(ex.Message);              
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize]
         [HttpPut("SetNotificationReaded")]
-        public async Task<ReturnResult<bool>> SetNotificationReaded(string notificationId)
+        public async Task<ActionResult<bool>> SetNotificationReaded(string notificationId)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Notification readed",
-                Data = true
-            };
-
-            await _notificationService.SetNotificationReaded(notificationId);
-            return result;
+               var res =  await _notificationService.SetNotificationReaded(notificationId);
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

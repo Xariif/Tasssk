@@ -86,8 +86,13 @@ namespace ToDoAPI.Controllers
         {
             try
             {
+                var loginDTO = new LoginDTO()
+                {
+                    Email = GetUserEmail(),
+                    Password = password
+                };
+                await _userService.Login(loginDTO);  
                 var res = await _userService.DeleteAccount(GetUserEmail());
-
                 return Ok(res);
 
             }
@@ -102,7 +107,7 @@ namespace ToDoAPI.Controllers
             }
         }
         [Authorize]
-        [HttpPost("ChangeTheme")]
+        [HttpPut("ChangeTheme")]
         public async Task<ActionResult<bool>> ChangeTheme()
         {
             try

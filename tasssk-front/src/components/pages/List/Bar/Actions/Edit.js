@@ -15,7 +15,7 @@ export default function Edit({ fetchData, selectedData }) {
 
   const toastRef = useToastContext();
   const [editListDialog, setEditListDialog] = useState(false);
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
   const [date, setDate] = useState(null);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Edit({ fetchData, selectedData }) {
                     toastRef.current.show({
                       severity: "info",
                       summary: "Edit",
-                      detail: res.message,
+                      detail: "List updated",
                       life: 5000,
                     });
                   })
@@ -105,7 +105,7 @@ export default function Edit({ fetchData, selectedData }) {
             placeholder="Name"
             value={value}
             onChange={(e) => {
-              setValue(e.target.value);
+              setValue((prev) => e.target.value);
             }}
           />
         </span>

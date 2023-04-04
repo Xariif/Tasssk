@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TassskAPI.DTOs;
 using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
-using TassskAPI.Models;
 using TassskAPI.Services;
 
 namespace ToDoAPI.Controllers
@@ -20,116 +18,120 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetLists")]
-        public async Task<ReturnResult<UserListsDTO>> GetLists(string selectedItemId)
+        public async Task<ActionResult<UserListsDTO>> GetLists(string selectedItemId)
         {
             try
             {
-                var result = new ReturnResult<UserListsDTO>()
-                {
-                    Code = ResultCodes.Ok,
-                    Message = "Lists",
-                    Data = null
-                };
-                result.Data = await _listService.GetLists(GetUserEmail(), selectedItemId);
+                var res = await _listService.GetLists(GetUserEmail(), selectedItemId);
 
-                return result;
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                return null;
+                return BadRequest(ex.Message);
             }
         }
 
         [Authorize]
         [HttpPost("CreateList")]
-        public async Task<ReturnResult<string>> CreateList(NewListDTO newList)
+        public async Task<ActionResult<string>> CreateList(NewListDTO newList)
         {
-            var result = new ReturnResult<string>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "List created",
-                Data = null
-            };
-
-            result.Data = await _listService.CreateList(newList, GetUserEmail());
-
-            return result;
+                var res = await _listService.CreateList(newList, GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         [Authorize]
         [HttpPut("UpdateList")]
-        public async Task<ReturnResult<bool>> UpdateList(ListDTO updateList)
+        public async Task<ActionResult<bool>> UpdateList(ListDTO updateList)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "List updated",
-                Data = true
-            };
-
-            result.Data = await _listService.UpdateList(updateList, GetUserEmail());
-
-            return result;
+                var res = await _listService.UpdateList(updateList, GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [Authorize]
         [HttpDelete("DeleteList")]
-        public async Task<ReturnResult<bool>> DeleteList(string id)
+        public async Task<ActionResult<bool>> DeleteList(string id)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "List deleted",
-                Data = true
-            };
+                var res = await _listService.DeleteList(id, GetUserEmail());
+                return Ok(res);
 
-            result.Data = await _listService.DeleteList(id, GetUserEmail());
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
 
-            return result;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-  
+
         [Authorize]
         [HttpPost("SendInvite")]
-        public async Task<ReturnResult<bool>> SendInvite(SendInviteDTO sendInviteDTO)
+        public async Task<ActionResult<bool>> SendInvite(SendInviteDTO sendInviteDTO)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Invite sent",
-                Data = true
-            };
-
-            if(sendInviteDTO.Receiver == GetUserEmail()) 
+                var res = await _listService.SendInvite(sendInviteDTO, GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
             {
-                SetReturnResult(result, ResultCodes.BadRequest, "You cannot send invite to yourself", false);
-                return result;
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
-            result.Data =   await _listService.SendInvite(sendInviteDTO,GetUserEmail());
-
-            if (result.Data == false)
-                SetReturnResult(result, ResultCodes.BadRequest, "User not exist", false);
-
-
-            return result;
         }
         [Authorize]
         [HttpPost("AcceptInvite")]
-        public async Task<ReturnResult<bool>> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
+        public async Task<ActionResult<bool>> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
         {
-            var result = new ReturnResult<bool>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Invite accepted",
-                Data = true
-            };
-
-            result.Data = await _listService.AcceptInvite(acceptInviteDTO);
-
-            if (result.Data == false)
-                SetReturnResult(result, ResultCodes.BadRequest, "This list no longer exist", false);
-
-            return result;
-        }     
+                var res= await _listService.AcceptInvite(acceptInviteDTO);
+                return Ok(res);
+            }
+            catch (ArgumentException ex )
+            {
+                return BadRequest(ex.Message);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

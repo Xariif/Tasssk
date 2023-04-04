@@ -19,99 +19,77 @@ namespace TassskAPI.Controllers
         }
         [Authorize]
         [HttpGet("GetFiles")]
-        public async Task<ReturnResult<List<FileDTO>>> GetFiles(string listId)
-        {
-            var result = new ReturnResult<List<FileDTO>>()
-            {
-                Code = ResultCodes.Ok,
-                Message = "Files",
-                Data = new List<FileDTO>() 
-            };
+        public async Task<ActionResult<List<FileDTO>>> GetFiles(string listId)
+        {           
             try
             {
-
-                result.Data = await _fileService.GetFiles(listId);
-
-                return result;
-
+                var res = await _fileService.GetFiles(listId);
+                return Ok(res);
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
-                SetReturnResult(result, ResultCodes.BadRequest, "File by id fail", null);
-                return result;
+                return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
         [Authorize]
         [HttpGet("DownloadFile")]
-        public async Task<ReturnResult<FilesData>> DownloadFile(string fileId)
+        public async Task<ActionResult<FilesData>> DownloadFile(string fileId)
         {
-            var result = new ReturnResult<FilesData>()
-            {
-                Code = ResultCodes.Ok,
-                Message = "File Data",
-            };
             try
             {
-
-                result.Data = await _fileService.DownloadFile(fileId);
-                return result;
-
+                var res = await _fileService.DownloadFile(fileId);
+                return Ok(res);
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
-                SetReturnResult(result, ResultCodes.BadRequest, "File download fail", null);
-                return result;
+                return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }          
         }
 
         [Authorize]
         [HttpPost("CreateFile")]
-        public async Task<ReturnResult<List<FileDTO>>> CreateFile(string listId, List<IFormFile> formData)
+        public async Task<ActionResult<List<FileDTO>>> CreateFile(string listId, List<IFormFile> formData)
         {
-            var result = new ReturnResult<List<FileDTO>>()
-            {
-                Code = ResultCodes.Ok,
-                Message = "File created",
-                Data = new List<FileDTO>()
-            };
-
             try
             {
-                result.Data = await _fileService.CreateFile(listId, formData);            
-                return result;
+                var res = await _fileService.CreateFile(listId, formData);
+                return Ok(res);
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
-                SetReturnResult(result, ResultCodes.BadRequest, "File create fail", null);
-
-                return result;
+                return BadRequest(ex.Message);
             }
-
-
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
         }
         [Authorize]
         [HttpDelete("DeleteFile")]
-        public async Task<ReturnResult<bool>> DeleteFile(string fileId)
+        public async Task<ActionResult<bool>> DeleteFile(string fileId)
         {
-            var result = new ReturnResult<bool>()
-            {
-                Code = ResultCodes.Ok,
-                Message = "File deleted",
-                Data = true
-            };
             try
             {
-
-                await _fileService.DeleteFile(fileId);
-
-                return result;
-
+                var res = await _fileService.DeleteFile(fileId);
+                return Ok(res);
             }
-            catch (Exception)
+            catch (ArgumentException ex)
             {
-                SetReturnResult(result, ResultCodes.BadRequest, "File delete fail", false);
-                return result;
+                return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }          
         }
     }
 }

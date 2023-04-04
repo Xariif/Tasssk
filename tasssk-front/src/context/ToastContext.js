@@ -1,9 +1,12 @@
-import { createContext, useContext, useRef } from "react";
-
-const ToastContext = createContext();
-
-export function ToastAPI(toastRef, response) {
-  switch (response.status) {
+switch (response.status) {
+    case 200:
+      toastRef.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: response.data,
+        life: 3000,
+      });
+      break;
     case 400:
       toastRef.current.show({
         severity: "error",
@@ -39,11 +42,3 @@ export function ToastAPI(toastRef, response) {
       });
       break;
   }
-}
-
-export function ToastProvder({ children }) {
-  const ref = useRef();
-  return <ToastContext.Provider value={ref}>{children}</ToastContext.Provider>;
-}
-
-export const useToastContext = () => useContext(ToastContext);

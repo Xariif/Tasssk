@@ -25,7 +25,7 @@ namespace TassskAPI.Services
 
             foreach (var list in lists)
             {
-                UserListDTO userListDTO = new UserListDTO()
+                UserListDTO userListDTO = new()
                 {
                     Id = list.Id.ToString(),
                     Name = list.Name,
@@ -43,9 +43,11 @@ namespace TassskAPI.Services
                 };
                 userListsDTO.Add(userListDTO);
             }
-            
-            UserListsDTO res = new UserListsDTO();
-            res.Lists = userListsDTO;
+
+            UserListsDTO res = new()
+            {
+                Lists = userListsDTO
+            };
 
             return res;       
         }
@@ -116,6 +118,8 @@ namespace TassskAPI.Services
                 return false;
 
             var privileges = list.Privileges.Where(x=>x.Email == email).FirstOrDefault();
+
+
 
                 if(privileges.Owner)
             {

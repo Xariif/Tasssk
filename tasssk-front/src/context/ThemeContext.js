@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { ChangeTheme } from "../services/UserService";
 
-const ThemeContext = React.createContext();
-const ThemeUpdateContext = React.createContext();
+const ThemeContext = React.createContext(false);
+const ThemeUpdateContext = React.createContext(() => {});
 
 export function useThemeContext() {
   return useContext(ThemeContext);

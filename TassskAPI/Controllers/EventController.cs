@@ -18,15 +18,21 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetEvents")]
-        public async Task<ReturnResult<List<EventDTO>>> GetEvents()
+        public async Task<ActionResult<List<EventDTO>>> GetEvents()
         {
-            var result = new ReturnResult<List<EventDTO>>()
+            try
             {
-                Code = ResultCodes.Ok,
-                Message = "Events",
-                Data = await _eventService.GetEvents(GetUserEmail())
-            };
-            return result;
+                var res = await _eventService.GetEvents(GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

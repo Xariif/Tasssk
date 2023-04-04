@@ -1,12 +1,14 @@
 import { useAPI } from "../hooks/useAPI";
 
+var url = process.env.REACT_APP_BASE_URL + "Item/";
+
 export function GetItems(props) {
   var params = {
     listId: props,
   };
   var config = {
     method: "get",
-    url: process.env.REACT_APP_BASE_URL + "Item/GetItems",
+    url: url + "GetItems",
     params: params,
   };
   return useAPI(config);
@@ -15,7 +17,7 @@ export function GetItems(props) {
 export function CreateItem(item) {
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "Item/CreateItem",
+    url: url + "CreateItem",
     data: item,
   };
 
@@ -25,7 +27,7 @@ export function CreateItem(item) {
 export function UpdateItem(item) {
   var config = {
     method: "put",
-    url: process.env.REACT_APP_BASE_URL + "Item/UpdateItem",
+    url: url + "UpdateItem",
     data: item,
   };
   return useAPI(config);
@@ -34,7 +36,7 @@ export function UpdateItem(item) {
 export function DeleteItem(item) {
   var config = {
     method: "delete",
-    url: process.env.REACT_APP_BASE_URL + "Item/DeleteItem",
+    url: url + "DeleteItem",
     data: item,
   };
 

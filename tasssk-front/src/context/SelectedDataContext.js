@@ -17,21 +17,21 @@ export function SelectedDataContextProvider({ children }) {
     selectedList: null,
   });
 
-  const [SignalRlistupdate, SignalRsendlistupdate] = useListSignalR();
+  const [SignalRlistupdate, SignalRsendlistupdate] = useListSignalR(
+    data.selectedList?.id
+  );
 
   const fetchData = (selectedItem = null) => {
-    console.log("fecz " + selectedItem);
     GetLists(selectedItem).then((res) => {
-      console.log(res);
-      let selected = res.data.lists.find((x) => x.isSelected === true);
+      let selected = res.lists.find((x) => x.isSelected === true);
       setData({
         ...data,
-        allLists: res.data.lists,
-        selectedList: selected ? selected : res.data.lists[0],
+        allLists: res.lists,
+        selectedList: selected ? selected : res.lists[0],
       });
     });
   };
-
+  console.log(data);
   useEffect(() => {
     fetchData();
   }, [SignalRlistupdate]);

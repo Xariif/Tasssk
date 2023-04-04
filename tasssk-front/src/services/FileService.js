@@ -1,5 +1,7 @@
 import { useAPI } from "hooks/useAPI";
 
+var url = process.env.REACT_APP_BASE_URL + "File/";
+
 export function GetFiles(listId) {
   var params = {
     listId: listId,
@@ -7,7 +9,7 @@ export function GetFiles(listId) {
 
   var config = {
     method: "get",
-    url: process.env.REACT_APP_BASE_URL + "File/GetFiles",
+    url: url + "GetFiles",
     params,
   };
 
@@ -21,7 +23,7 @@ export function DownloadFile(fileId) {
 
   var config = {
     method: "get",
-    url: process.env.REACT_APP_BASE_URL + "File/DownloadFile",
+    url: url + "DownloadFile",
     params,
   };
 
@@ -41,7 +43,7 @@ export function CreateFile(props) {
 
   var config = {
     method: "post",
-    url: process.env.REACT_APP_BASE_URL + "File/CreateFile",
+    url: url + "CreateFile",
     params: params,
     data: formData,
     onUploadProgress: (progressEvent) => {
@@ -59,7 +61,7 @@ export function DeleteFile({ fileId }) {
 
   var config = {
     method: "delete",
-    url: process.env.REACT_APP_BASE_URL + "File/DeleteFile",
+    url: url + "DeleteFile",
     params: params,
   };
 

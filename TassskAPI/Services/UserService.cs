@@ -21,31 +21,24 @@ namespace ToDoAPI.Services
 
         public async Task<UserDataDTO> Login(LoginDTO loginDTO)
         {
-           
-                var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == loginDTO.Email).FirstOrDefaultAsync();
 
-                if (user == null)
-                    throw new ArgumentException("User not exist");
+            var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == loginDTO.Email).FirstOrDefaultAsync() ?? throw new ArgumentException("User not exist");
+            using var hmac = new HMACSHA512(user.PasswordSalt);
 
-                using var hmac = new HMACSHA512(user.PasswordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
 
-                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
+            for (int i = 0; i < computedHash.Length; i++)
+            {
+                if (computedHash[i] != user.PasswordHash[i])
+                    throw new ArgumentException("Bad password");
+            }
 
-                for (int i = 0; i < computedHash.Length; i++)
-                {
-                    if (computedHash[i] != user.PasswordHash[i])
-                        throw new ArgumentException("Bad password");
-                }
-
-                return new UserDataDTO
-                {
-                    Email = user.Email,
-                    DarkMode = user.DarkMode,
-                    Token = _tokenService.CreateTokenDisciple(user)
-                };
-           
-
-            
+            return new UserDataDTO
+            {
+                Email = user.Email,
+                DarkMode = user.DarkMode,
+                Token = _tokenService.CreateTokenDisciple(user)
+            };
         }
 
         public async Task Register(RegisterDTO registerDTO)
@@ -108,7 +101,7 @@ namespace ToDoAPI.Services
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
 
             user.DarkMode = !user.DarkMode;
-            await db.GetCollection<User>(UserCollection).FindOneAndReplaceAsync<User>(x=>x.Email == email,user);
+            await db.GetCollection<User>(UserCollection).FindOneAndReplaceAsync<User>(x => x.Email == email, user);
             return user.DarkMode;
         }
 

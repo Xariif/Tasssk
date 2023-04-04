@@ -16,7 +16,7 @@ export function NotificationContextProvider({ children }) {
 
   useEffect(() => {
     GetNotifications().then((res) => {
-      setNotifications((notifications) => res.data);
+      res.lenght > 0 && setNotifications((notifications) => res.data);
     });
   }, [SignalRnotifications]);
 
