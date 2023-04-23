@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using ServerSignalR;
 
@@ -20,6 +18,5 @@ builder
 );
 
 app.MapHub<NotificationsHub>("notifications");
-app.MapHub<ListHub>("list");
 
 app.Run();

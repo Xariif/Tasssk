@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { GetNotifications } from "../services/NotificationService";
-import useSignalR from "../hooks/useSignalR";
+import useSignalRNotifications from "../hooks/useSignalRNotifications";
 
 export const NotificationContext = createContext(null);
 
@@ -9,14 +9,15 @@ export function useNotificationContext() {
 }
 
 export function NotificationContextProvider({ children }) {
-  const [SignalRnotifications, SignalRsendNotification] = useSignalR();
+  const [SignalRnotifications, SignalRsendNotification] =
+    useSignalRNotifications();
   const [visible, setVisible] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [badgeCount, setBadgeCount] = useState(0);
 
   useEffect(() => {
     GetNotifications().then((res) => {
-      res.lenght > 0 && setNotifications((notifications) => res.data);
+      res.data.length > 0 && setNotifications((notifications) => res.data);
     });
   }, [SignalRnotifications]);
 

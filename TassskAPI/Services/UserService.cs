@@ -90,10 +90,16 @@ namespace ToDoAPI.Services
 
         public async Task<bool> DeleteAccount(string email)
         {
-            var res = await db.GetCollection<User>(UserCollection).DeleteOneAsync(x => x.Email == email);
+            await db.GetCollection<Notification>(NotificationCollection).DeleteManyAsync(x => x.Receiver== email);
+            var userLists = await db.GetCollection<List>(ListCollection).Find(x=>x.Privileges.Find(z=>z.Email == email).Owner == true).ToListAsync();
+            ListService listService = new ListService();
+            foreach (var list in userLists)
+            {
+                await listService.DeleteList(list.Id.ToString(), email);
+            }
+            await db.GetCollection<User>(UserCollection).DeleteOneAsync(x => x.Email == email);
 
-            if (res.DeletedCount > 0) { return true; }
-            else { return false; }
+            return true;
         }
 
         public async Task<bool> ChangeTheme(string email)

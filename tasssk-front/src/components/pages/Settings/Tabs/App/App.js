@@ -12,7 +12,7 @@ import {
   useThemeUpdateContext,
 } from "../../../../../context/ThemeContext";
 export default function App() {
-  const [reportDialog, setReportDialog] = useState();
+  const [reportDialog, setReportDialog] = useState(false);
   const toastRef = useToastContext();
 
   const ReportDialog = () => {
@@ -83,8 +83,7 @@ export default function App() {
           checked={theme}
           onChange={() => {
             ChangeTheme().then((res) => {
-              if (res.data === true) setDarkTheme(res.data);
-              else setDarkTheme(false);
+              setDarkTheme(res.data);
             });
           }}
         />

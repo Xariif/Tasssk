@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using TassskAPI.DTOs;
 using TassskAPI.DTOs.Item;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
@@ -11,7 +10,8 @@ namespace TassskAPI.Services
 {
     public class ListService : BaseService
     {
-        public async Task<UserListsDTO> GetLists(string email, string? selectedItemId)
+        #region List operations
+        public async Task<UserListsDTO> GetLists(string email, string? selectedListId)
         {
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
 
@@ -36,10 +36,11 @@ namespace TassskAPI.Services
                     CanEdit = list.Privileges.Where(x => x.Email == email).Select(z => z.Modify).FirstOrDefault(),
                     Items = db.GetCollection<Item>(ItemCollection).Find(x => x.ListId == list.Id).ToListAsync()
                     .Result.Select(z => new ItemDTO { Id = z.Id.ToString(), CreatedAt = z.CreatedAt, Finished = z.Finished, ListId = z.ListId.ToString(), Name = z.Name }).ToList(),
-                    IsSelected = 
-                    selectedItemId == null && lists.First() == list ? true : selectedItemId != null && lists.Any(x => x.Id == ObjectId.Parse(selectedItemId)) && list == lists.First(x => x.Id == ObjectId.Parse(selectedItemId)) ? true : false
-                    ,IsOwner = list.Privileges.Where(x => x.Email == email).Select(z => z.Owner).FirstOrDefault()
-                
+                    IsSelected =
+                    selectedListId == null && lists.First() == list ? true : selectedListId != null && lists.Any(x => x.Id == ObjectId.Parse(selectedListId)) && list == lists.First(x => x.Id == ObjectId.Parse(selectedListId)) ? true : false
+                    ,
+                    IsOwner = list.Privileges.Where(x => x.Email == email).Select(z => z.Owner).FirstOrDefault()
+
                 };
                 userListsDTO.Add(userListDTO);
             }
@@ -49,10 +50,8 @@ namespace TassskAPI.Services
                 Lists = userListsDTO
             };
 
-            return res;       
+            return res;
         }
-
-
         public async Task<string> CreateList(NewListDTO newList, string email)
         {
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
@@ -104,24 +103,23 @@ namespace TassskAPI.Services
             list.Finished = updateList.Finished;
             list.FinishDate = updateList.FinishDate;
 
-           var res=   await db.GetCollection<List>(ListCollection).ReplaceOneAsync(Builders<List>.Filter.Eq(x => x.Id, ObjectId.Parse(updateList.Id)), list);
+            var res = await db.GetCollection<List>(ListCollection).ReplaceOneAsync(Builders<List>.Filter.Eq(x => x.Id, ObjectId.Parse(updateList.Id)), list);
             return res.IsAcknowledged;
         }
-
         public async Task<bool> DeleteList(string id, string email)
         {
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
 
             var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();
-            
-            if(list == null)
+
+            if (list == null)
                 return false;
 
-            var privileges = list.Privileges.Where(x=>x.Email == email).FirstOrDefault();
+            var privileges = list.Privileges.Where(x => x.Email == email).FirstOrDefault();
 
 
 
-                if(privileges.Owner)
+            if (privileges.Owner)
             {
                 var files = await db.GetCollection<File>(FileCollection).Find(x => x.ListId == ObjectId.Parse(id)).ToListAsync();
 
@@ -142,53 +140,109 @@ namespace TassskAPI.Services
                 return res.IsAcknowledged;
             }
         }
+        #endregion
 
-
-        public async Task<bool> SendInvite(SendInviteDTO sendInviteDTO, string email)
+        #region Invites
+        public async Task<string> SendInvite(SendInviteDTO sendInviteDTO, string email)
         {
-        
-
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == sendInviteDTO.Receiver).FirstOrDefaultAsync();
             if (user == null)
             {
-                return false;
+                throw new ArgumentException(message: "User not exist");
             }
-            var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(sendInviteDTO.ListId)).FirstOrDefaultAsync();
-    
-            var notification = new InviteNotification
+            if (user.Email == email)
             {
-                Type = "Invite",
-                Header = $"New invite!",
-                Body = $"You've got invite to \"{list.Name}\" list from {email}!",
-                Receiver = sendInviteDTO.Receiver,
-                CreatedAt = DateTime.Now,
-                ListId = ObjectId.Parse(sendInviteDTO.ListId),
-                Privileges = new Privileges
-                {
-                    Email = user.Email,
-                    Owner = false,
-                    Read = true,
-                    Write = true,
-                    Modify = true,
-                    Delete = true
-                }
-            };
+                throw new ArgumentException(message: "You can't send invite to yourself");
+            }
 
-            await db.GetCollection<InviteNotification>(NotificationCollection).InsertOneAsync(notification);
-            return true;
+            var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(sendInviteDTO.ListId)).FirstOrDefaultAsync();
+
+            if (list.Privileges.Any(x => x.Email == sendInviteDTO.Receiver))
+            {
+                throw new ArgumentException(message: "User already is assigned to following list");
+            }
+
+
+            var filter = new BsonDocument
+            {
+                { "Receiver", sendInviteDTO.Receiver },
+                { "Type", "Invite" },
+                {"ListId", new ObjectId(sendInviteDTO.ListId) }
+            };
+            var usernotifications = await db.GetCollection<BsonDocument>(NotificationCollection).Find(filter).ToListAsync();
+
+            if (usernotifications.Any())
+            {
+                throw new ArgumentException(message: "User already have pending invite to this list");
+            }
+
+
+            NotificationService notificationService = new NotificationService();
+            await notificationService.CreateInviteNotification(list.Name, sendInviteDTO.ListId, email, sendInviteDTO.Receiver);
+            return "Invite sent";
         }
-        public async Task<bool> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
+        public async Task<string> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
         {
             var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(acceptInviteDTO.ListId)).FirstOrDefaultAsync();
-                
-            if(list == null) { return false; }
+
+            if (list == null) { throw new ArgumentException(message: "List no longer exist"); }
+
+            if (list.Privileges.Any(x => x.Email == acceptInviteDTO.Privileges.Email))
+            {
+                throw new ArgumentException(message: "You are already assigned to that list");
+            }
 
             list.Privileges.Add(acceptInviteDTO.Privileges);
 
-
             var res = await db.GetCollection<List>(ListCollection)
                  .ReplaceOneAsync(Builders<List>.Filter.Eq(x => x.Id, ObjectId.Parse(acceptInviteDTO.ListId)), list);
-            return res.IsAcknowledged;
+            return "Invitation accepted";
+        }
+        #endregion
+
+
+        public async Task<List<ListPrivileges>> ListPrivileges(string listId, string email)
+        {
+            var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(listId)).FirstOrDefaultAsync();
+
+            var user = list.Privileges.FirstOrDefault(x => x.Email == email);
+
+            if (user.Owner == false)
+            {
+                return null;
+            }
+
+
+            var result = list.Privileges.Select(x =>
+                new ListPrivileges
+                {
+                    Email = x.Email,
+                    IsOwner = x.Owner
+                }
+            ).ToList();
+
+            //Jak bd rozbudowywać uprawnienia dodać więcej parametrów
+
+            return result;
+        }
+        public async Task<string> RemoveAccess(string listId, string user, string email)
+        {
+            var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(listId)).FirstOrDefaultAsync();
+
+            if (list.Privileges.Find(x => x.Email == email).Owner == false)
+                throw new ArgumentException(message: "You are not owner");
+
+
+            list.Privileges.Remove(list.Privileges.First(x => x.Email == user));
+
+            await db.GetCollection<List>(ListCollection).ReplaceOneAsync(Builders<List>.Filter.Eq(x => x.Id, ObjectId.Parse(listId)), list);
+
+
+
+            NotificationService notificationService = new NotificationService();
+            await notificationService.CreateNotification(user, "Privleges removed", "Privileges to list " + list.Name + " has been removed by it's owner");
+
+            return "Privileges removed";
         }
     }
 }

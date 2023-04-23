@@ -42,7 +42,7 @@ export default function ChangePasswordButton() {
           setChangePasswordDialog(false);
         })
         .catch((err) => {
-          ToastAPI(toastRef, err.response);
+          ToastAPI( err.response);
         });
     }
 

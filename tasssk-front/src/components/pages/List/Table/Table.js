@@ -11,10 +11,13 @@ import { Edit } from "./Actions/Edit";
 import { Delete } from "./Actions/Delete";
 import { Add } from "./Actions/Add";
 import useLocalStorage from "hooks/useLocalStorage";
-import Privilages from "./Actions/Privilages";
+import Privilages from "../Bar/Actions/Privilages";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 
 function Table({ selectedData, fetchData }) {
   const [emailStorage] = useLocalStorage("email");
+
   var finishDate = new Date(selectedData.finishDate);
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
@@ -50,7 +53,6 @@ function Table({ selectedData, fetchData }) {
         <Edit selectedItem={row} fetchData={fetchData} />
 
         <Delete
-          style={{ marginLeft: "1rem" }}
           selectedItem={row}
           fetchData={fetchData}
         />
@@ -92,6 +94,7 @@ function Table({ selectedData, fetchData }) {
         paginator
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
         rows={7}
+        editMode="cell"
       >
         <Column
           filter
@@ -108,7 +111,7 @@ function Table({ selectedData, fetchData }) {
           field="createdAt"
           sortable
           body={createadAtTemplate}
-          style={{ textAlign: "center", width: " 250px" }}
+          style={{ width: " 200px" }}
         />
         <Column
           header="Finished"
@@ -116,7 +119,7 @@ function Table({ selectedData, fetchData }) {
           sortField="finished"
           sortFunction={finishedSort}
           body={finishedTemplate}
-          style={{ textAlign: "center" }}
+          style={{ width: " 50px" }}
         />
         <Column
           header="Actions"
@@ -187,27 +190,11 @@ function Table({ selectedData, fetchData }) {
 
   function Footer() {
     return (
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        {false ? (
-          <>
-            {selectedData.list.privileges.find((x) => x.email === emailStorage)
-              .owner ? (
-              <div>
-                <Privilages selectedData={selectedData}></Privilages>
-              </div>
-            ) : (
-              <div> </div>
-            )}
-          </>
-        ) : (
-          <div> </div>
-        )}
+      <div>
         <Add fetchData={fetchData} list={selectedData} />
       </div>
     );
   }
-
-  return <>Table</>;
 }
 
 export default Table;

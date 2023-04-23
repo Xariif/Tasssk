@@ -98,7 +98,7 @@ export default function DeleteAccountButton() {
             }}
           >
             {" "}
-            <Countdown date={Date.now() + 1000} daysInHours>
+            <Countdown date={Date.now() + 10000} daysInHours>
               <Delete />
             </Countdown>
           </div>

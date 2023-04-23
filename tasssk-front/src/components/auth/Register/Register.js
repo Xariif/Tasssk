@@ -63,13 +63,12 @@ export const Register = () => {
     RegisterUser(data)
       .then((res) => {
         console.log(res);
-        ToastAPI(toastRef, res.response);
+        ToastAPI(toastRef, res);
         form.restart();
         navigate("/Login");
       })
-      .catch((error) => {
-        console.log(error);
-        ToastAPI(toastRef, error.response);
+      .catch((err) => {
+        ToastAPI(toastRef, err);
       });
   };
 

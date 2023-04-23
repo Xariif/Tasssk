@@ -31,6 +31,7 @@ export function DownloadFile(fileId) {
 }
 
 export function CreateFile(props) {
+  console.log(props)
   var params = {
     listId: props.body.listId,
   };

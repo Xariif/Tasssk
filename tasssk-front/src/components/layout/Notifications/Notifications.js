@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sidebar } from "primereact/sidebar";
-import { NotificationContext } from "../../context/NotificationContext";
+import { NotificationContext } from "../../../context/NotificationContext";
 import { useContext, useEffect } from "react";
 import { Button } from "primereact/button";
 
@@ -11,21 +11,17 @@ import {
   CreateNotification,
   DeleteNotification,
   GetInviteNotification,
-  GetNotifications,
   SetNotificationReaded,
-} from "../../services/NotificationService";
-import { useToastContext } from "../../context/ToastContext";
-import { ToastAPI } from "./../../context/ToastContext";
+} from "../../../services/NotificationService";
+import { useToastContext } from "../../../context/ToastContext";
+import { ToastAPI } from "../../../context/ToastContext";
 import { AcceptInvite } from "services/ListService";
 
 export default function Notifications() {
-  const { visible, notifications, badge, send } =
-    useContext(NotificationContext);
+  const { visible, notifications, badge } = useContext(NotificationContext);
   const [notificationsVisible, setNotificationsVisible] = visible;
   const [notificationsList, setNotificationsList] = notifications;
   const [badgeCount, setBadgeCount] = badge;
-
-  const [SginalRnotifications, SginalRsendNotification] = send;
 
   const toastRef = useToastContext();
 
@@ -44,23 +40,9 @@ export default function Notifications() {
         </>
       }
     >
-      <Button
-        label="AddNotification"
-        onClick={() => {
-          var data = {
-            Email: "test@test.pl",
-            Header: "Gorące Mamuśki w twojej okolicy!",
-            Body: "Zobacz sam w twojej okolicy znaleziono 54 chętne mamuśki",
-          };
-          CreateNotification(data).then((res) => {
-            SginalRsendNotification(data.Email, res.message);
-          });
-        }}
-      ></Button>
-
       {notificationsList ? (
         notificationsList.map((element) => {
-          return <Notification element={element} key={element.id} />;
+          return <Notification key={element.id} element={element} />;
         })
       ) : (
         <div className="no-notifications">
@@ -111,7 +93,7 @@ export default function Notifications() {
                   DeleteNotification(element.id).then(() => {
                     setNotificationsList((notificationsList) =>
                       notificationsList.filter((x) => {
-                        return x.id !== element.id;
+                        return x.id != element.id;
                       })
                     );
                   })
@@ -131,12 +113,14 @@ export default function Notifications() {
             <div
               className="notification-body"
               onClick={() => {
+                console.log(element);
                 setNotificationsList(
                   notificationsList.map((x) => {
                     if (x.id === element.id) x.isReaded = true;
                     return x;
                   })
-                ).then(() => SetNotificationReaded(element.id));
+                );
+                SetNotificationReaded(element.id);
               }}
             >
               <div style={{ fontWeight: "bold" }}>{element.header}</div>
@@ -157,32 +141,28 @@ export default function Notifications() {
                 icon="pi pi-check"
                 text
                 severity="success"
-                size="sm"
                 rounded
                 label="Accept"
                 onClick={() => {
-                  GetInviteNotification(element.id)
-                    .then((res) => {
-                      console.log(res);
-                      AcceptInvite(res.data)
-                        .then((res) => {
-                          ToastAPI(toastRef, res);
-                          return res;
-                        })
-                        .then((res) => {
-                          DeleteNotification(element.id).then(() => {
-                            setNotificationsList((notificationsList) =>
-                              notificationsList.filter((x) => {
-                                return x.id != element.id;
-                              })
-                            );
-                          });
+                  GetInviteNotification(element.id).then((res) => {
+                    AcceptInvite(res.data)
+                      .then((res) => {
+                        ToastAPI(toastRef, res);
+                        return res;
+                      })
+                      .catch((err) => {
+                        ToastAPI(toastRef, err);
+                      })
+                      .finally(() => {
+                        DeleteNotification(element.id).then(() => {
+                          setNotificationsList((notificationsList) =>
+                            notificationsList.filter((x) => {
+                              return x.id != element.id;
+                            })
+                          );
                         });
-                    })
-
-                    .finally(() => {
-                      //add to list
-                    });
+                      });
+                  });
                 }}
               ></Button>
               <Button
@@ -190,7 +170,6 @@ export default function Notifications() {
                 icon="pi pi-times"
                 label="Reject"
                 severity="danger"
-                size="sm"
                 rounded
                 onClick={() =>
                   DeleteNotification(element.id).then(() => {

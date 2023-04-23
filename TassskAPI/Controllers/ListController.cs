@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Services;
@@ -18,11 +17,11 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpGet("GetLists")]
-        public async Task<ActionResult<UserListsDTO>> GetLists(string selectedItemId)
+        public async Task<ActionResult<UserListsDTO>> GetLists(string selectedListId)
         {
             try
             {
-                var res = await _listService.GetLists(GetUserEmail(), selectedItemId);
+                var res = await _listService.GetLists(GetUserEmail(), selectedListId);
 
                 return Ok(res);
             }
@@ -98,7 +97,7 @@ namespace ToDoAPI.Controllers
 
         [Authorize]
         [HttpPost("SendInvite")]
-        public async Task<ActionResult<bool>> SendInvite(SendInviteDTO sendInviteDTO)
+        public async Task<ActionResult<string>> SendInvite(SendInviteDTO sendInviteDTO)
         {
             try
             {
@@ -117,18 +116,55 @@ namespace ToDoAPI.Controllers
         }
         [Authorize]
         [HttpPost("AcceptInvite")]
-        public async Task<ActionResult<bool>> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
+        public async Task<ActionResult<string>> AcceptInvite(AcceptInviteDTO acceptInviteDTO)
         {
             try
             {
-                var res= await _listService.AcceptInvite(acceptInviteDTO);
+                var res = await _listService.AcceptInvite(acceptInviteDTO);
                 return Ok(res);
             }
-            catch (ArgumentException ex )
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("ListPrivileges")]
+        public async Task<ActionResult<List<ListPrivileges>>> ListPrivileges(string listId)
+        {
+            try
+            {
+                var res = await _listService.ListPrivileges(listId, GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [Authorize]
+        [HttpDelete("RemoveAccess")]
+        public async Task<ActionResult<string>> RemoveAccess(string listId,string user)
+        {
+            try
+            {
+                var res = await _listService.RemoveAccess(listId, user, GetUserEmail());
+                return Ok(res);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

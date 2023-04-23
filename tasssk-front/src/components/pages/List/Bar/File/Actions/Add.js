@@ -1,8 +1,5 @@
 import { FileUpload } from "primereact/fileupload";
-import {
-  ToastAPI,
-  useToastContext,
-} from "../../../../../../context/ToastContext";
+import { ToastAPI, useToastContext } from "../../../../../../context/ToastContext";
 import { useRef } from "react";
 import { Tag } from "primereact/tag";
 import { useState } from "react";
@@ -16,9 +13,8 @@ export const Add = ({ fetchData, selectedData }) => {
   const [uploadFileDialog, setUploadFileDialog] = useState(false);
   const [uploadedPercent, setUploadedPecent] = useState(0);
   const [progressBar, setProgressBar] = useState(false);
-  const toastRef = useToastContext();
   const fileUploadRef = useRef(null);
-
+  const toastRef = useToastContext();
   const onTemplateRemove = (file, callback) => {
     callback();
   };
@@ -93,19 +89,13 @@ export const Add = ({ fetchData, selectedData }) => {
       listId: selectedData.id,
       files: event.files,
     };
-
     CreateFile({ body, setUploadedPecent })
       .then((res) => {
-        ToastAPI(toastRef, res);
+        ToastAPI(toastRef, "File uploaded successfully");
         setUploadFileDialog(false);
-        fetchData(selectedData.id);
       })
-      .catch((error) => {
-        toastRef.current.show({
-          severity: "error",
-          summary: "Error",
-          detail: error.message,
-        });
+      .catch((err) => {
+        ToastAPI(toastRef, err);
       })
       .finally(() => {
         setUploadedPecent(0);
@@ -133,13 +123,11 @@ export const Add = ({ fetchData, selectedData }) => {
           uploadHandler={uploadHandler}
           maxFileSize={10000000}
         />
-        {progressBar ? (
+        {progressBar && (
           <div style={{ textAlign: "center" }}>
             Uploading
             <ProgressBar value={uploadedPercent} />
           </div>
-        ) : (
-          <></>
         )}
       </Dialog>
       <Button

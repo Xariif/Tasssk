@@ -58,14 +58,11 @@ export const File = ({ selectedData }) => {
           onClick={() => {
             DeleteFile({ fileId })
               .then((res) => {
-                ToastAPI(toastRef, res);
+                ToastAPI(toastRef,res);
                 getFiles();
               })
-              .catch(() => {
-                toastRef.current.show({
-                  severity: "error",
-                  summary: "Error",
-                });
+              .catch((err) => {
+                ToastAPI(toastRef,err);
               });
           }}
         />
@@ -122,6 +119,7 @@ export const File = ({ selectedData }) => {
         label="Files"
         icon="pi pi-file"
         onClick={() => setFileDialog(true)}
+        style={{ marginRight: "1rem" }}
       />
     </>
   );

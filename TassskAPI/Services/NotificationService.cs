@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Models;
@@ -53,6 +54,31 @@ namespace TassskAPI.Services
             };
 
             await db.GetCollection<Notification>(NotificationCollection).InsertOneAsync(notification);
+            return true;
+        }
+
+
+        public async Task<bool> CreateInviteNotification(string listName,string listId, string sender, string receiver)
+        {
+            var notification = new InviteNotification
+            {
+                Type = "Invite",
+                Header = $"New invite!",
+                Body = $"You've got invite to \"{listName}\" list from {sender}!",
+                Receiver = receiver,
+                CreatedAt = DateTime.Now,
+                ListId = ObjectId.Parse(listId),
+                Privileges = new Privileges
+                {
+                    Email = receiver,
+                    Owner = false,
+                    Read = true,
+                    Write = true,
+                    Modify = true,
+                    Delete = true
+                }
+            };
+            await db.GetCollection<InviteNotification>(NotificationCollection).InsertOneAsync(notification);
             return true;
         }
         public async Task<bool> DeleteNotification(string notificationId)

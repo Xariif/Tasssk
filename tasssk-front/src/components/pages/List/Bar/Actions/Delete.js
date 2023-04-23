@@ -10,7 +10,6 @@ import useLocalStorage from "hooks/useLocalStorage";
 export default function Delete({ fetchData, selectedData }) {
   const toastRef = useToastContext();
   const [deleteListDialog, setDeleteListDialog] = useState(false);
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
   return (
     <>
       <ConfirmDialog
@@ -41,7 +40,6 @@ export default function Delete({ fetchData, selectedData }) {
                 detail: res.message,
                 life: 5000,
               });
-              setListStorage("");
               fetchData();
             })
             .catch((error) => {

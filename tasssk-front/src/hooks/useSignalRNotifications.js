@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 import useLocalStorage from "./useLocalStorage";
-import notificationSound from "./notification_sound.mp3";
 
-export default function useSignalR() {
+const useSignalRNotifications = () => {
   const [connection, setConnection] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [email, setEmail] = useLocalStorage("email");
@@ -13,26 +12,25 @@ export default function useSignalR() {
       .withUrl("http://localhost:5000/notifications?email=" + email)
       .withAutomaticReconnect()
       .build();
-
     setConnection(newConnection);
-  }, []);
+  }, [email]);
 
   useEffect(() => {
     if (connection) {
       connection
         .start()
         .then(async () => {
-          console.log("Connected to SignalR hub");
+          console.log("Connected to SignalR Notifications hub");
         })
         .catch((error) => {
           console.error(error);
         });
 
       connection.on("ReceiveNotification", (notification) => {
-        const sound = new Audio(notificationSound);
-
+        const sound = new Audio("/sounds/notification.mp3");
         sound.play();
-        setNotifications((notifications) => [...notifications, notification]); //czy powinienem to robić używając true/false state?
+
+        setNotifications((notifications) => [...notifications, notification]);
       });
     }
   }, [connection]);
@@ -44,4 +42,6 @@ export default function useSignalR() {
   };
 
   return [notifications, sendNotification];
-}
+};
+
+export default useSignalRNotifications;

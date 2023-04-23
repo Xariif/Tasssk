@@ -7,13 +7,12 @@ import { CreateList } from "../../../../../services/ListService";
 import { useToastContext } from "../../../../../context/ToastContext";
 import { useRef, useState } from "react";
 
-function New(props) {
+function New({ fetchData }) {
   const refFocusName = useRef(null);
   const toastRef = useToastContext();
   const [newListDialog, setNewListDialog] = useState(false);
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date());
-  const [, setListStorage] = useLocalStorage("selectedList");
 
   var dateNow = new Date();
   dateNow.setDate(dateNow.getDate());
@@ -102,10 +101,9 @@ function New(props) {
                 }}
               />
             </div>
-            <br />
+
             <p style={{ opacity: "0.8", fontSize: "0.8rem" }}>
-              *If you set hours to 00:00
-              <br /> event will be setted for whole day!
+              *If you set hours to 00:00 event will be setted for whole day!
             </p>
           </>
         }
@@ -125,15 +123,13 @@ function New(props) {
             finishDate: date,
           })
             .then((res) => {
-              setListStorage(name);
               toastRef.current.show({
                 severity: "success",
                 summary: "Success ",
                 detail: res.message,
                 life: 5000,
               });
-              console.log(res);
-              props.fetchData(res.data);
+              fetchData(res.data);
             })
 
             .catch((error) => {

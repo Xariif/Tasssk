@@ -7,7 +7,7 @@ import { Card } from "primereact/card";
 
 import "./Layout.scss";
 import { Dialog } from "primereact/dialog";
-import Notifications from "../../UI/Notifications/Notifications.js";
+import Notifications from "./Notifications/Notifications.js";
 import { useNotificationContext } from "../../context/NotificationContext";
 import { NotificationContextProvider } from "./../../context/NotificationContext";
 import { useThemeContext } from "../../context/ThemeContext";

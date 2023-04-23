@@ -1,4 +1,3 @@
-import { React } from "react";
 import { Link } from "react-router-dom";
 
 import { InputText } from "primereact/inputtext";
@@ -15,7 +14,6 @@ import { useAuthUpdateContext } from "../../../context/AuthContext";
 import { useThemeUpdateContext } from "../../../context/ThemeContext";
 import { useToastContext } from "../../../context/ToastContext";
 
-import "./Login.scss";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -44,15 +42,14 @@ export default function Login() {
   async function onSubmit(data, form) {
     LoginUser(data)
       .then((res) => {
-        setToken(res.token);
-        setEmail(res.email);
+        setToken(res.data.token);
+        setEmail(res.data.email);
         setAuth(true);
-        setTheme(res.darkMode);
-
+        setTheme(res.data.darkMode);
         navigate("/");
       })
       .catch((err) => {
-        ToastAPI(toastRef, err.response);
+        ToastAPI(toastRef, err);
       });
   }
 
@@ -64,8 +61,24 @@ export default function Login() {
   };
 
   return (
-    <div className="Login">
-      <div className="Card">
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div
+        style={{
+          minWidth: "350px",
+          justifyContent: "center",
+          backgroundColor: "#f3c21e",
+          padding: "2rem",
+          borderRadius: "10px",
+          border: "1px solid var(--text-color)",
+        }}
+      >
         <div
           style={{
             width: "100%",
@@ -89,13 +102,18 @@ export default function Login() {
           onSubmit={onSubmit}
           initialValues={{
             email: "test@test.pl",
-            password: "qwe",
+            password: "12345678",
             logedIn: false,
           }}
           validate={validate}
           render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit} className="p-fluid">
+            <form
+              onSubmit={handleSubmit}
+              className="p-fluid"
+              style={{ marginTop: "2rem" }}
+            >
               <Field
+                style={{ marginBottom: "1rem" }}
                 name="email"
                 render={({ input, meta }) => (
                   <div className="field">
@@ -122,6 +140,7 @@ export default function Login() {
                 )}
               />
               <Field
+                style={{ marginBottom: "1rem" }}
                 name="password"
                 render={({ input, meta }) => (
                   <div className="field">

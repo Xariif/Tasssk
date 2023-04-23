@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 
 import useLocalStorage from "../hooks/useLocalStorage";
 
-const AuthContext = React.createContext();
-const AuthUpdateContext = React.createContext();
+const AuthContext = React.createContext(false);
+const AuthUpdateContext = React.createContext(() => {});
 
 export function useAuthContext() {
   return useContext(AuthContext);

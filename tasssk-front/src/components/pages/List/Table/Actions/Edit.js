@@ -6,10 +6,9 @@ import { UpdateItem } from "services/ItemService";
 
 export const Edit = ({ selectedItem, fetchData }) => {
   const inputRef = useRef();
-  const [itemName, setItemName] = useState();
+  const [itemName, setItemName] = useState("");
 
   const [editItemDialog, setEditItemDialog] = useState(false);
-  console.log(selectedItem);
   useEffect(() => {
     setItemName(selectedItem.name);
   }, [selectedItem]);
@@ -38,7 +37,7 @@ export const Edit = ({ selectedItem, fetchData }) => {
             <i className="pi pi-pencil" style={{ marginRight: ".5rem" }}></i>
             Edit
           </>
-        }
+        }     
         onShow={() => inputRef.current.focus()}
         onHide={() => setEditItemDialog(false)}
         footer={
@@ -69,9 +68,8 @@ export const Edit = ({ selectedItem, fetchData }) => {
               e.currentTarget.value.length,
               e.currentTarget.value.length
             )
-          }
-          rows={5}
-          cols={30}
+          }        
+          cols={80}  
           autoResize
         />
       </Dialog>

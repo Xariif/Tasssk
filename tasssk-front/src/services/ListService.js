@@ -2,12 +2,12 @@ import { useAPI } from "../hooks/useAPI";
 
 var url = process.env.REACT_APP_BASE_URL + "List/";
 
-export function GetLists(selectedItem) {
+export function GetLists(listId) {
   var config = {
     method: "get",
     url: url + "GetLists",
     params: {
-      selectedItemId: selectedItem,
+      selectedListId: listId,
     },
   };
   return useAPI(config);
@@ -48,10 +48,10 @@ export function DeleteList(props) {
   return useAPI(config);
 }
 
-export function SendInvite({ email, selectedData }) {
+export function SendInvite({ email, selectedList }) {
   const data = {
     Receiver: email,
-    ListId: selectedData.list.id,
+    ListId: selectedList.id,
   };
   var config = {
     method: "post",
@@ -78,6 +78,29 @@ export function AcceptInvite(props) {
     method: "post",
     url: url + "AcceptInvite",
     data: data,
+  };
+  return useAPI(config);
+}
+
+export function ListPrivileges(listId) {
+  var config = {
+    method: "get",
+    url: url + "ListPrivileges",
+    params: {
+      listId: listId,
+    },
+  };
+  return useAPI(config);
+}
+
+export function RemoveAccess(listId, user) {
+  var config = {
+    method: "delete",
+    url: url + "RemoveAccess",
+    params: {
+      listId: listId,
+      user: user,
+    },
   };
   return useAPI(config);
 }

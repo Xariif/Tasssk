@@ -1,4 +1,4 @@
-import { useEffect, React } from "react";
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 
@@ -66,9 +66,10 @@ function App() {
         </Route>
 
         <Route path="/Login" element={<Login />} />
+
         <Route path="/Register" element={<Register />} />
 
-        <Route path="*" exact={true} element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

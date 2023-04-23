@@ -11,7 +11,6 @@ import "./index.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "/node_modules/primeflex/primeflex.css";
-import { SelectedDataContextProvider } from "context/SelectedDataContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 //<React.StrictMode></React.StrictMode>
@@ -22,9 +21,7 @@ root.render(
       <BrowserRouter>
         <ThemeContextProvider>
           <AuthContextProvider>
-            <SelectedDataContextProvider>
-              <App />
-            </SelectedDataContextProvider>
+            <App />
           </AuthContextProvider>
         </ThemeContextProvider>
       </BrowserRouter>

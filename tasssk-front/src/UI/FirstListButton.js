@@ -1,7 +1,6 @@
-const EmptyArr = ({ addButton }) => (
+const FirstListButton = ({ addButton }) => (
   <div style={{ width: "100%", textAlign: "center", padding: "10vh" }}>
     <h1>
-      {" "}
       <p>
         Create your first to do list!
         <br /> Use button below
@@ -11,4 +10,4 @@ const EmptyArr = ({ addButton }) => (
   </div>
 );
 
-export default EmptyArr;
+export default FirstListButton;

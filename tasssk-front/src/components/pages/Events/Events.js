@@ -13,15 +13,15 @@ function Events() {
   const toastRef = useToastContext();
   const navigate = useNavigate();
   const moment = require("moment");
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-
   const [Events, setEvents] = useState();
+  console.log(Events)
+
   useEffect(() => {
     const fetchData = () => {
       GetEvents()
         .then((res) => {
           setEvents(
-            res.map((x) => ({
+            res.data.map((x) => ({
               title: x.name,
               date:
                 moment(x.date).format("HH:mm:ss") === "00:00:00"
@@ -49,6 +49,7 @@ function Events() {
       {Events ? (
         <>
           <FullCalendar
+  
             locale={"en-GB"} //system do 23:59  a nie 24:59
             eventTimeFormat={{
               hour: "2-digit", //2-digit, numeric
@@ -60,7 +61,7 @@ function Events() {
             plugins={[dayGridPlugin]}
             events={Events}
             eventClick={(e) => {
-              setListStorage(e.event._def.title);
+              console.log(e.event._def)
               navigate("/ToDoList");
             }}
           />

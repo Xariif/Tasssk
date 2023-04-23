@@ -6,20 +6,16 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { ToastAPI, useToastContext } from "context/ToastContext";
 import { NotificationContext } from "context/NotificationContext";
-import { SendInvite } from "services/ListService";
+import { ListPrivileges, RemoveAccess, SendInvite } from "services/ListService";
+import { useAPI } from "hooks/useAPI";
 
-export default function Privilages({ selectedData }) {
+export default function Privilages({ selectedList }) {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [email, setEmail] = useState("");
   const toastRef = useToastContext();
   const { send } = useContext(NotificationContext);
   const [SginalRnotifications, SginalRsendNotification] = send;
-
-  const [usersPrivileges, setUserPrivileges] = useState([]);
-  useEffect(() => {
-    setUserPrivileges((prev) => selectedData.list.privileges);
-  }, []);
-
+  const [privileges, setPrivileges] = useState([]);
   const footer = (options) => {
     return (
       <div style={{ textAlign: "right" }}>
@@ -38,15 +34,14 @@ export default function Privilages({ selectedData }) {
           onClick={() => {
             if (email) {
               setEmail("");
-              SendInvite({ email, selectedData })
+              SendInvite({ email, selectedList })
                 .then((res) => {
                   ToastAPI(toastRef, res);
-                  return res;
+                  res.status === 200 &&
+                    SginalRsendNotification(email, res.data);
                 })
-                .then((res) => {
-                  console.log(res);
-                  res.code === 200 &&
-                    SginalRsendNotification(email, res.message);
+                .catch((err) => {
+                  ToastAPI(toastRef, err);
                 });
             }
           }}
@@ -54,6 +49,12 @@ export default function Privilages({ selectedData }) {
       </div>
     );
   };
+
+  useEffect(() => {
+    ListPrivileges(selectedList.id).then((res) => {
+      setPrivileges(res.data);
+    });
+  }, []);
 
   return (
     <>
@@ -70,61 +71,21 @@ export default function Privilages({ selectedData }) {
           </>
         }
       >
-        <DataTable value={usersPrivileges} paginator rows={8} footer={footer}>
+        <DataTable value={privileges} paginator rows={8} footer={footer}>
           <Column
             field="email"
             header="E-mail"
             body={(user) => {
-              if (user.owner)
-                return <div style={{ color: "red" }}>{user.email}</div>;
-              return user.email;
+              return <>{user.email}</>;
             }}
           ></Column>
-          {/*
-  <Column
-            field="read"
-            header="Read"
-            dataType="boolean"
-            body={(user) => {
-              return (
-                <Checkbox disabled={user.owner} checked={user.read}></Checkbox>
-              );
-            }}
-          ></Column>
-          <Column
-            field="write"
-            header="Write"
-            dataType="boolean"
-            body={(user) => {
-              return <Checkbox disabled checked={user.write}></Checkbox>;
-            }}
-          ></Column>
-          <Column
-            field="modify"
-            header="Modify"
-            dataType="boolean"
-            body={(user) => {
-              return <Checkbox disabled checked={user.modify}></Checkbox>;
-            }}
-          ></Column>
-          <Column
-            field="delete"
-            header="Delete"
-            dataType="boolean"
-            body={(user) => {
-              return <Checkbox disabled checked={user.delete}></Checkbox>;
-            }}
-          ></Column>
-       
-
-          */}
           <Column
             field="actions"
             header="Actions"
             dataType="boolean"
             style={{ width: "108px" }}
             body={(user) => {
-              return user.owner ? (
+              return user.isOwner ? (
                 <div style={{ color: "red", textAlign: "center" }}>Owner</div>
               ) : (
                 <div>
@@ -134,10 +95,24 @@ export default function Privilages({ selectedData }) {
                     icon="pi pi-pencil"
                   ></Button>
                   <Button
-                    disabled={user.owner}
+                    disabled={user.isOwner}
                     className="p-button-rounded p-button-danger"
                     icon="pi pi-trash"
                     style={{ marginLeft: "1rem" }}
+                    onClick={() => {
+                      RemoveAccess(selectedList.id, user.email)
+                        .then((res) => {
+                          ToastAPI(toastRef, res);
+                          setPrivileges(
+                            privileges.filter((u) => u.email !== user.email)
+                          );
+                          res.status === 200 &&
+                            SginalRsendNotification(user.email, res.data);
+                        })
+                        .catch((err) => {
+                          ToastAPI(toastRef, err);
+                        });
+                    }}
                   ></Button>
                 </div>
               );

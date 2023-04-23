@@ -9,7 +9,6 @@ import { UpdateList } from "../../../../../services/ListService";
 import { Calendar } from "primereact/calendar";
 
 export default function Edit({ fetchData, selectedData }) {
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
   const [emailStorage] = useLocalStorage("email");
   const refFocusName = useRef(null);
 
@@ -66,7 +65,6 @@ export default function Edit({ fetchData, selectedData }) {
                 selectedData.finishDate = date;
                 UpdateList(selectedData)
                   .then((res) => {
-                    setListStorage(value);
                     setEditListDialog(false);
                     fetchData(selectedData.id);
 
