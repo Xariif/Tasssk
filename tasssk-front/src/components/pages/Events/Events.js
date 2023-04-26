@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { useEffect } from "react";
-import "./Events.scss";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { GetEvents } from "../../../services/EventService";
 import Spinner from "./../../../UI/Spinner";
@@ -14,7 +13,6 @@ function Events() {
   const navigate = useNavigate();
   const moment = require("moment");
   const [Events, setEvents] = useState();
-  console.log(Events)
 
   useEffect(() => {
     const fetchData = () => {
@@ -49,7 +47,6 @@ function Events() {
       {Events ? (
         <>
           <FullCalendar
-  
             locale={"en-GB"} //system do 23:59  a nie 24:59
             eventTimeFormat={{
               hour: "2-digit", //2-digit, numeric
@@ -61,7 +58,7 @@ function Events() {
             plugins={[dayGridPlugin]}
             events={Events}
             eventClick={(e) => {
-              console.log(e.event._def)
+              console.log(e.event._def);
               navigate("/ToDoList");
             }}
           />

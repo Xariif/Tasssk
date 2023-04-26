@@ -19,6 +19,22 @@ function Table({ selectedData, fetchData }) {
   const [emailStorage] = useLocalStorage("email");
 
   var finishDate = new Date(selectedData.finishDate);
+
+  const finishedSort = (event) => {
+    event.data.sort((data1, data2) => {
+      const val1 = data1[event.field];
+      const val2 = data2[event.field];
+
+      if (val1 === val2) {
+        return 0;
+      } else if (val1 === true && val2 === false) {
+        return -1 * event.order || 1; // odwrócenie sortowania, jeśli order = -1
+      } else {
+        return 1 * event.order || 1; // zachowanie porządku sortowania, jeśli order = 1 lub niezdefiniowany
+      }
+    });
+    return event.data;
+  };
   const finishedTemplate = (row) => {
     function ChangeItemState(item) {
       item.finished = !item.finished;
@@ -46,16 +62,12 @@ function Table({ selectedData, fetchData }) {
       />
     );
   };
-
   const actionsTemplate = (row) => {
     return (
       <>
         <Edit selectedItem={row} fetchData={fetchData} />
 
-        <Delete
-          selectedItem={row}
-          fetchData={fetchData}
-        />
+        <Delete selectedItem={row} fetchData={fetchData} />
       </>
     );
   };
@@ -64,73 +76,55 @@ function Table({ selectedData, fetchData }) {
     return <>{moment(row.createdAt).format("MMMM Do YYYY, HH:mm:ss ")}</>;
   };
 
-  const finishedSort = (event) => {
-    event.data.sort((data1, data2) => {
-      const val1 = data1[event.field];
-      const val2 = data2[event.field];
-
-      if (val1 === val2) {
-        return 0;
-      } else if (val1 === true && val2 === false) {
-        return -1 * event.order || 1; // odwrócenie sortowania, jeśli order = -1
-      } else {
-        return 1 * event.order || 1; // zachowanie porządku sortowania, jeśli order = 1 lub niezdefiniowany
-      }
-    });
-    return event.data;
-  };
-
   return (
-    <div className="ToDoItem">
-      <DataTable
-        emptyMessage={"Your list is empty! Add somethning using button bellow"}
-        value={selectedData.items}
-        header={<Topbar />}
-        footer={<Footer />}
-        responsiveLayout="scroll"
-        sortField="createdAt"
-        sortOrder={-1}
-        rowHover
-        paginator
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
-        rows={7}
-        editMode="cell"
-      >
-        <Column
-          filter
-          sortable
-          field="name"
-          header="Name"
-          style={{
-            wordBreak: "break-all",
-            wordWrap: "break-word",
-          }}
-        />
-        <Column
-          header="Created at"
-          field="createdAt"
-          sortable
-          body={createadAtTemplate}
-          style={{ width: " 200px" }}
-        />
-        <Column
-          header="Finished"
-          sortable
-          sortField="finished"
-          sortFunction={finishedSort}
-          body={finishedTemplate}
-          style={{ width: " 50px" }}
-        />
-        <Column
-          header="Actions"
-          body={actionsTemplate}
-          style={{
-            textAlign: "center",
-            width: "108px",
-          }}
-        />
-      </DataTable>
-    </div>
+    <DataTable
+      emptyMessage={"Your list is empty! Add somethning using button bellow"}
+      value={selectedData.items}
+      header={<Topbar />}
+      footer={<Footer />}
+      responsiveLayout="scroll"
+      sortField="createdAt"
+      sortOrder={-1}
+      rowHover
+      paginator
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
+      rows={7}
+      editMode="cell"
+      style={{ width: "100%" }}
+    >
+      <Column
+        filter
+        sortable
+        field="name"
+        header="Name"
+        style={{
+          wordBreak: "break-all",
+          wordWrap: "break-word",
+        }}
+      />
+      <Column
+        header="Created at"
+        field="createdAt"
+        sortable
+        body={createadAtTemplate}
+        style={{ width: "10%" }}
+      />
+      <Column
+        header="Finished"
+        sortable
+        sortField="finished"
+        sortFunction={finishedSort}
+        body={finishedTemplate}
+        style={{ textAlign: "center", width: " 5%" }}
+      />
+      <Column
+        header="Actions"
+        body={actionsTemplate}
+        style={{
+          width: "126px",
+        }}
+      />
+    </DataTable>
   );
 
   function Topbar() {

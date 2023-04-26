@@ -3,7 +3,6 @@ const FirstListButton = ({ addButton }) => (
     <h1>
       <p>
         Create your first to do list!
-        <br /> Use button below
       </p>
     </h1>
     {addButton}

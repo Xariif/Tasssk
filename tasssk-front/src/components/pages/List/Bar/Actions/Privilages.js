@@ -83,7 +83,7 @@ export default function Privilages({ selectedList }) {
             field="actions"
             header="Actions"
             dataType="boolean"
-            style={{ width: "108px" }}
+            style={{ width: "126px" }}
             body={(user) => {
               return user.isOwner ? (
                 <div style={{ color: "red", textAlign: "center" }}>Owner</div>

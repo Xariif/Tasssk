@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
@@ -28,6 +28,11 @@ export const Add = ({ list, fetchData }) => {
         .finally(() => fetchData(list.id));
     });
   }
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   return (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       <InputText
@@ -41,6 +46,12 @@ export const Add = ({ list, fetchData }) => {
         onChange={(e) => setValue(e.target.value)}
         ref={inputRef}
         onLoad={() => inputRef.current.focus()}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            setValue("");
+            if (value.trim() !== "") Add();
+          }
+        }}
       ></InputText>
       <Button
         className="p-button-rounded p-button-success"

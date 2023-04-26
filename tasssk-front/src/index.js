@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ToastProvder } from "./context/ToastContext";
 import { AuthContextProvider } from "./context/AuthContext";
-import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
 
@@ -19,11 +18,9 @@ root.render(
   <>
     <ToastProvder>
       <BrowserRouter>
-        <ThemeContextProvider>
           <AuthContextProvider>
             <App />
           </AuthContextProvider>
-        </ThemeContextProvider>
       </BrowserRouter>
     </ToastProvder>
   </>

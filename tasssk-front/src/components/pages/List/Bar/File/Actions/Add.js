@@ -91,8 +91,8 @@ export const Add = ({ fetchData, selectedData }) => {
     };
     CreateFile({ body, setUploadedPecent })
       .then((res) => {
-        ToastAPI(toastRef, "File uploaded successfully");
         setUploadFileDialog(false);
+        fetchData();
       })
       .catch((err) => {
         ToastAPI(toastRef, err);

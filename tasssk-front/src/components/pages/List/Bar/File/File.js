@@ -58,7 +58,6 @@ export const File = ({ selectedData }) => {
           onClick={() => {
             DeleteFile({ fileId })
               .then((res) => {
-                ToastAPI(toastRef,res);
                 getFiles();
               })
               .catch((err) => {

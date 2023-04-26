@@ -126,7 +126,7 @@ function New({ fetchData }) {
               toastRef.current.show({
                 severity: "success",
                 summary: "Success ",
-                detail: res.message,
+                detail: "List created",
                 life: 5000,
               });
               fetchData(res.data);

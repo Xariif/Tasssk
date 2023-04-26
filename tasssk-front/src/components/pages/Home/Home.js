@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 
 import { Card } from "primereact/card";
 import { Button } from "primereact/button";
-
+import PrimeReact from "primereact/api";
 import "./Home.scss";
+import { Divider } from "primereact/divider";
 
 function Home() {
   return (

@@ -37,7 +37,7 @@ export default function Delete({ fetchData, selectedData }) {
               toastRef.current.show({
                 severity: "error",
                 summary: "Deleted",
-                detail: res.message,
+                detail: "List deleted",
                 life: 5000,
               });
               fetchData();
