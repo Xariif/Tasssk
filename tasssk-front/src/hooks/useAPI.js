@@ -9,8 +9,6 @@ export function useAPI(config) {
     ...config,
     headers: {
       Authorization: "Bearer " + token(),
-      'Access-Control-Allow-Origin': '*'
-
     },
   };
 

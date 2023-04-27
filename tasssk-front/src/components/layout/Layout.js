@@ -8,7 +8,7 @@ import { Card } from "primereact/card";
 import { Dialog } from "primereact/dialog";
 import Notifications from "./Notifications/Notifications.js";
 import { useNotificationContext } from "../../context/NotificationContext";
-import { NotificationContextProvider } from "./../../context/NotificationContext";
+import { NotificationContextProvider } from "../../context/NotificationContext";
 
 import PrimeReact from "primereact/api";
 import useLocalStorage from "hooks/useLocalStorage";

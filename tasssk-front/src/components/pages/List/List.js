@@ -13,21 +13,19 @@ import { Column } from "primereact/column";
 const List = () => {
   const [selectedData, setSelectedData] = useState(null);
   const fetchData = (id = null) => {
-    setTimeout(() => {
-      GetLists(id).then((res) => {
-        let selected = res.data.lists.find((x) => x.isSelected === true);
-        setSelectedData({
-          ...selectedData,
-          allLists: res.data.lists,
-          selectedList: selected ? selected : res.data.lists[0],
-        });
-        return selected ? selected : res.data.lists[0];
+    GetLists(id).then((res) => {
+      let selected = res.data.lists.find((x) => x.isSelected === true);
+      setSelectedData({
+        ...selectedData,
+        allLists: res.data.lists,
+        selectedList: selected ? selected : res.data.lists[0],
       });
-    }, 1000);
+      return selected ? selected : res.data.lists[0];
+    });
   };
 
   useEffect(() => {
-     fetchData();
+    fetchData();
   }, []);
 
   console.log(selectedData);
@@ -115,12 +113,7 @@ const MySkeleton = () => {
           <Skeleton width="15rem" height="4rem" />
         </div>
         <DataTable value={items} className="p-datatable-striped">
-          <Column
-            field="name"
-            header="Name"
-            
-            body={bodyTemplate}
-          ></Column>
+          <Column field="name" header="Name" body={bodyTemplate}></Column>
           <Column
             field="created_at"
             header="Created at"
