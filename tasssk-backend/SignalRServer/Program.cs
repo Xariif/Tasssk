@@ -18,5 +18,4 @@ builder
 );
 
 app.MapHub<NotificationsHub>("notifications");
-
 app.Run();

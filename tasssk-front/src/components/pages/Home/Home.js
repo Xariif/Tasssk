@@ -10,7 +10,11 @@ import { Divider } from "primereact/divider";
 function Home() {
   return (
     <div className="Home">
-      <h1>Welcome on my page! </h1>
+      <h1
+        style={{ textShadow: "1px 1px 2px teal", color: "var(--text-color)" }}
+      >
+        Welcome in TASSSK!
+      </h1>
       <div className="Cards">
         <Card
           header={<i className="pi pi-list" />}
@@ -62,6 +66,42 @@ function Home() {
           header={<i className="pi pi-info-circle" />}
           title={<div style={{ textAlign: "center" }}>About me</div>}
           className="Card"
+          footer={
+            <>
+              You can also check my GitHub, Linkedin or just mail me! &#128516;
+              <br></br>
+              <a
+                href="https://github.com/Xariif"
+                style={{
+                  textDecoration: "inherit",
+
+                  color: "inherit",
+                }}
+              >
+                <i className="pi pi-github" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/jakub-filiks-4537b9225/"
+                style={{
+                  textDecoration: "inherit",
+
+                  color: "inherit",
+                }}
+              >
+                <i className="pi pi-linkedin" />
+              </a>
+              <a
+                href="mailto: jakubfiliks7@gmail.com"
+                style={{
+                  textDecoration: "inherit",
+
+                  color: "inherit",
+                }}
+              >
+                <i className="pi pi-at" />
+              </a>
+            </>
+          }
         >
           Hello! I'm Jakub Filiks, the creator of this app. I'm a software
           engineer with a passion for building useful tools that make people's

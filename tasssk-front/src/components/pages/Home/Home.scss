@@ -1,5 +1,5 @@
 .Home {
-  padding: 1rem 0;
+
 
   h1,
   h2 {
@@ -10,23 +10,19 @@
     grid-template-columns: auto auto auto;
     gap: 1rem;
 
+
     .Card {
       margin: 0px auto;
-      background-color: transparent;
-      box-shadow: none;
+      background-color:var(--highlight-bg) ;
+      border-radius: var(--border-radius);
+      box-shadow: 2px 2px 2px  var(--shadow-color);
+      text-align: justify;
+      text-align-last: center;
       i {
         font-size: 4rem;
-        margin: 1rem;
-        display: flex;
-        justify-content: center;
+        margin: 1rem;     
       }
-      button {
-        float: right;
-        font-weight: bold;
-      }
-      .p-card .p-card-body {
-        background-color: red !important;
-      }
+ 
     }
   }
 }

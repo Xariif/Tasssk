@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 
@@ -17,22 +17,14 @@ import { useToastContext } from "./context/ToastContext";
 import useLocalStorage from "./hooks/useLocalStorage";
 
 import "./App.css";
+import Loading from "components/Loading/Loading";
 
 function App() {
   const auth = useAuthContext();
   const toastRef = useToastContext();
   const [token, setToken] = useLocalStorage("token");
 
-  useEffect(() => {
-    if (auth == false) {
-      if (token) {
-        //const decodedToken = jwt_decode(token);
-        //console.log(decodedToken);
-        //check if tooken is in local storage
-        //validate token api request
-      }
-    }
-  }, [token]);
+
   return (
     <>
       <Toast ref={toastRef} position={"bottom-center"} />
@@ -41,7 +33,11 @@ function App() {
         <Route
           path="/"
           element={
-            auth ? <Layout content={<Outlet />} /> : <Navigate to="/Login" />
+            auth ? (
+              <Layout content={<Outlet />} />
+            ) : (
+              <Navigate to="/Login" />
+            )
           }
         >
           <Route path="/" element={<Home />} />

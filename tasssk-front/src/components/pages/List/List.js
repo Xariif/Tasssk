@@ -121,8 +121,8 @@ const MySkeleton = () => {
             body={bodyTemplate}
           ></Column>
           <Column
-            field="category"
-            header="Category"
+            field="finished"
+            header="Finished"
             style={{ width: "5%" }}
             body={bodyTemplate}
           ></Column>

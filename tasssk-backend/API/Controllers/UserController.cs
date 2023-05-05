@@ -13,7 +13,7 @@ namespace ToDoAPI.Controllers
         private readonly UserService _userService;
         public UserController(UserService userService)
         {
-            _userService = userService;
+            _userService = userService;    
         }
         [AllowAnonymous]
         [HttpPost("Login")]
@@ -59,7 +59,6 @@ namespace ToDoAPI.Controllers
         }
 
 
-        [Authorize]
         [HttpPost("ValidateToken")]
         public async Task<ActionResult<bool>> ValidateToken(string token)
         {
@@ -68,7 +67,7 @@ namespace ToDoAPI.Controllers
                 var res = await _userService.ValidateToken(token);
                 return Ok(res);
 
-            }
+            } 
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);

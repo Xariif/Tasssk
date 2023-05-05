@@ -61,3 +61,15 @@ export async function ChangePassword(props) {
   };
   return useAPI(config);
 }
+
+export async function ValidateToken(token) {
+  const params = {
+    token: token,
+  };
+  var config = {
+    method: "post",
+    url: url + "ValidateToken",
+    params,
+  };
+  return useAPI(config);
+}

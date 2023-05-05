@@ -9,7 +9,7 @@ const useSignalRNotifications = () => {
 
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://localhost:5000/notifications?email=" + email)
+      .withUrl("http://138.2.158.55:5050/notifications?email=" + email)
       .withAutomaticReconnect()
       .build();
     setConnection(newConnection);

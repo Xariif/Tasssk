@@ -74,27 +74,12 @@ namespace ToDoAPI.Services
         }
 
         public async Task<bool> ValidateToken(string token)
-        {
-            var mySecret = "agCa0sg!@FaWFG!KO*UY5hsdf1aq!";
-            var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(mySecret));
-
-            var myIssuer = "http://mysite.com";
-            var myAudience = "http://myaudience.com";
-
-            var tokenHandler = new JwtSecurityTokenHandler();
+        {        
             try
             {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = myIssuer,
-                    ValidAudience = myAudience,
-                    IssuerSigningKey = mySecurityKey
-                }, out SecurityToken validatedToken);
+                 _tokenService.ValidateToken(token);
             }
-            catch
+            catch 
             {
                 throw new ArgumentException(message: "Token invalid");
             }

@@ -39,5 +39,24 @@ namespace ToDoAPI.Services
             return tokenHandler.WriteToken(token);
         }
 
+        public bool ValidateToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = _key
+                }, out SecurityToken validatedToken);
+            }
+            catch
+            {
+                throw new ArgumentException(message: "Token invalid");
+            }
+            return true;
+        }
     }
 }

@@ -5,5 +5,7 @@ namespace ToDoAPI.Interfaces
     public interface ITokenService
     {
         string CreateTokenDisciple(User user);
+
+        bool ValidateToken(string token);
     }
 }
