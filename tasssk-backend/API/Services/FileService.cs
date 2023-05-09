@@ -2,7 +2,7 @@
 using MongoDB.Driver;
 using TassskAPI.DTOs.File;
 using TassskAPI.Models;
-using ToDoAPI.DTOs.Event;
+using TassskAPI.DTOs.Event;
 using File = TassskAPI.Models.File;
 
 namespace TassskAPI.Services

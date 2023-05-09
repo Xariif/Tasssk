@@ -12,6 +12,7 @@ import { NotificationContextProvider } from "../../context/NotificationContext";
 
 import PrimeReact from "primereact/api";
 import useLocalStorage from "hooks/useLocalStorage";
+import { ListContextProvider } from "context/ListContext";
 function Layout(props) {
   const [darkMode, setTheme] = useLocalStorage("darkMode");
   useEffect(() => {
@@ -25,21 +26,31 @@ function Layout(props) {
     }
   }, [darkMode]);
   return (
-    <NotificationContextProvider>
-      <Notifications />
-      <TopBar />
-      <div className="Main" style={{
-        padding: "1rem",
-        minHeight: "calc(100vh - 90px)",
-      }}>
-        <div className="Content" style={{
-          backgroundColor: "var(--surface-card)",
-          borderRadius:"var(--border-radius)",
-          padding: "1rem",
-        }}>{props.content}</div>
-      </div>
-      <Footer />
-    </NotificationContextProvider>
+    <ListContextProvider>
+      <NotificationContextProvider>
+        <Notifications />
+        <TopBar />
+        <div
+          className="Main"
+          style={{
+            padding: "1rem",
+            minHeight: "calc(100vh - 90px)",
+          }}
+        >
+          <div
+            className="Content"
+            style={{
+              backgroundColor: "var(--surface-card)",
+              borderRadius: "var(--border-radius)",
+              padding: "1rem",
+            }}
+          >
+            {props.content}
+          </div>
+        </div>
+        <Footer />
+      </NotificationContextProvider>
+    </ListContextProvider>
   );
 }
 

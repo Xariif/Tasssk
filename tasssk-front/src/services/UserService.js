@@ -1,6 +1,6 @@
 import { useAPI } from "../hooks/useAPI";
 
-var url = process.env.REACT_APP_BASE_URL + "User/";
+var url = process.env.REACT_APP_API_URL + "User/";
 
 export async function LoginUser(props) {
   var data = {

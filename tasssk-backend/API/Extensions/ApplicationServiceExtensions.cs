@@ -1,8 +1,7 @@
 ﻿using TassskAPI.Services;
-using ToDoAPI.Interfaces;
-using ToDoAPI.Services;
+using TassskAPI.Interfaces;
 
-namespace ToDoAPI.Extensions
+namespace TassskAPI.Extensions
 {
     public static class ApplicationServiceExtensions
     {

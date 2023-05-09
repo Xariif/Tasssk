@@ -1,6 +1,6 @@
 import { useAPI } from "../hooks/useAPI";
 
-var url = process.env.REACT_APP_BASE_URL + "List/";
+var url = process.env.REACT_APP_API_URL + "List/";
 
 export function GetLists(listId) {
   var config = {

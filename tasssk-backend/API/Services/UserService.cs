@@ -5,11 +5,11 @@ using System.Security.Cryptography;
 using System.Text;
 using TassskAPI.Models;
 using TassskAPI.Services;
-using ToDoAPI.DTOs;
-using ToDoAPI.DTOs.User;
-using ToDoAPI.Interfaces;
+using TassskAPI.DTOs;
+using TassskAPI.DTOs.User;
+using TassskAPI.Interfaces;
 
-namespace ToDoAPI.Services
+namespace TassskAPI.Services
 {
     public class UserService : BaseService
     {
@@ -65,6 +65,7 @@ namespace ToDoAPI.Services
                 Body = "We're here to make your day easier! Start by clicking list icon to make your first list!",
                 CreatedAt = DateTime.UtcNow,
                 IsReaded = false,
+                Sender = "Tasssk Administration",
                 Receiver = registerDTO.Email,
                 Type = "Notification"
 

@@ -16,15 +16,18 @@ import {
 import { useToastContext } from "../../../context/ToastContext";
 import { ToastAPI } from "../../../context/ToastContext";
 import { AcceptInvite } from "services/ListService";
+import { useListContext } from "context/ListContext";
 
 export default function Notifications() {
-  const { visible, notifications, badge } = useContext(NotificationContext);
+  const { visible, notifications, badge, send } =
+    useContext(NotificationContext);
   const [notificationsVisible, setNotificationsVisible] = visible;
   const [notificationsList, setNotificationsList] = notifications;
   const [badgeCount, setBadgeCount] = badge;
 
   const toastRef = useToastContext();
 
+  const listContext = useListContext();
   return (
     <Sidebar
       style={{ width: "450px" }}
@@ -148,9 +151,13 @@ export default function Notifications() {
                     AcceptInvite(res.data)
                       .then((res) => {
                         ToastAPI(toastRef, res);
+                        listContext.fetchData[0]();
+                        console.log(res, element);
+                        //send.SginalRsendNotification(email, res.data);
                         return res;
                       })
                       .catch((err) => {
+                        console.log(err);
                         ToastAPI(toastRef, err);
                       })
                       .finally(() => {

@@ -1,9 +1,9 @@
 ﻿using MongoDB.Driver;
 using TassskAPI.Models;
 using TassskAPI.Services;
-using ToDoAPI.DTOs.Event;
+using TassskAPI.DTOs.Event;
 
-namespace ToDoAPI.Services
+namespace TassskAPI.Services
 {
     public class EventService : BaseService
     {

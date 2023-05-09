@@ -4,7 +4,7 @@ using TassskAPI.DTOs.Item;
 using TassskAPI.Models;
 using TassskAPI.Services;
 
-namespace ToDoAPI.Services
+namespace TassskAPI.Services
 {
     public class ItemService : BaseService
     {

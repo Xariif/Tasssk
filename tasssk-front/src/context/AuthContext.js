@@ -20,9 +20,8 @@ export function AuthContextProvider({ children }) {
   function isCorrect() {
     const token = tokenStorage;
     if (token) {
-      var isValid = ValidateToken(token)
+      var res = ValidateToken(token)
         .then((res) => {
-          console.log(res);
           if (res.data === false) {
             localStorage.clear();
             navigate("/Login");
@@ -33,12 +32,11 @@ export function AuthContextProvider({ children }) {
           localStorage.clear();
           navigate("/Login");
         });
-      console.log(isValid);
-      return isValid;
     }
+    return res;
   }
 
-  const [auth, setAuth] = useState(isCorrect);
+  const [auth, setAuth] = useState(isCorrect());
 
   function changeAuth(value) {
     setAuth(value);

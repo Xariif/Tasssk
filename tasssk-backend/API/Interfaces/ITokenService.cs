@@ -1,6 +1,6 @@
 ﻿using TassskAPI.Models;
 
-namespace ToDoAPI.Interfaces
+namespace TassskAPI.Interfaces
 {
     public interface ITokenService
     {

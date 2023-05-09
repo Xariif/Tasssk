@@ -1,6 +1,6 @@
 import { useAPI } from "hooks/useAPI";
 
-var url = process.env.REACT_APP_BASE_URL + "File/";
+var url = process.env.REACT_APP_API_URL + "File/";
 
 export function GetFiles(listId) {
   var params = {

@@ -42,15 +42,17 @@ namespace TassskAPI.Services
             return res;
         }
 
-        public async Task<bool> CreateNotification(string email, string header, string body)
+        public async Task<bool> CreateNotification(string sender,string receiver, string header, string body)
         {
             var notification = new Notification
             {
                 Type = "Notification",
                 Header = header,
                 Body = body,
-                Receiver = email,
+                Sender = sender,
+                Receiver = receiver,
                 IsReaded = false
+                
             };
 
             await db.GetCollection<Notification>(NotificationCollection).InsertOneAsync(notification);
@@ -65,6 +67,7 @@ namespace TassskAPI.Services
                 Type = "Invite",
                 Header = $"New invite!",
                 Body = $"You've got invite to \"{listName}\" list from {sender}!",
+                Sender = sender,
                 Receiver = receiver,
                 CreatedAt = DateTime.Now,
                 ListId = ObjectId.Parse(listId),

@@ -3,9 +3,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TassskAPI.Models;
-using ToDoAPI.Interfaces;
+using TassskAPI.Interfaces;
 
-namespace ToDoAPI.Services
+namespace TassskAPI.Services
 
 {
     public class TokenService : ITokenService

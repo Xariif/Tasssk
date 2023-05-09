@@ -24,7 +24,6 @@ function App() {
   const toastRef = useToastContext();
   const [token, setToken] = useLocalStorage("token");
 
-
   return (
     <>
       <Toast ref={toastRef} position={"bottom-center"} />

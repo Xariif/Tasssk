@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using TassskAPI.DTOs.Core;
-using ToDoAPI.DTOs.Event;
-using ToDoAPI.Services;
+using TassskAPI.DTOs.Event;
+using TassskAPI.Services;
 
-namespace ToDoAPI.Controllers
+namespace TassskAPI.Controllers
 {
     public class EventController : BaseAPIController
     {

@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import * as signalR from "@microsoft/signalr";
 import useLocalStorage from "./useLocalStorage";
 
+  var url = process.env.REACT_APP_SIGNALR_URL;
+
+
 const useSignalRNotifications = () => {
   const [connection, setConnection] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [email, setEmail] = useLocalStorage("email");
-
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl("http://138.2.158.55:5050/notifications?email=" + email)
+      .withUrl(url+"notifications?email=" + email)
       .withAutomaticReconnect()
       .build();
     setConnection(newConnection);

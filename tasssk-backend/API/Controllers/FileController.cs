@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.File;
 using TassskAPI.Models;
 using TassskAPI.Services;
-using ToDoAPI.Controllers;
-using ToDoAPI.Services;
 
 namespace TassskAPI.Controllers
 {

@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.User;
-using ToDoAPI.DTOs;
-using ToDoAPI.DTOs.User;
-using ToDoAPI.Services;
+using TassskAPI.DTOs;
+using TassskAPI.Services;
 
-namespace ToDoAPI.Controllers
+namespace TassskAPI.Controllers
 {
     public class UserController : BaseAPIController
     {

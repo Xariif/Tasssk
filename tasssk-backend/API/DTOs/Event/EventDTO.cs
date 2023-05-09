@@ -1,4 +1,4 @@
-﻿namespace ToDoAPI.DTOs.Event
+﻿namespace TassskAPI.DTOs.Event
 {
     public class EventDTO
     {

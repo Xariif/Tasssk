@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using TassskAPI.DTOs.Core;
 
-namespace ToDoAPI.Controllers
+namespace TassskAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

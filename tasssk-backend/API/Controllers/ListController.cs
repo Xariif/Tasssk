@@ -4,7 +4,7 @@ using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Services;
 
-namespace ToDoAPI.Controllers
+namespace TassskAPI.Controllers
 {
     public class ListController : BaseAPIController
     {

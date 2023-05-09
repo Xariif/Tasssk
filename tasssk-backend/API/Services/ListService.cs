@@ -225,22 +225,22 @@ namespace TassskAPI.Services
 
             return result;
         }
-        public async Task<string> RemoveAccess(string listId, string user, string email)
+        public async Task<string> RemoveAccess(string listId, string receiver, string sender)
         {
             var list = await db.GetCollection<List>(ListCollection).Find(x => x.Id == ObjectId.Parse(listId)).FirstOrDefaultAsync();
 
-            if (list.Privileges.Find(x => x.Email == email).Owner == false)
+            if (list.Privileges.Find(x => x.Email == sender).Owner == false)
                 throw new ArgumentException(message: "You are not owner");
 
 
-            list.Privileges.Remove(list.Privileges.First(x => x.Email == user));
+            list.Privileges.Remove(list.Privileges.First(x => x.Email == receiver));
 
             await db.GetCollection<List>(ListCollection).ReplaceOneAsync(Builders<List>.Filter.Eq(x => x.Id, ObjectId.Parse(listId)), list);
 
 
 
             NotificationService notificationService = new NotificationService();
-            await notificationService.CreateNotification(user, "Privleges removed", "Privileges to list " + list.Name + " has been removed by it's owner");
+            await notificationService.CreateNotification(sender,receiver, "Privleges removed", "Privileges to list " + list.Name + " has been removed by it's owner");
 
             return "Privileges removed";
         }

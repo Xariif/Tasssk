@@ -1,6 +1,6 @@
 import { useAPI } from "../hooks/useAPI";
 
-var url = process.env.REACT_APP_BASE_URL + "Item/";
+var url = process.env.REACT_APP_API_URL + "Item/";
 
 export function GetItems(props) {
   var params = {

@@ -1,4 +1,4 @@
-﻿namespace ToDoAPI.DTOs.User
+﻿namespace TassskAPI.DTOs.User
 {
     public class UserDataDTO
     {

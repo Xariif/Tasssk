@@ -4,7 +4,7 @@ using TassskAPI.DTOs.Core;
 using TassskAPI.DTOs.List;
 using TassskAPI.DTOs.Notification;
 using TassskAPI.Services;
-using ToDoAPI.Controllers;
+using TassskAPI.Controllers;
 
 namespace TassskAPI.Controllers
 {
@@ -61,7 +61,8 @@ namespace TassskAPI.Controllers
         {
             try
             {
-                var res = await _notificationService.CreateNotification(newNotification.Email, newNotification.Header, newNotification.Body);
+              
+                var res = await _notificationService.CreateNotification(GetUserEmail(),newNotification.Email, newNotification.Header, newNotification.Body);
                 return Ok(res);
             }
             catch (ArgumentException ex)

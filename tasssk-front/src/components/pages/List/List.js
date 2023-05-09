@@ -9,27 +9,12 @@ import New from "./Bar/Actions/New";
 import { Skeleton } from "primereact/skeleton";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { useListContext } from "context/ListContext";
 
 const List = () => {
-  const [selectedData, setSelectedData] = useState(null);
-  const fetchData = (id = null) => {
-    GetLists(id).then((res) => {
-      let selected = res.data.lists.find((x) => x.isSelected === true);
-      setSelectedData({
-        ...selectedData,
-        allLists: res.data.lists,
-        selectedList: selected ? selected : res.data.lists[0],
-      });
-      return selected ? selected : res.data.lists[0];
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  console.log(selectedData);
-
+  const listContext = useListContext();
+  const fetchData = listContext.fetchData[0];
+  const [selectedData, setSelectedData] = listContext.selectedData;
   return (
     <div className="ToDoList">
       {selectedData === null ? (
