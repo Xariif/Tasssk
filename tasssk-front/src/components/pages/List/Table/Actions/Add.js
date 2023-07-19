@@ -1,23 +1,23 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
-
-import { AddItem } from "../../../../../services/ToDoService";
+import { CreateItem } from "services/ItemService";
+import { InputText } from "primereact/inputtext";
+import { Toast } from "primereact/toast";
 
 export const Add = ({ list, fetchData }) => {
   const [value, setValue] = useState("");
-  const refFocusName = useRef(null);
+  const inputRef = useRef(null);
   const [addItemDialog, setAddItemDialog] = useState(false);
-
   function Add() {
     return new Promise((resolve, reject) => {
       const props = {
-        listId: list.id,
-        itemName: value,
+        ListId: list.id,
+        Name: value,
       };
-      AddItem(props)
+      CreateItem(props)
         .then((res) => {
           setAddItemDialog(false);
           resolve(res);
@@ -25,63 +25,42 @@ export const Add = ({ list, fetchData }) => {
         .catch((error) => {
           reject(error);
         })
-        .finally(() => fetchData());
+        .finally(() => fetchData(list.id));
     });
   }
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+
   return (
-    <div >
-      <Dialog
-        visible={addItemDialog}
-        resizable={false}
-        draggable={false}
-        header={
-          <>
-            <i className="pi pi-plus" style={{ marginRight: ".5rem" }}></i>Add
-            item to list
-          </>
-        }
-        onHide={() => {
-          setAddItemDialog(false);
-          setValue("");
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <InputText
+        style={{
+          borderRadius: "2rem",
+          marginRight: "1rem",
+          width: "calc(100%)",
         }}
-        onShow={() => refFocusName.current.focus()}
-        footer={
-          <>
-            <Button
-              label="Discard"
-              className=" p-button-text"
-              icon="pi pi-times"
-              onClick={() => {
-                setAddItemDialog(false);
-                setValue("");
-              }}
-            />
-            <Button
-              label="Add"
-              className=" p-button-accept"
-              icon="pi pi-check"
-              onClick={() => {
-                Add();
-                setValue("");
-              }}
-            />
-          </>
-        }
-      >
-        <InputTextarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          rows={5}
-          cols={30}
-          ref={refFocusName}
-          autoResize
-        />
-      </Dialog>{" "}
+        placeholder="Name"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        ref={inputRef}
+        onLoad={() => inputRef.current.focus()}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") {
+            setValue("");
+            if (value.trim() !== "") Add();
+          }
+        }}
+      ></InputText>
       <Button
         className="p-button-rounded p-button-success"
         icon="pi pi-plus"
-        label="Add item "
-        onClick={() => setAddItemDialog(true)}
+        label="Add"
+        onClick={() => {
+          setValue("");
+          if (value.trim() !== "") Add();
+        }}
       />
     </div>
   );

@@ -1,73 +1,58 @@
 import { Dropdown } from "primereact/dropdown";
+import * as signalR from "@microsoft/signalr";
+import { useState, useEffect, useContext } from "react";
+import { Skeleton } from "primereact/skeleton";
 
-import New from "./Actions/New";
+import FirstListButton from "../../../../UI/FirstListButton";
+import Spinner from "../../../../UI/Spinner";
+import useLocalStorage from "../../../../hooks/useLocalStorage";
 import Delete from "./Actions/Delete";
 import Edit from "./Actions/Edit";
-
+import New from "./Actions/New";
 import { File } from "./File/File";
+import Privilages from "./Actions/Privilages";
 
-import useLocalStorage from "../../../../hooks/useLocalStorage";
-import EmptyArr from "../../../../UI/EmptyArr";
-import { GetListById } from "../../../../services/ToDoService";
-import Spinner from "../../../../UI/Spinner";
-
-function Bar({
-  list,
-  setList,
-  loadData,
-  listNames,
-  selectedListDropdown,
-  setSelectedListDropdown,
-}) {
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-  var dateNow = new Date();
-  dateNow.setDate(dateNow.getDate());
-  dateNow.setMonth(dateNow.getMonth());
-  dateNow.setFullYear(dateNow.getFullYear());
-
+function Bar({ selectedData, setSelectedData, fetchData }) {
   return (
-    <div className="ListBar" style={{ marginBottom: "1rem" }}>
-      {listNames ? (
-        listNames.length === 0 ? (
-          <EmptyArr addButton={<New dateNow={dateNow} loadData={loadData} />} />
-        ) : (
-          <div style={{ justifyContent: "space-between", display: "flex" }}>
-            <div> {list && <File list={list} loadData={loadData} />}</div>
-            <div>
-              <Dropdown
-                value={selectedListDropdown}
-                style={{ marginRight: "1rem", borderRadius: "2rem" }}
-                panelStyle={{
-                  padding: ".5rem 0",
-                  borderRadius: "2rem",
-                  overflow: "hidden",
-                }}
-                optionLabel="name"
-                placeholder={"Select list"}
-                options={listNames}
-                onChange={(e) => {
-                  GetListById(e.value.id).then((res) => {
-                    setList((prev) => res.data);
-                  });
-                  setSelectedListDropdown(
-                    listNames.find((x) => x.name === e.value.name)
-                  );
-                  setListStorage(e.value.name);
-                }}
-              />
-              <New dateNow={dateNow} loadData={loadData} />
-              {list && (
-                <>
-                  <Edit list={list} loadData={loadData} />
-                  <Delete list={list} loadData={loadData} />
-                </>
-              )}
-            </div>
-          </div>
-        )
-      ) : (
-        <Spinner />
-      )}
+    <div
+      style={{
+        justifyContent: "space-between",
+        display: "flex",
+        marginBottom: "1rem",
+      }}
+    >
+      <div>
+        <File selectedData={selectedData.selectedList} />
+        {selectedData.selectedList.isOwner && (
+          <Privilages selectedList={selectedData.selectedList} />
+        )}
+      </div>
+      <div>
+        <Dropdown
+          value={selectedData.selectedList}
+          style={{ marginRight: "1rem", borderRadius: "2rem" }}
+          panelStyle={{
+            padding: ".5rem 0",
+            borderRadius: "2rem",
+            overflow: "hidden",
+          }}
+          optionLabel="name"
+          placeholder={"Select list"}
+          options={selectedData.allLists}
+          onChange={(e) => {
+            setSelectedData({
+              ...selectedData,
+              selectedList: e.value,
+            });
+          }}
+        />
+        <New fetchData={fetchData} />
+        <Edit fetchData={fetchData} selectedData={selectedData.selectedList} />
+        <Delete
+          fetchData={fetchData}
+          selectedData={selectedData.selectedList}
+        />
+      </div>
     </div>
   );
 }

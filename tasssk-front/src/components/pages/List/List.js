@@ -1,91 +1,124 @@
-import React, { useState, useEffect, useReducer } from "react";
-import {
-  GetListById,
-  GetLists,
-  GetListsNames,
-  GetUserPrivilages,
-} from "../../../services/ToDoService";
-import Table from "./Table/Table";
+import { useState, useEffect, useContext } from "react";
+import useLocalStorage from "hooks/useLocalStorage";
 import Bar from "./Bar/Bar";
-import { useCallback } from "react";
-import { useToastContext } from "../../../context/ToastContext";
-import Spinner from "../../../UI/Spinner";
-import useLocalStorage from "../../../hooks/useLocalStorage";
+import Table from "./Table/Table";
+import { GetLists } from "services/ListService";
+import Spinner from "UI/Spinner";
+import FirstListButton from "UI/FirstListButton";
+import New from "./Bar/Actions/New";
+import { Skeleton } from "primereact/skeleton";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { useListContext } from "context/ListContext";
 
-const List = (props) => {
-  const toastRef = useToastContext();
-  const [list, setList] = useState();
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-  const [listNames, setListNames] = useState();
-  const [selectedListDropdown, setSelectedListDropdown] = useState();
-  const [privileges, setPrivileges] = useState();
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  function loadData() {
-    console.log("load");
-    GetListsNames().then((res) => {
-      setListNames((prev) => res.data);
-      if (
-        res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-      ) {
-        GetListById(
-          res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-            .id
-        )
-          .then((res) => {
-            setList((prev) => res.data);
-            return res.data;
-          })
-          .then((res) => {
-            console.log(res);
-
-            GetUserPrivilages(res.id).then((res) => {
-              setPrivileges(res.data.listPermission);
-            });
-          });
-        setSelectedListDropdown(
-          res.data.find((x) => x.name === localStorage.getItem("selectedList"))
-        );
-      } else if (res.data.length > 0) {
-        GetListById(res.data[0].id)
-          .then((res) => {
-            setList((prev) => res.data);
-            return res.data;
-          })
-          .then((res) => {
-            console.log(res);
-            GetUserPrivilages(res.id).then((res) => {
-              console.log(res);
-
-              setPrivileges(res.data.listPermission);
-            });
-          });
-        setSelectedListDropdown(res.data[0]);
-      } else {
-        setList();
-        setSelectedListDropdown();
-        setPrivileges();
-      }
-    });
-  }
+const List = () => {
+  const listContext = useListContext();
+  const fetchData = listContext.fetchData[0];
+  const [selectedData, setSelectedData] = listContext.selectedData;
   return (
     <div className="ToDoList">
-      <Bar
-        list={list}
-        setList={setList}
-        loadData={loadData}
-        listNames={listNames}
-        selectedListDropdown={selectedListDropdown}
-        setSelectedListDropdown={setSelectedListDropdown}
-      />
-      {list && privileges && (
-        <Table list={list} privileges={privileges} loadData={loadData} />
+      {selectedData === null ? (
+        <MySkeleton />
+      ) : selectedData.allLists.length === 0 ? (
+        <FirstListButton addButton={<New fetchData={fetchData} />} />
+      ) : (
+        <>
+          <Bar
+            selectedData={selectedData}
+            setSelectedData={setSelectedData}
+            fetchData={fetchData}
+          />
+          <Table
+            selectedData={selectedData.selectedList}
+            fetchData={fetchData}
+          />
+        </>
       )}
     </div>
   );
 };
 
 export default List;
+const items = Array.from({ length: 5 }, (v, i) => i);
+
+const MySkeleton = () => {
+  const bodyTemplate = () => {
+    return <Skeleton className="mt-3 mb-3"></Skeleton>;
+  };
+  return (
+    <>
+      <div
+        style={{
+          justifyContent: "space-between",
+          display: "flex",
+          marginBottom: "1rem",
+        }}
+      >
+        <div style={{ display: "flex" }}>
+          <Skeleton width="86px" height="41px" borderRadius="2rem" />
+          <Skeleton
+            width="121px"
+            height="41px"
+            borderRadius="2rem"
+            className="ml-3"
+          />
+        </div>
+        <div style={{ display: "flex" }}>
+          <Skeleton width="5rem" height="41px" borderRadius="2rem" />
+          <Skeleton
+            width="87px"
+            height="41px"
+            borderRadius="2rem"
+            className="ml-3"
+          />{" "}
+          <Skeleton
+            width="83px"
+            height="41px"
+            borderRadius="2rem"
+            className="ml-3"
+          />{" "}
+          <Skeleton
+            width="100px"
+            height="41px"
+            borderRadius="2rem"
+            className="ml-3"
+          />
+        </div>
+      </div>
+
+      <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "1rem",
+          }}
+        >
+          <Skeleton width="10rem" height="4rem" />
+          <Skeleton width="15rem" height="4rem" />
+        </div>
+        <DataTable value={items} className="p-datatable-striped">
+          <Column field="name" header="Name" body={bodyTemplate}></Column>
+          <Column
+            field="created_at"
+            header="Created at"
+            style={{ width: "10%" }}
+            body={bodyTemplate}
+          ></Column>
+          <Column
+            field="finished"
+            header="Finished"
+            style={{ width: "5%" }}
+            body={bodyTemplate}
+          ></Column>
+          <Column
+            field="actions"
+            header="Actions"
+            style={{ width: "126px" }}
+            body={bodyTemplate}
+          ></Column>
+        </DataTable>
+      </div>
+    </>
+  );
+};

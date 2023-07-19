@@ -2,19 +2,31 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Add } from "./Actions/Add";
 
-import { DeleteFile, GetFile } from "../../../../../services/ToDoService";
 import { ToastAPI, useToastContext } from "../../../../../context/ToastContext";
+import { DeleteFile, DownloadFile, GetFiles } from "services/FileService";
 
-export const File = ({ list, loadData }) => {
+export const File = ({ selectedData }) => {
   const [fileDialog, setFileDialog] = useState(false);
   const toastRef = useToastContext();
+
+  const [files, setFiles] = useState([]);
+
+  const getFiles = () => {
+    GetFiles(selectedData.id).then((res) => {
+      setFiles((files) => res.data);
+    });
+  };
+
+  useEffect(() => {
+    getFiles();
+  }, [selectedData]);
+
   const actionsTemplate = (row) => {
     var fileId = row.fileId;
-    var listId = list.id;
 
     return (
       <>
@@ -22,7 +34,7 @@ export const File = ({ list, loadData }) => {
           icon="pi pi-download "
           className="p-button-rounded p-button-outlined"
           onClick={() => {
-            GetFile({ fileId }).then((res) => {
+            DownloadFile(fileId).then((res) => {
               var base64 =
                 "data:" + row.type + ";base64," + res.data.fileString;
               fetch(base64)
@@ -44,16 +56,12 @@ export const File = ({ list, loadData }) => {
           style={{ marginLeft: "1rem" }}
           className="p-button-danger p-button-rounded p-button-outlined"
           onClick={() => {
-            DeleteFile({ listId, fileId })
+            DeleteFile({ fileId })
               .then((res) => {
-                ToastAPI(toastRef, res);
-                loadData();
+                getFiles();
               })
-              .catch(() => {
-                toastRef.current.show({
-                  severity: "error",
-                  summary: "Error",
-                });
+              .catch((err) => {
+                ToastAPI(toastRef,err);
               });
           }}
         />
@@ -86,12 +94,12 @@ export const File = ({ list, loadData }) => {
           paginator
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink  "
           rows={7}
-          value={list.files}
+          value={files}
           responsiveLayout="scroll"
           emptyMessage="No files"
           footer={
             <div style={{ display: "flex", justifyContent: "right" }}>
-              <Add list={list} loadData={loadData} />
+              <Add selectedData={selectedData} fetchData={getFiles} />
             </div>
           }
         >
@@ -110,6 +118,7 @@ export const File = ({ list, loadData }) => {
         label="Files"
         icon="pi pi-file"
         onClick={() => setFileDialog(true)}
+        style={{ marginRight: "1rem" }}
       />
     </>
   );

@@ -6,15 +6,14 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { useToastContext } from "../../../../../context/ToastContext";
 import { ChangeTheme } from "../../../../../services/UserService";
 import { ScrollPanel } from "primereact/scrollpanel";
+import PrimeReact from "primereact/api";
+import useLocalStorage from "hooks/useLocalStorage";
 
-import {
-  useThemeContext,
-  useThemeUpdateContext,
-} from "../../../../../context/ThemeContext";
 export default function App() {
-  const [reportDialog, setReportDialog] = useState();
+  const [reportDialog, setReportDialog] = useState(false);
   const toastRef = useToastContext();
-
+  const [darkMode, setDarkMode] = useLocalStorage("darkMode");
+  const [dakModeSwitch, setDarkModeSwitch] = useState(Boolean(darkMode));
   const ReportDialog = () => {
     function SendReport() {
       setReportDialog(false);
@@ -62,9 +61,7 @@ export default function App() {
       </Dialog>
     );
   };
-  const theme = useThemeContext();
 
-  const setDarkTheme = useThemeUpdateContext();
   return (
     <>
       <ReportDialog />
@@ -80,11 +77,17 @@ export default function App() {
       <div style={{ borderBottom: "1px solid #383838", padding: " 1rem 0px" }}>
         <h2>Dark mode?</h2>
         <InputSwitch
-          checked={theme}
+          checked={dakModeSwitch}
           onChange={() => {
             ChangeTheme().then((res) => {
-              if (res.data === true) setDarkTheme(res.data);
-              else setDarkTheme(false);
+              PrimeReact.changeTheme(
+                res.data ? "lara-light-blue" : "lara-dark-blue",
+                res.data ? "lara-dark-blue" : "lara-light-blue",
+                "theme-link",
+                () => {}
+              );
+              res.data ? setDarkMode(true) : setDarkMode("");
+              setDarkModeSwitch(res.data);
             });
           }}
         />

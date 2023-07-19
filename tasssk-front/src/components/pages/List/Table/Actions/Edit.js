@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
+import { UpdateItem } from "services/ItemService";
 
-import { UpdateItem } from "../../../../../services/ToDoService";
-export const Edit = ({ selectedItem, list, fetchData }) => {
+export const Edit = ({ selectedItem, fetchData }) => {
   const inputRef = useRef();
-  const [itemName, setItemName] = useState();
+  const [itemName, setItemName] = useState("");
+
   const [editItemDialog, setEditItemDialog] = useState(false);
   useEffect(() => {
     setItemName(selectedItem.name);
@@ -14,19 +15,10 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
 
   function ChangeItemName() {
     return new Promise((resolve, reject) => {
-      const props = {
-        listId: list.id,
-        item: {
-          id: selectedItem.id,
-          name: itemName,
-          finished: selectedItem.finished,
-          createdAt: selectedItem.createdAt,
-        },
-      };
-
-      UpdateItem(props)
+      selectedItem.name = itemName;
+      UpdateItem(selectedItem)
         .then((res) => {
-          fetchData();
+          fetchData(selectedItem.istId);
           resolve(res);
         })
         .catch((error) => {
@@ -45,7 +37,7 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
             <i className="pi pi-pencil" style={{ marginRight: ".5rem" }}></i>
             Edit
           </>
-        }
+        }     
         onShow={() => inputRef.current.focus()}
         onHide={() => setEditItemDialog(false)}
         footer={
@@ -76,9 +68,8 @@ export const Edit = ({ selectedItem, list, fetchData }) => {
               e.currentTarget.value.length,
               e.currentTarget.value.length
             )
-          }
-          rows={5}
-          cols={30}
+          }        
+          cols={80}  
           autoResize
         />
       </Dialog>

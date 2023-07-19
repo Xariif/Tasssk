@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import { useEffect } from "react";
-import "./Events.scss";
 import useLocalStorage from "../../../hooks/useLocalStorage";
 import { GetEvents } from "../../../services/EventService";
 import Spinner from "./../../../UI/Spinner";
@@ -13,9 +12,8 @@ function Events() {
   const toastRef = useToastContext();
   const navigate = useNavigate();
   const moment = require("moment");
-  const [listStorage, setListStorage] = useLocalStorage("selectedList");
-
   const [Events, setEvents] = useState();
+
   useEffect(() => {
     const fetchData = () => {
       GetEvents()
@@ -60,7 +58,7 @@ function Events() {
             plugins={[dayGridPlugin]}
             events={Events}
             eventClick={(e) => {
-              setListStorage(e.event._def.title);
+              console.log(e.event._def);
               navigate("/ToDoList");
             }}
           />

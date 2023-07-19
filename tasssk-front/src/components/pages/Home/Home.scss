@@ -1,31 +1,26 @@
 .Home {
-  padding: 1rem 0;
-
   h1,
   h2 {
     text-align: center;
   }
   .Cards {
-    display: grid;
-    grid-template-columns: auto auto auto;
+    display: flex;
+    flex-direction: row;
     gap: 1rem;
+    flex-flow: wrap;
 
     .Card {
       margin: 0px auto;
-      background-color: transparent;
-      box-shadow: none;
+      background-color: var(--highlight-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 2px 2px 2px var(--shadow-color);
+      text-align: justify;
+      text-align-last: center;
+      min-width: 500px;
+      width: min-content;
       i {
         font-size: 4rem;
         margin: 1rem;
-        display: flex;
-        justify-content: center;
-      }
-      button {
-        float: right;
-        font-weight: bold;
-      }
-      .p-card .p-card-body {
-        background-color: red !important;
       }
     }
   }

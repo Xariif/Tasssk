@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ToastProvder } from "./context/ToastContext";
 import { AuthContextProvider } from "./context/AuthContext";
-import { ThemeContextProvider } from "./context/ThemeContext";
 
 import "./index.css";
 
@@ -13,18 +12,16 @@ import "primeicons/primeicons.css";
 import "/node_modules/primeflex/primeflex.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+//<React.StrictMode></React.StrictMode>
+
 root.render(
   <>
-    <React.StrictMode>
-      <ToastProvder>
-        <BrowserRouter>
-          <ThemeContextProvider>
-            <AuthContextProvider>
-              <App />
-            </AuthContextProvider>
-          </ThemeContextProvider>
-        </BrowserRouter>
-      </ToastProvder>
-    </React.StrictMode>
+    <ToastProvder>
+      <BrowserRouter>
+          <AuthContextProvider>
+            <App />
+          </AuthContextProvider>
+      </BrowserRouter>
+    </ToastProvder>
   </>
 );

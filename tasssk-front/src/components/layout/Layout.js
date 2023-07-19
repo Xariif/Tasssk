@@ -5,26 +5,52 @@ import TopBar from "./TopBar/TopBar";
 import Footer from "./Footer/Footer";
 import { Card } from "primereact/card";
 
-import "./Layout.scss";
 import { Dialog } from "primereact/dialog";
-import Notifications from "../../UI/Notifications/Notifications.js";
+import Notifications from "./Notifications/Notifications.js";
 import { useNotificationContext } from "../../context/NotificationContext";
-import { NotificationContextProvider } from "./../../context/NotificationContext";
-import { useThemeContext } from "../../context/ThemeContext";
-import { useThemeUpdateContext } from "../../context/ThemeContext";
-function Layout(props) {
-  const theme = useThemeContext();
-  const setTheme = useThemeUpdateContext();
+import { NotificationContextProvider } from "../../context/NotificationContext";
 
+import PrimeReact from "primereact/api";
+import useLocalStorage from "hooks/useLocalStorage";
+import { ListContextProvider } from "context/ListContext";
+function Layout(props) {
+  const [darkMode, setTheme] = useLocalStorage("darkMode");
+  useEffect(() => {
+    if (darkMode) {
+      PrimeReact.changeTheme(
+        "lara-light-blue",
+        "lara-dark-blue",
+        "theme-link",
+        () => {}
+      );
+    }
+  }, [darkMode]);
   return (
-    <NotificationContextProvider>
-      <Notifications />
-      <TopBar />
-      <div className="Main">
-        <div className="Content">{props.content}</div>
-      </div>
-      <Footer />
-    </NotificationContextProvider>
+    <ListContextProvider>
+      <NotificationContextProvider>
+        <Notifications />
+        <TopBar />
+        <div
+          className="Main"
+          style={{
+            padding: "1rem",
+            minHeight: "calc(100vh - 90px)",
+          }}
+        >
+          <div
+            className="Content"
+            style={{
+              backgroundColor: "var(--surface-card)",
+              borderRadius: "var(--border-radius)",
+              padding: "1rem",
+            }}
+          >
+            {props.content}
+          </div>
+        </div>
+        <Footer />
+      </NotificationContextProvider>
+    </ListContextProvider>
   );
 }
 

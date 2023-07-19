@@ -1,15 +1,27 @@
 import { useAPI } from "../hooks/useAPI";
 
-var url = process.env.REACT_APP_BASE_URL + "Notification/";
+var url = process.env.REACT_APP_API_URL + "Notification/";
 
 export async function GetNotifications() {
   var config = {
     method: "get",
-    url: url + "Notifications",
+    url: url + "GetNotifications",
   };
   return useAPI(config);
 }
-export async function AddNotification(props) {
+
+export async function GetInviteNotification(id) {
+  const params = {
+    id: id,
+  };
+  var config = {
+    method: "get",
+    url: url + "GetInviteNotification",
+    params,
+  };
+  return useAPI(config);
+}
+export async function CreateNotification(props) {
   var data = {
     Email: props.Email,
     Header: props.Header,
@@ -17,7 +29,7 @@ export async function AddNotification(props) {
   };
   var config = {
     method: "post",
-    url: url + "AddNotification",
+    url: url + "CreateNotification",
     data,
   };
   return useAPI(config);

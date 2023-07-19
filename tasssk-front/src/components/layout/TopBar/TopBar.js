@@ -2,14 +2,14 @@ import React from "react";
 
 import { useLocation, Link } from "react-router-dom";
 import { useAuthUpdateContext } from "../../../context/AuthContext";
-import { useThemeContext } from "../../../context/ThemeContext";
-import { useThemeUpdateContext } from "../../../context/ThemeContext";
+
 import logo from "./../../../logo.png";
 import { useContext } from "react";
 import { Badge } from "primereact/badge";
 
 import "./TopBar.scss";
 import { NotificationContext } from "./../../../context/NotificationContext";
+import PrimeReact from "primereact/api";
 
 function TopBar() {
   const { visible, notifications, badge } = useContext(NotificationContext);
@@ -18,11 +18,9 @@ function TopBar() {
 
   const setAuth = useAuthUpdateContext();
   const location = useLocation();
-  const setTheme = useThemeUpdateContext();
 
   const logOut = () => {
     localStorage.clear();
-    setAuth(false);
   };
 
   const imgSize = 2;
@@ -81,7 +79,12 @@ function TopBar() {
             to="/Login"
             onClick={() => {
               logOut();
-              setTheme(false);
+              PrimeReact.changeTheme(
+                "lara-dark-blue",
+                "lara-light-blue",
+                "theme-link",
+                () => {}
+              );
             }}
           >
             <i className="pi pi-fw pi-power-off" />

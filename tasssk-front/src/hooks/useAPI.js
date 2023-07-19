@@ -15,10 +15,10 @@ export function useAPI(config) {
   return new Promise((resolve, reject) => {
     axios(config)
       .then(function (response) {
-        resolve(response.data);
+        resolve(response);
       })
       .catch(function (error) {
-        reject(error);
+        reject(error.response);
       });
   });
 }
