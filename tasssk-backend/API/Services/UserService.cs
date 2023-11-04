@@ -19,7 +19,15 @@ namespace TassskAPI.Services
             _tokenService = tokenService;
         }
 
-        public async Task<UserDataDTO> Login(LoginDTO loginDTO)
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == email).FirstOrDefaultAsync();
+            return user;
+        }
+
+
+        public async Task<UserDataDTO> LoginAsync(LoginDTO loginDTO)
         {
 
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == loginDTO.Email).FirstOrDefaultAsync() ?? throw new ArgumentException("User not exist");
@@ -41,9 +49,13 @@ namespace TassskAPI.Services
             };
         }
 
-        public async Task Register(RegisterDTO registerDTO)
+        public async Task RegisterAsync(RegisterDTO registerDTO)
         {
             using var hmac = new HMACSHA512();
+
+
+            if (registerDTO.BirthDate.AddYears(18) > DateTime.UtcNow)
+                throw new ArgumentException(message: "You must be at least 18 years old!");
 
             var user = await db.GetCollection<User>(UserCollection).Find(x => x.Email == registerDTO.Email).FirstOrDefaultAsync();
 
@@ -55,7 +67,7 @@ namespace TassskAPI.Services
                 Email = registerDTO.Email,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
                 PasswordSalt = hmac.Key,
-                BirthDate = registerDTO.BirthDate,
+                BirthDate = registerDTO.BirthDate.ToUniversalTime(),
             };
             await db.GetCollection<User>(UserCollection).InsertOneAsync(newUser);
 
@@ -74,7 +86,7 @@ namespace TassskAPI.Services
 
         }
 
-        public async Task<bool> ValidateToken(string token)
+        public  bool ValidateToken(string token)
         {        
             try
             {
@@ -87,10 +99,18 @@ namespace TassskAPI.Services
             return true;
         }
 
-        public async Task<bool> DeleteAccount(string email)
+        public async Task<bool> DeleteAccountAsync(string email)
         {
             await db.GetCollection<Notification>(NotificationCollection).DeleteManyAsync(x => x.Receiver== email);
-            var userLists = await db.GetCollection<List>(ListCollection).Find(x=>x.Privileges.Find(z=>z.Email == email).Owner == true).ToListAsync();
+
+
+            //getalllists from db 
+            var userLists = await db.GetCollection<List>(ListCollection)
+              .Find(Builders<List>.Filter
+              .ElemMatch(x => x.Privileges, z => z.Email == email && z.Owner == true))
+              .ToListAsync();
+
+
             ListService listService = new ListService();
             foreach (var list in userLists)
             {

@@ -15,7 +15,7 @@ node_modules/
 x64/
 x86/
 build/
-bld/
+bld/ eess
 [Bb]in/
 [Oo]bj/
 [Oo]ut/

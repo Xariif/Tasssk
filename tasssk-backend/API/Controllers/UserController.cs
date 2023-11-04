@@ -20,7 +20,7 @@ namespace TassskAPI.Controllers
         {
             try
             {
-                var userData = await _userService.Login(loginDTO);
+                var userData = await _userService.LoginAsync(loginDTO);
 
                 return Ok(userData);
             }
@@ -41,7 +41,7 @@ namespace TassskAPI.Controllers
         {
             try
             {
-                await _userService.Register(registerDTO);
+                await _userService.RegisterAsync(registerDTO);
 
                 return Ok("Register complete");
 
@@ -63,7 +63,7 @@ namespace TassskAPI.Controllers
         {
             try
             {
-                var res = await _userService.ValidateToken(token);
+                var res =  _userService.ValidateToken(token);
                 return Ok(res);
 
             } 
@@ -89,8 +89,8 @@ namespace TassskAPI.Controllers
                     Email = GetUserEmail(),
                     Password = password
                 };
-                await _userService.Login(loginDTO);  
-                var res = await _userService.DeleteAccount(GetUserEmail());
+                await _userService.LoginAsync(loginDTO);  
+                var res = await _userService.DeleteAccountAsync(GetUserEmail());
                 return Ok(res);
 
             }
@@ -131,7 +131,7 @@ namespace TassskAPI.Controllers
                     Password = changePasswordDTO.OldPassword
                 };
 
-                var res = await _userService.Login(loginDTO);
+                var res = await _userService.LoginAsync(loginDTO);
                 await _userService.ChangePassword(GetUserEmail(), changePasswordDTO.NewPassword);
                 return Ok(res);
             }
